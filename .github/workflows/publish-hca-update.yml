@@ -1,0 +1,81 @@
+name: HCA Update veröffentlichen
+
+on:
+  push:
+    paths:
+      - "incoming/*.hcaupdate"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Update-Datei bestimmen
+        id: update
+        shell: bash
+        run: |
+          set -euo pipefail
+          FILE="$(find incoming -maxdepth 1 -type f -name '*.hcaupdate' -printf '%T@ %p\n' | sort -nr | head -1 | cut -d' ' -f2-)"
+          if [ -z "${FILE:-}" ] || [ ! -f "$FILE" ]; then
+            echo "Keine .hcaupdate-Datei unter incoming/ gefunden."
+            exit 1
+          fi
+          mkdir -p /tmp/hca_manifest
+          unzip -p "$FILE" hca-update.json > /tmp/hca_manifest/hca-update.json
+          PRODUCT="$(jq -r '.product // empty' /tmp/hca_manifest/hca-update.json)"
+          VERSION="$(jq -r '.version // empty' /tmp/hca_manifest/hca-update.json)"
+          DESCRIPTION="$(jq -r '.description // "HCA Produktionsmanager Update"' /tmp/hca_manifest/hca-update.json)"
+          if [ "$PRODUCT" != "HCA Produktionsmanager" ]; then
+            echo "Falsche Produktkennung: $PRODUCT"
+            exit 1
+          fi
+          if [ -z "$VERSION" ]; then
+            echo "Version fehlt in hca-update.json"
+            exit 1
+          fi
+          TAG="v${VERSION#v}"
+          BASENAME="$(basename "$FILE")"
+          SHA_FILE="/tmp/${BASENAME%.hcaupdate}.sha256"
+          sha256sum "$FILE" | sed "s#  $FILE#  $BASENAME#" > "$SHA_FILE"
+          echo "file=$FILE" >> "$GITHUB_OUTPUT"
+          echo "basename=$BASENAME" >> "$GITHUB_OUTPUT"
+          echo "sha_file=$SHA_FILE" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          {
+            echo 'description<<EOF'
+            echo "$DESCRIPTION"
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      - name: GitHub Release anlegen oder aktualisieren
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FILE: ${{ steps.update.outputs.file }}
+          SHA_FILE: ${{ steps.update.outputs.sha_file }}
+          TAG: ${{ steps.update.outputs.tag }}
+          VERSION: ${{ steps.update.outputs.version }}
+          DESCRIPTION: ${{ steps.update.outputs.description }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          NOTES="/tmp/hca_release_notes.md"
+          printf '## HCA Produktionsmanager %s\n\n%s\n\n### Installation\nDer HCA Produktionsmanager erkennt dieses Stable-Update automatisch. Alternativ kann die `.hcaupdate` weiterhin manuell unter Einstellungen → Update einspielen installiert werden.\n' "$VERSION" "$DESCRIPTION" > "$NOTES"
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "$FILE" "$SHA_FILE" --clobber
+            gh release edit "$TAG" --title "HCA Produktionsmanager $VERSION" --notes-file "$NOTES" --latest
+          else
+            gh release create "$TAG" "$FILE" "$SHA_FILE" --title "HCA Produktionsmanager $VERSION" --notes-file "$NOTES" --latest
+          fi
+
+      - name: Prüfsumme anzeigen
+        shell: bash
+        run: cat "${{ steps.update.outputs.sha_file }}"
