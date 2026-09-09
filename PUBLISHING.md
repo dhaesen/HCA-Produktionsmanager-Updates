@@ -2,18 +2,24 @@
 
 Der HCA Produktionsmanager nutzt dieses Repository als öffentliche Updatequelle.
 
-## Stable Release
+## Automatischer Stable-Release
 
-1. Auf GitHub **Releases → Draft a new release** öffnen.
-2. Tag im Format `vX.Y.Z` anlegen, z. B. `v0.9.4`.
-3. Einen kurzen Titel und die Änderungen als Release Notes eintragen.
-4. Genau eine `.hcaupdate`-Datei als Asset hochladen.
-5. Zusätzlich die passende `.sha256`-Datei hochladen.
-6. Release veröffentlichen.
+Die Release-Erstellung ist automatisiert:
+
+1. Eine fertige `.hcaupdate`-Datei in den Ordner `incoming/` hochladen.
+2. Die GitHub Action `HCA Update veröffentlichen` startet automatisch.
+3. Sie liest `hca-update.json` aus der Update-Datei.
+4. Sie prüft die Produktkennung `HCA Produktionsmanager` und die Version.
+5. Sie berechnet automatisch die SHA256-Prüfsumme.
+6. Sie legt bzw. aktualisiert das GitHub Release mit Tag `v<version>`.
+7. `.hcaupdate` und `.sha256` werden als Release Assets veröffentlicht.
+8. Der HCA Produktionsmanager findet das Release anschließend automatisch.
+
+Ein separates manuelles Erstellen der `.sha256` auf GitHub ist nicht mehr nötig.
 
 ## Beta Release
 
-Für Beta-Versionen einen Tag wie `v0.9.4-beta.1` verwenden und das Release als **pre-release** markieren.
+Beta-Versionen werden weiterhin mit einer Versionskennung wie `0.9.5-beta.1` gebaut. Die aktuelle Automatik veröffentlicht Uploads zunächst als normalen Release. Eine automatische Kennzeichnung als Pre-Release kann ergänzt werden, sobald der Beta-Kanal tatsächlich genutzt wird.
 
 ## Pflichtinhalt
 
@@ -27,10 +33,4 @@ Jede `.hcaupdate`-Datei muss enthalten:
 
 ## Prüfsumme
 
-Die `.sha256`-Datei enthält die 64-stellige SHA256-Prüfsumme, z. B.:
-
-```text
-0123456789abcdef...  HCA_Update_v0.9.4.hcaupdate
-```
-
-Der Produktionsmanager verweigert eine automatische GitHub-Installation, wenn die SHA256-Datei fehlt oder die Prüfsumme nicht stimmt.
+Die Action erstellt die `.sha256`-Datei automatisch. Der Produktionsmanager verweigert eine automatische GitHub-Installation, wenn die Prüfsumme fehlt oder nicht zur `.hcaupdate` passt.
