@@ -23,16 +23,25 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          FILE="$(find incoming -maxdepth 1 -type f -name '*.hcaupdate' -printf '%T@ %p\n' | sort -nr | head -1 | cut -d' ' -f2-)"
+
+          if [ "${{ github.event_name }}" = "push" ]; then
+            FILE="$(git diff --name-only --diff-filter=AM "${{ github.event.before }}" "${{ github.sha }}" -- 'incoming/*.hcaupdate' | tail -n 1)"
+          else
+            FILE="$(find incoming -maxdepth 1 -type f -name '*.hcaupdate' -print | sort -V | tail -n 1)"
+          fi
+
           if [ -z "${FILE:-}" ] || [ ! -f "$FILE" ]; then
-            echo "Keine .hcaupdate-Datei unter incoming/ gefunden."
+            echo "Keine neu hinzugefügte oder geänderte .hcaupdate-Datei gefunden."
             exit 1
           fi
+
+          echo "Veröffentliche: $FILE"
           mkdir -p /tmp/hca_manifest
           unzip -p "$FILE" hca-update.json > /tmp/hca_manifest/hca-update.json
           PRODUCT="$(jq -r '.product // empty' /tmp/hca_manifest/hca-update.json)"
           VERSION="$(jq -r '.version // empty' /tmp/hca_manifest/hca-update.json)"
           DESCRIPTION="$(jq -r '.description // "HCA Produktionsmanager Update"' /tmp/hca_manifest/hca-update.json)"
+
           if [ "$PRODUCT" != "HCA Produktionsmanager" ]; then
             echo "Falsche Produktkennung: $PRODUCT"
             exit 1
@@ -41,10 +50,12 @@ jobs:
             echo "Version fehlt in hca-update.json"
             exit 1
           fi
+
           TAG="v${VERSION#v}"
           BASENAME="$(basename "$FILE")"
           SHA_FILE="/tmp/${BASENAME%.hcaupdate}.sha256"
           sha256sum "$FILE" | sed "s#  $FILE#  $BASENAME#" > "$SHA_FILE"
+
           echo "file=$FILE" >> "$GITHUB_OUTPUT"
           echo "basename=$BASENAME" >> "$GITHUB_OUTPUT"
           echo "sha_file=$SHA_FILE" >> "$GITHUB_OUTPUT"
@@ -69,6 +80,7 @@ jobs:
           set -euo pipefail
           NOTES="/tmp/hca_release_notes.md"
           printf '## HCA Produktionsmanager %s\n\n%s\n\n### Installation\nDer HCA Produktionsmanager erkennt dieses Stable-Update automatisch. Alternativ kann die `.hcaupdate` weiterhin manuell unter Einstellungen → Update einspielen installiert werden.\n' "$VERSION" "$DESCRIPTION" > "$NOTES"
+
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "$FILE" "$SHA_FILE" --clobber
             gh release edit "$TAG" --title "HCA Produktionsmanager $VERSION" --notes-file "$NOTES" --latest
