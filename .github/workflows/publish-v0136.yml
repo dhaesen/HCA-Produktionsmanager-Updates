@@ -1,0 +1,114 @@
+name: Build and publish HCA v0.13.6
+on:
+  push:
+    branches: [codex/v0.13.2-development]
+    paths: [.github/workflows/publish-v0136.yml]
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Prepare client and NAS
+        run: |
+          set -euo pipefail
+          rm -rf work/v0136 dist
+          mkdir -p work/v0136/client/payload work/v0136/nas/app dist
+          cp development/current-v0.13.5/client/* work/v0136/client/payload/
+          mv work/v0136/client/payload/hca-update.json work/v0136/client/hca-update.json
+          cp development/v0.13.6/hca-v0136.js development/v0.13.6/hca-v0136.css work/v0136/client/payload/
+          cp development/current-v0.13.5/nas/hca_shared.py work/v0136/nas/app/hca_shared.py
+          python development/v0.13.6/patch_server.py work/v0136/nas/app/hca_shared.py
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          root=Path("work/v0136/client")
+          payload=root/"payload"
+          html=(payload/"index.html").read_text(encoding="utf-8")
+          if "hca-v0136.css" not in html:
+              html=html.replace("</head>",'  <link rel="stylesheet" href="/hca-v0136.css?v=0.13.6">\n</head>')
+          if "hca-v0136.js" not in html:
+              html=html.replace("</body>",'  <script src="/hca-v0136.js?v=0.13.6"></script>\n</body>')
+          (payload/"index.html").write_text(html,encoding="utf-8")
+          (payload/"version.json").write_text(json.dumps({"version":"0.13.6","channel":"test","released":"2026-09-14"},ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          (root/"hca-update.json").write_text(json.dumps({"product":"HCA Produktionsmanager","version":"0.13.6","description":"SKU-sicherer Import, Angebots-Mengenstaffeln, Produktionsart, Verpackungseinheiten, Adressprüfung und eindeutige Lieferschein-Sendungs-Verknüpfung."},ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          (payload/"AENDERUNGEN_v0.13.6.txt").write_text("""HCA v0.13.6
+          - Artikelidentität nach WooCommerce-Produkt-ID und exakter SKU; gleiche Namen werden nicht zusammengeführt
+          - Angebots-Mengenstaffeln mit gespeicherten Staffelpreisen und PDF-Zusammenfassung
+          - durchsuchbare Kundenauswahl im Angebot
+          - robuste Übernahme der Veredelungen vom Angebot in den Auftrag
+          - Wahl Eigenproduktion oder Lieferantenproduktion bei Aufträgen mit Veredelung
+          - Produktionsvorschlag nur bei Eigenproduktion
+          - Verpackungseinheit für gebündelte Fertigmeldung und genau ein Etikett je Einheit
+          - Standardlieferadresse im erzeugten Produktionsauftrag
+          - PLZ-/Ort-Prüfung und Straßenvorschläge
+          - eindeutige Verknüpfung Lieferschein, Sendung und Sendcloud-Label ohne Duplikat
+          """,encoding="utf-8")
+          PY
+          cp project_sources/03-HCA_SOFTWAREBESCHREIBUNG_AKTUELL-1-.md /tmp/ignore 2>/dev/null || true
+      - name: Validate
+        run: |
+          set -euo pipefail
+          python -m py_compile work/v0136/nas/app/hca_shared.py
+          node --check work/v0136/client/payload/app.js
+          node --check work/v0136/client/payload/hca-v0132.js
+          node --check work/v0136/client/payload/hca-v0134.js
+          node --check work/v0136/client/payload/hca-v0135.js
+          node --check work/v0136/client/payload/hca-v0136.js
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          c=Path("work/v0136/client")
+          s=Path("work/v0136/nas/app/hca_shared.py").read_text(encoding="utf-8")
+          j=(c/"payload/hca-v0136.js").read_text(encoding="utf-8")
+          h=(c/"payload/index.html").read_text(encoding="utf-8")
+          assert json.loads((c/"hca-update.json").read_text())["version"]=="0.13.6"
+          assert json.loads((c/"payload/version.json").read_text())["version"]=="0.13.6"
+          for marker in ("hca-v0136.js?v=0.13.6","hca-v0136.css?v=0.13.6"): assert marker in h
+          for marker in ("ux_inventory_article_woo_sku","_hca136_normalize_config","/address/lookup","production_task_settings","_HCA136_DELIVERY_FROM_SHIPMENT"): assert marker in s
+          for marker in ("Mengenstaffel","hca136CustomerSearch","Verpackungseinheit","production_mode"): assert marker in j
+          assert "wk-werbeartikel-konfigurator" not in "\n".join(str(p) for p in Path("work/v0136").rglob("*"))
+          PY
+      - name: Package
+        run: |
+          set -euo pipefail
+          cat > work/v0136/nas/INSTALLATION_v0.13.6.txt <<'EOF'
+          HCA NAS-Erweiterung v0.13.6
+
+          1. Bestehende app/hca_shared.py sichern.
+          2. app/hca_shared.py aus diesem Paket ersetzen.
+          3. NAS-Dienst beziehungsweise Container neu starten.
+          4. Erst danach HCA_Update_v0.13.6.hcaupdate am Client einspielen.
+          EOF
+          (cd work/v0136/client && zip -qr "$GITHUB_WORKSPACE/dist/HCA_Update_v0.13.6.hcaupdate" hca-update.json payload)
+          (cd work/v0136/nas && zip -qr "$GITHUB_WORKSPACE/dist/HCA_NAS_Erweiterung_Auftrag_Produktion_Versand_v0.13.6.zip" .)
+          (cd dist && sha256sum HCA_Update_v0.13.6.hcaupdate > HCA_Update_v0.13.6.sha256)
+          (cd dist && sha256sum HCA_NAS_Erweiterung_Auftrag_Produktion_Versand_v0.13.6.zip > HCA_NAS_Erweiterung_Auftrag_Produktion_Versand_v0.13.6.sha256)
+          unzip -t dist/HCA_Update_v0.13.6.hcaupdate
+          unzip -t dist/HCA_NAS_Erweiterung_Auftrag_Produktion_Versand_v0.13.6.zip
+          (cd dist && sha256sum -c HCA_Update_v0.13.6.sha256 && sha256sum -c HCA_NAS_Erweiterung_Auftrag_Produktion_Versand_v0.13.6.sha256)
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.md <<'EOF'
+          HCA Produktionsmanager v0.13.6 Testbuild
+
+          Enthält SKU-sicheren Artikelimport, Mengenstaffeln im Angebot, durchsuchbare Kundenauswahl,
+          robuste Veredelungsübernahme, Eigen-/Lieferantenproduktion, Verpackungseinheiten,
+          Standardlieferadressen, PLZ-/Ort-Prüfung sowie eine eindeutige Lieferschein-/Sendungs-Verknüpfung.
+
+          Zuerst das NAS-Paket, danach das Clientupdate installieren.
+          Das WooCommerce-Plugin wurde nicht verändert.
+          EOF
+          gh release create v0.13.6 dist/* --repo dhaesen/HCA-Produktionsmanager-Updates --title "HCA Produktionsmanager 0.13.6 Testbuild" --notes-file /tmp/notes.md --prerelease
+          mkdir verify
+          for f in dist/*; do
+            name=$(basename "$f")
+            curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.6/$name" -o "verify/$name"
+          done
+          (cd verify && sha256sum -c HCA_Update_v0.13.6.sha256 && sha256sum -c HCA_NAS_Erweiterung_Auftrag_Produktion_Versand_v0.13.6.sha256)
