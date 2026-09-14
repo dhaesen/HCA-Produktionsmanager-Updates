@@ -251,8 +251,8 @@ jobs:
 
           cp=src/"HcaWindowsHost.csproj"
           cs=cp.read_text(encoding="utf-8-sig")
-          cs=cs.replace("<Version>0.12.1.0</Version>","<Version>0.13.5.4.0</Version>")
-          cs=cs.replace("<FileVersion>0.12.1.0</FileVersion>","<FileVersion>0.13.5.4.0</FileVersion>")
+          cs=cs.replace("<Version>0.12.1.0</Version>","<Version>0.13.5.4</Version>")
+          cs=cs.replace("<FileVersion>0.12.1.0</FileVersion>","<FileVersion>0.13.5.4</FileVersion>")
           cs=cs.replace("<InformationalVersion>0.12.1</InformationalVersion>","<InformationalVersion>0.13.5.4</InformationalVersion>")
           cp.write_text(cs,encoding="utf-8-sig")
           (src/"Assets").mkdir(exist_ok=True)
