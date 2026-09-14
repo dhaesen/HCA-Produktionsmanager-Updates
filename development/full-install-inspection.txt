@@ -1,0 +1,1855 @@
+# Full installer inventory
+
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/HCA_INSTALLIEREN.cmd | 473 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/HCA_STARTDIAGNOSE.cmd | 625 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/INSTALLATION.txt | 4928 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/INSTALLIEREN.ps1 | 6582 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/PRUEFBERICHT_v0.11.1.txt | 1455 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/PRUEFBERICHT_v0.11.2.txt | 1036 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/PRUEFBERICHT_v0.11.3.txt | 811 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/PRUEFBERICHT_v0.11.4.txt | 709 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/PRUEFBERICHT_v0.11.5.txt | 936 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/PRUEFBERICHT_v0.11.6.txt | 772 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/PRUEFBERICHT_v0.11.7.txt | 563 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/PRUEFBERICHT_v0.12.0.txt | 1300 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/PRUEFBERICHT_v0.12.1.txt | 776 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/Assets/HCA.ico | 16634 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/BUILD_WINDOWS.ps1 | 330 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/HcaWindowsHost.csproj | 1487 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/Patch-Backend.ps1 | 938 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/Program.cs | 34366 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/README-ENTWICKLUNG.md | 1339 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/bin/Release/net48/HCA_Produktionsmanager.exe | 62976 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/bin/Release/net48/HCA_Produktionsmanager.exe.config | 169 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/bin/Release/net48/HCA_Produktionsmanager.pdb | 9160 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/bin/Release/net48/Microsoft.Web.WebView2.Core.dll | 649832 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/bin/Release/net48/Microsoft.Web.WebView2.WinForms.dll | 39000 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/bin/Release/net48/Microsoft.Web.WebView2.Wpf.dll | 82536 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/bin/Release/net48/native-bridge.js | 3650 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/bin/Release/net48/runtimes/win-x64/native/WebView2Loader.dll | 159848 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/native-bridge.js | 3650 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/HcaWindowsHost.csproj.nuget.dgspec.json | 2403 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/HcaWindowsHost.csproj.nuget.g.props | 1357 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/HcaWindowsHost.csproj.nuget.g.targets | 819 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/Release/net48/.NETFramework,Version=v4.8.AssemblyAttributes.cs | 209 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/Release/net48/HCA_Produktionsmanager.exe | 62976 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/Release/net48/HCA_Produktionsmanager.exe.withSupportedRuntime.config | 169 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/Release/net48/HCA_Produktionsmanager.pdb | 9160 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/Release/net48/HcaWindo.4E5DA538.Up2Date | 0 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/Release/net48/HcaWindowsHost.AssemblyInfo.cs | 985 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/Release/net48/HcaWindowsHost.AssemblyInfoInputs.cache | 65 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/Release/net48/HcaWindowsHost.GeneratedMSBuildEditorConfig.editorconfig | 292 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/Release/net48/HcaWindowsHost.assets.cache | 3219 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/Release/net48/HcaWindowsHost.csproj.AssemblyReference.cache | 2970 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/Release/net48/HcaWindowsHost.csproj.CoreCompileInputs.cache | 65 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/Release/net48/HcaWindowsHost.csproj.FileListAbsolute.txt | 4966 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/project.assets.json | 34889 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/project.nuget.cache | 668 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/SHA256SUMS_SETUP.txt | 9625 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/AENDERUNGEN_v0.10.3.txt | 528 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/AENDERUNGEN_v0.11.0.txt | 752 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/AENDERUNGEN_v0.11.1.txt | 402 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/AENDERUNGEN_v0.11.2.txt | 666 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/AENDERUNGEN_v0.11.3.txt | 653 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/AENDERUNGEN_v0.11.4.txt | 709 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/AENDERUNGEN_v0.11.5.txt | 963 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/AENDERUNGEN_v0.11.6.txt | 571 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/AENDERUNGEN_v0.11.7.txt | 362 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/AENDERUNGEN_v0.12.0.txt | 951 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/AENDERUNGEN_v0.12.1.txt | 680 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/AENDERUNGEN_v0.12.2.txt | 516 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/AENDERUNGEN_v0.12.3.txt | 627 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/AENDERUNGEN_v0.13.0.txt | 697 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/HCA_Auftragsimport_Vorlage.xlsx | 5134 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/HCA_Backend.exe | 6719488 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/HCA_Merch_Einzelversand_Vorlage.xlsx | 13663 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/HCA_Produktionsmanager.exe | 62976 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/HCA_Produktionsmanager.exe.config | 169 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/Microsoft.Web.WebView2.Core.dll | 649832 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/Microsoft.Web.WebView2.Wpf.dll | 82536 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/SHA256SUMS.txt | 3753 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/WebView2-LICENSE.txt | 1487 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/WebView2-NOTICE.txt | 3894 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/WebView2Loader.dll | 159848 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/app.js | 552033 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/assets/HCA.ico | 16634 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/assets/app-icon.png | 17461 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/assets/briefpapier-seite1.jpg | 262833 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/assets/briefpapier-seite2.jpg | 262833 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/assets/logo-app.png | 27606 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/config.default.json | 247 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/data/README.txt | 153 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/hca-ui.css | 3937 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/hca-ui.js | 10720 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/index.html | 118742 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/native-bridge.js | 3650 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/pico/boot.py | 192 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/pico/hca_bridge.py | 17184 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/pico/hca_disk.py | 9041 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/pico/main.py | 35 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/style.css | 99872 bytes
+HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/version.json | 80 bytes
+
+# Relevant source files
+
+===== HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/HCA_INSTALLIEREN.cmd =====
+@echo off
+chcp 65001 >nul
+setlocal
+cd /d "%~dp0"
+echo.
+echo HCA Produktionsmanager v0.13.0 - korrigierte Installation
+echo ================================================
+echo.
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0INSTALLIEREN.ps1"
+if errorlevel 1 (
+  echo.
+  echo Die Installation konnte nicht abgeschlossen werden.
+  echo Bitte sende die oben angezeigte Fehlermeldung.
+  echo.
+  pause
+  exit /b 1
+)
+echo.
+echo Fertig.
+timeout /t 3 /nobreak >nul
+
+===== HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/HCA_STARTDIAGNOSE.cmd =====
+@echo off
+chcp 65001 >nul
+setlocal
+set "HCA_EXE=%LOCALAPPDATA%\Programs\HCA Produktionsmanager\HCA_Produktionsmanager.exe"
+set "HCA_LOG=%LOCALAPPDATA%\HCA Produktionsmanager\hca-start.log"
+
+if not exist "%HCA_EXE%" (
+  echo HCA ist nicht am erwarteten Ort installiert:
+  echo %HCA_EXE%
+  pause
+  exit /b 1
+)
+
+start "" "%HCA_EXE%"
+timeout /t 6 /nobreak >nul
+
+if exist "%HCA_LOG%" (
+  start "" notepad.exe "%HCA_LOG%"
+) else (
+  echo Es wurde noch kein Startprotokoll erzeugt.
+  echo Falls auch keine Windows-Fehlermeldung erscheint, wurde die EXE vermutlich
+  echo durch Sicherheitssoftware blockiert oder entfernt.
+  pause
+)
+
+===== HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/INSTALLIEREN.ps1 =====
+$ErrorActionPreference = 'Stop'
+$Host.UI.RawUI.WindowTitle = 'HCA Produktionsmanager - Installation'
+
+function Write-Step([string]$Text) {
+    Write-Host "`n==> $Text" -ForegroundColor Cyan
+}
+
+$setupRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+$payload = Join-Path $setupRoot 'payload'
+$target = Join-Path $env:LOCALAPPDATA 'Programs\HCA Produktionsmanager'
+
+Write-Host 'HCA Produktionsmanager v0.13.0 - korrigierte Vollinstallation' -ForegroundColor White
+Write-Host 'Die Installation erfolgt nur für den aktuellen Windows-Benutzer und benötigt keine Administratorrechte.'
+
+if (-not (Test-Path (Join-Path $payload 'HCA_Produktionsmanager.exe'))) {
+    throw 'Installationsdateien unvollständig: HCA_Produktionsmanager.exe fehlt.'
+}
+
+Write-Step 'Installationspaket prüfen'
+$hashFile = Join-Path $payload 'SHA256SUMS.txt'
+if (Test-Path $hashFile) {
+    $bad = @()
+    Get-Content $hashFile | ForEach-Object {
+        if ($_ -match '^([0-9a-fA-F]{64})\s+\*?(.+)$') {
+            $expected = $matches[1].ToLowerInvariant()
+            $rel = $matches[2] -replace '^\.\\','' -replace '^\./',''
+            $file = Join-Path $payload ($rel -replace '/', '\')
+            if (-not (Test-Path $file)) {
+                $bad += "$rel (fehlt)"
+            } else {
+                $actual = (Get-FileHash -Algorithm SHA256 -Path $file).Hash.ToLowerInvariant()
+                if ($actual -ne $expected) { $bad += "$rel (Prüfsumme falsch)" }
+            }
+        }
+    }
+    if ($bad.Count -gt 0) {
+        throw ('Paketprüfung fehlgeschlagen: ' + ($bad -join ', '))
+    }
+    Write-Host 'Paketprüfung OK.' -ForegroundColor Green
+}
+
+Write-Step 'Laufenden HCA Client beenden'
+Get-Process -Name 'HCA_Produktionsmanager' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+Get-Process -Name 'HCA_Backend' -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+Start-Sleep -Milliseconds 500
+
+# Try to find an existing installation so local settings can be retained.
+$oldCandidates = @(
+    $target,
+    'C:\HCA-Produktionsmanager',
+    'C:\HCA Produktionsmanager',
+    (Join-Path $env:USERPROFILE 'HCA-Produktionsmanager'),
+    (Join-Path $env:USERPROFILE 'Desktop\HCA-Produktionsmanager')
+) | Select-Object -Unique
+
+$oldInstall = $null
+foreach ($candidate in $oldCandidates) {
+    if ((Test-Path (Join-Path $candidate 'config.json')) -or (Test-Path (Join-Path $candidate 'data'))) {
+        $oldInstall = $candidate
+        break
+    }
+}
+
+$preserveRoot = Join-Path $env:TEMP ('HCA-preserve-' + [guid]::NewGuid().ToString('N'))
+New-Item -ItemType Directory -Force -Path $preserveRoot | Out-Null
+
+if ($oldInstall) {
+    Write-Host "Bestehende lokale Einstellungen gefunden: $oldInstall" -ForegroundColor Yellow
+    if (Test-Path (Join-Path $oldInstall 'config.json')) {
+        Copy-Item (Join-Path $oldInstall 'config.json') (Join-Path $preserveRoot 'config.json') -Force
+    }
+    if (Test-Path (Join-Path $oldInstall 'data')) {
+        Copy-Item (Join-Path $oldInstall 'data') (Join-Path $preserveRoot 'data') -Recurse -Force
+    }
+}
+
+Write-Step 'HCA installieren'
+New-Item -ItemType Directory -Force -Path $target | Out-Null
+
+# Replace only program/support files. Existing config.json and data are handled separately.
+Get-ChildItem -Path $payload -Force | ForEach-Object {
+    if ($_.Name -notin @('config.default.json','data')) {
+        $dest = Join-Path $target $_.Name
+        if ($_.PSIsContainer) {
+            if (Test-Path $dest) { Remove-Item $dest -Recurse -Force }
+            Copy-Item $_.FullName $dest -Recurse -Force
+        } else {
+            Copy-Item $_.FullName $dest -Force
+        }
+    }
+}
+
+# Restore settings/data from an existing installation if found.
+if (Test-Path (Join-Path $preserveRoot 'config.json')) {
+    Copy-Item (Join-Path $preserveRoot 'config.json') (Join-Path $target 'config.json') -Force
+} elseif (-not (Test-Path (Join-Path $target 'config.json'))) {
+    Copy-Item (Join-Path $payload 'config.default.json') (Join-Path $target 'config.json') -Force
+}
+
+if (Test-Path (Join-Path $preserveRoot 'data')) {
+    if (Test-Path (Join-Path $target 'data')) { Remove-Item (Join-Path $target 'data') -Recurse -Force }
+    Copy-Item (Join-Path $preserveRoot 'data') (Join-Path $target 'data') -Recurse -Force
+} elseif (-not (Test-Path (Join-Path $target 'data'))) {
+    Copy-Item (Join-Path $payload 'data') (Join-Path $target 'data') -Recurse -Force
+}
+Remove-Item $preserveRoot -Recurse -Force -ErrorAction SilentlyContinue
+
+# Create shortcuts.
+Write-Step 'Verknüpfungen anlegen'
+$exe = Join-Path $target 'HCA_Produktionsmanager.exe'
+$wsh = New-Object -ComObject WScript.Shell
+$desktop = [Environment]::GetFolderPath('Desktop')
+$startMenu = Join-Path $env:APPDATA 'Microsoft\Windows\Start Menu\Programs'
+foreach ($shortcutPath in @(
+    (Join-Path $desktop 'HCA Produktionsmanager.lnk'),
+    (Join-Path $startMenu 'HCA Produktionsmanager.lnk')
+)) {
+    $sc = $wsh.CreateShortcut($shortcutPath)
+    $sc.TargetPath = $exe
+    $sc.WorkingDirectory = $target
+    $sc.Description = 'HCA Produktionsmanager'
+    $sc.IconLocation = "$exe,0"
+    $sc.Save()
+}
+
+# Register a simple per-user app entry in Apps & Features.
+$uninstallKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\HCA Produktionsmanager'
+New-Item -Path $uninstallKey -Force | Out-Null
+New-ItemProperty -Path $uninstallKey -Name 'DisplayName' -Value 'HCA Produktionsmanager' -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $uninstallKey -Name 'DisplayVersion' -Value '0.13.0' -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $uninstallKey -Name 'Publisher' -Value 'Werbestudio Königswinter' -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $uninstallKey -Name 'InstallLocation' -Value $target -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $uninstallKey -Name 'DisplayIcon' -Value $exe -PropertyType String -Force | Out-Null
+New-ItemProperty -Path $uninstallKey -Name 'NoModify' -Value 1 -PropertyType DWord -Force | Out-Null
+New-ItemProperty -Path $uninstallKey -Name 'NoRepair' -Value 1 -PropertyType DWord -Force | Out-Null
+
+Write-Step 'Installation abgeschlossen'
+Write-Host "Installiert nach: $target" -ForegroundColor Green
+Write-Host 'Eine Desktop-Verknüpfung wurde erstellt.' -ForegroundColor Green
+Write-Host 'Lokale Einstellungen und der data-Ordner wurden, soweit gefunden, übernommen.' -ForegroundColor Green
+Write-Host ''
+Write-Host 'HCA wird jetzt gestartet ...'
+Start-Process -FilePath $exe -WorkingDirectory $target
+Start-Sleep -Seconds 2
+
+===== HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/BUILD_WINDOWS.ps1 =====
+$ErrorActionPreference = 'Stop'
+$root = Split-Path -Parent $MyInvocation.MyCommand.Path
+Push-Location $root
+try {
+    dotnet restore .\HcaWindowsHost.csproj
+    dotnet build .\HcaWindowsHost.csproj -c Release --no-restore
+    Write-Host 'Build erfolgreich: bin\Release\net48' -ForegroundColor Green
+} finally {
+    Pop-Location
+}
+
+===== HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/HcaWindowsHost.csproj =====
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net48</TargetFramework>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>HCA_Produktionsmanager</AssemblyName>
+    <RootNamespace>HcaWindowsHost</RootNamespace>
+    <PlatformTarget>x64</PlatformTarget>
+    <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <ApplicationIcon>Assets\HCA.ico</ApplicationIcon>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <AssemblyTitle>HCA Produktionsmanager</AssemblyTitle>
+    <Company>Werbestudio Königswinter</Company>
+    <Product>HCA Produktionsmanager</Product>
+    <Version>0.12.1.0</Version>
+    <FileVersion>0.12.1.0</FileVersion>
+    <InformationalVersion>0.12.1</InformationalVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies.net48" Version="1.0.3" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.3537.50" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\HCA.ico" />
+    <None Include="native-bridge.js" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>
+
+===== HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/Patch-Backend.ps1 =====
+param(
+    [Parameter(Mandatory = $true)] [string] $InputExe,
+    [Parameter(Mandatory = $true)] [string] $OutputExe
+)
+
+$ErrorActionPreference = 'Stop'
+$expectedHash = 'd4e7d6bc2ed7a75ccd821b7913616b8ad5e5f83a3cf42b0253103381a9a1e56f'
+$patchOffset = 0x2FAD20
+$expectedByte = 0x4C
+$replacementByte = 0xC3
+
+$actualHash = (Get-FileHash -Algorithm SHA256 -Path $InputExe).Hash.ToLowerInvariant()
+if ($actualHash -ne $expectedHash) {
+    throw "Unbekannte Backend-Version. Erwartet: $expectedHash, erhalten: $actualHash"
+}
+
+$bytes = [System.IO.File]::ReadAllBytes((Resolve-Path $InputExe))
+if ($bytes.Length -le $patchOffset -or $bytes[$patchOffset] -ne $expectedByte) {
+    throw 'Die geprüfte Browserstart-Stelle wurde nicht gefunden. Datei bleibt unverändert.'
+}
+
+$bytes[$patchOffset] = $replacementByte
+[System.IO.File]::WriteAllBytes($OutputExe, $bytes)
+Write-Host "Backend ohne Browserstart erzeugt: $OutputExe" -ForegroundColor Green
+
+===== HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/Program.cs =====
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using System.IO.Ports;
+using System.Linq;
+using System.Net.Http;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using System.Web.Script.Serialization;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using System.Windows.Media.Effects;
+using System.Windows.Media.Imaging;
+using Microsoft.Web.WebView2.Core;
+using Microsoft.Web.WebView2.Wpf;
+using Microsoft.Win32;
+
+namespace HcaWindowsHost
+{
+    internal static class Program
+    {
+        private const string AppId = "WerbestudioKoenigswinter.HCA.Produktionsmanager";
+        private static Mutex _mutex;
+        internal static readonly string LogPath = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "HCA Produktionsmanager", "hca-start.log");
+
+        [DllImport("shell32.dll", SetLastError = true)]
+        private static extern int SetCurrentProcessExplicitAppUserModelID([MarshalAs(UnmanagedType.LPWStr)] string appId);
+
+        [STAThread]
+        private static void Main()
+        {
+            try
+            {
+                Log("Programmstart v0.12.1");
+                var app = new Application { ShutdownMode = ShutdownMode.OnMainWindowClose };
+                bool created;
+                _mutex = new Mutex(true, "Local\\HCA-Produktionsmanager", out created);
+                if (!created)
+                {
+                    HcaDialog.ShowStandalone("HCA Produktionsmanager", "Der HCA Produktionsmanager läuft bereits.", false, null);
+                    return;
+                }
+
+                SetCurrentProcessExplicitAppUserModelID(AppId);
+                app.DispatcherUnhandledException += (sender, args) =>
+                {
+                    Log("Oberflächenfehler: " + args.Exception);
+                    HcaDialog.ShowStandalone("HCA-Fehler", args.Exception.Message, false, null);
+                    args.Handled = true;
+                };
+                app.Run(new MainWindow());
+                _mutex.ReleaseMutex();
+            }
+            catch (Exception ex)
+            {
+                Log("Schwerer Startfehler: " + ex);
+                MessageBox.Show(
+                    "HCA konnte nicht gestartet werden.\n\n" + ex.Message + "\n\nStartprotokoll:\n" + LogPath,
+                    "HCA Produktionsmanager – Startfehler",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+            }
+        }
+
+        internal static void Log(string message)
+        {
+            try
+            {
+                Directory.CreateDirectory(Path.GetDirectoryName(LogPath));
+                File.AppendAllText(LogPath, DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff") + "  " + message + Environment.NewLine, Encoding.UTF8);
+            }
+            catch { }
+        }
+    }
+
+    internal sealed class MainWindow : Window
+    {
+        private readonly WebView2 _webView;
+        private readonly Grid _root;
+        private readonly TextBlock _status;
+        private readonly HttpClient _http = new HttpClient { Timeout = TimeSpan.FromSeconds(2) };
+        private readonly JavaScriptSerializer _json = new JavaScriptSerializer();
+        private readonly Dictionary<string, SerialPort> _serialPorts = new Dictionary<string, SerialPort>(StringComparer.OrdinalIgnoreCase);
+        private Process _backend;
+        private int _port = 8765;
+        private bool _allowClose;
+
+        public MainWindow()
+        {
+            Title = "HCA Produktionsmanager · Werbestudio Königswinter";
+            WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            WindowState = WindowState.Maximized;
+            MinWidth = 1100;
+            MinHeight = 720;
+            Background = new SolidColorBrush(Color.FromRgb(245, 245, 242));
+            Icon = AppIcon.Load();
+
+            _root = new Grid();
+            _webView = new WebView2 { Visibility = Visibility.Collapsed };
+            _status = new TextBlock
+            {
+                Text = "HCA wird gestartet …",
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                FontSize = 24,
+                FontWeight = FontWeights.SemiBold,
+                Foreground = new SolidColorBrush(Color.FromRgb(40, 40, 38))
+            };
+            _root.Children.Add(_webView);
+            _root.Children.Add(_status);
+            Content = _root;
+
+            Loaded += async (sender, args) => await StartAsync();
+            Closing += OnClosing;
+        }
+
+        private async Task StartAsync()
+        {
+            try
+            {
+                Program.Log("Startkonfiguration wird gelesen.");
+                _port = ReadConfiguredPort();
+                Program.Log("Lokaler Port: " + _port);
+                if (!await ServerAvailableAsync())
+                {
+                    Program.Log("Lokaler Dienst wird gestartet.");
+                    StartBackend();
+                }
+                if (!await WaitForServerAsync(TimeSpan.FromSeconds(25)))
+                    throw new InvalidOperationException("Der lokale HCA-Dienst konnte nicht gestartet werden.");
+
+                Program.Log("Lokaler Dienst ist erreichbar.");
+                var dataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HCA Produktionsmanager", "WebView2");
+                Directory.CreateDirectory(dataFolder);
+                Program.Log("WebView2 Runtime: " + CoreWebView2Environment.GetAvailableBrowserVersionString());
+                var environment = await CoreWebView2Environment.CreateAsync(null, dataFolder);
+                await _webView.EnsureCoreWebView2Async(environment);
+                await ConfigureWebViewAsync(_webView);
+                _webView.Source = new Uri("http://127.0.0.1:" + _port + "/");
+                _status.Visibility = Visibility.Collapsed;
+                _webView.Visibility = Visibility.Visible;
+                _webView.Focus();
+                Program.Log("HCA-Oberfläche wurde geöffnet.");
+            }
+            catch (Exception ex)
+            {
+                Program.Log("StartAsync fehlgeschlagen: " + ex);
+                _status.Text = "HCA konnte nicht gestartet werden.";
+                HcaDialog.Show(this, "Startfehler", ex.Message + "\n\nPrüfe bitte, ob Microsoft Edge WebView2 Runtime installiert ist.", false, null);
+            }
+        }
+
+        private int ReadConfiguredPort()
+        {
+            try
+            {
+                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "config.json");
+                if (!File.Exists(path)) return 8765;
+                var data = _json.Deserialize<Dictionary<string, object>>(File.ReadAllText(path, Encoding.UTF8));
+                object value;
+                int port;
+                return data.TryGetValue("port", out value) && int.TryParse(Convert.ToString(value), out port) ? port : 8765;
+            }
+            catch { return 8765; }
+        }
+
+        private void StartBackend()
+        {
+            var executable = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "HCA_Backend.exe");
+            if (!File.Exists(executable)) throw new FileNotFoundException("HCA_Backend.exe fehlt im Installationsordner.", executable);
+            _backend = Process.Start(new ProcessStartInfo
+            {
+                FileName = executable,
+                WorkingDirectory = AppDomain.CurrentDomain.BaseDirectory,
+                UseShellExecute = false,
+                CreateNoWindow = true,
+                WindowStyle = ProcessWindowStyle.Hidden
+            });
+        }
+
+        private async Task<bool> ServerAvailableAsync()
+        {
+            try
+            {
+                using (var response = await _http.GetAsync("http://127.0.0.1:" + _port + "/api/status"))
+                    return response.IsSuccessStatusCode;
+            }
+            catch { return false; }
+        }
+
+        private async Task<bool> WaitForServerAsync(TimeSpan timeout)
+        {
+            var until = DateTime.UtcNow + timeout;
+            while (DateTime.UtcNow < until)
+            {
+                if (await ServerAvailableAsync()) return true;
+                await Task.Delay(250);
+            }
+            return false;
+        }
+
+        private async Task ConfigureWebViewAsync(WebView2 view)
+        {
+            var core = view.CoreWebView2;
+            core.Settings.AreDefaultContextMenusEnabled = false;
+            core.Settings.AreDevToolsEnabled = false;
+            core.Settings.AreBrowserAcceleratorKeysEnabled = false;
+            core.Settings.IsStatusBarEnabled = false;
+            core.Settings.IsZoomControlEnabled = false;
+            core.Settings.IsBuiltInErrorPageEnabled = false;
+            try
+            {
+                core.Profile.IsPasswordAutosaveEnabled = false;
+                core.Profile.IsGeneralAutofillEnabled = false;
+            }
+            catch { }
+
+            var bridgePath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "native-bridge.js");
+            if (File.Exists(bridgePath)) await core.AddScriptToExecuteOnDocumentCreatedAsync(File.ReadAllText(bridgePath, Encoding.UTF8));
+
+            core.ScriptDialogOpening += OnScriptDialogOpening;
+            core.NewWindowRequested += OnNewWindowRequested;
+            core.DownloadStarting += OnDownloadStarting;
+            core.WebMessageReceived += OnWebMessageReceived;
+            core.WindowCloseRequested += (sender, args) =>
+            {
+                var window = Window.GetWindow(view);
+                if (window != null) window.Close();
+            };
+            core.ProcessFailed += (sender, args) => Dispatcher.Invoke(() =>
+                HcaDialog.Show(this, "Darstellungsfehler", "Die Programmoberfläche wurde unerwartet beendet. HCA wird neu geladen.", false, null));
+        }
+
+        private void OnScriptDialogOpening(object sender, CoreWebView2ScriptDialogOpeningEventArgs args)
+        {
+            var deferral = args.GetDeferral();
+            try
+            {
+                Program.Log("Web-Dialog abgefangen: " + args.Kind);
+                var prompt = args.Kind == CoreWebView2ScriptDialogKind.Prompt;
+                var confirm = args.Kind == CoreWebView2ScriptDialogKind.Confirm || prompt || args.Kind == CoreWebView2ScriptDialogKind.Beforeunload;
+                string input;
+                var accepted = HcaDialog.Show(this, "HCA Produktionsmanager", args.Message, confirm, prompt ? args.DefaultText : null, out input);
+                if (accepted)
+                {
+                    if (prompt) args.ResultText = input ?? string.Empty;
+                    args.Accept();
+                }
+            }
+            finally { deferral.Complete(); }
+        }
+
+        private async void OnNewWindowRequested(object sender, CoreWebView2NewWindowRequestedEventArgs args)
+        {
+            var uri = args.Uri ?? string.Empty;
+            Uri parsed;
+            if (Uri.TryCreate(uri, UriKind.Absolute, out parsed) && parsed.Host != "127.0.0.1" && parsed.Host != "localhost" && parsed.Scheme != "about")
+            {
+                args.Handled = true;
+                Process.Start(new ProcessStartInfo(uri) { UseShellExecute = true });
+                return;
+            }
+
+            var deferral = args.GetDeferral();
+            try
+            {
+                var child = new HcaWebWindow(this, ConfigureWebViewAsync);
+                await child.InitializeAsync();
+                args.NewWindow = child.Core;
+                args.Handled = true;
+                child.Show();
+            }
+            finally { deferral.Complete(); }
+        }
+
+        private void OnDownloadStarting(object sender, CoreWebView2DownloadStartingEventArgs args)
+        {
+            var deferral = args.GetDeferral();
+            try
+            {
+                var dialog = new SaveFileDialog
+                {
+                    Title = "Datei speichern",
+                    FileName = Path.GetFileName(args.ResultFilePath),
+                    InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
+                    AddExtension = true,
+                    OverwritePrompt = true
+                };
+                if (dialog.ShowDialog(this) == true)
+                {
+                    args.ResultFilePath = dialog.FileName;
+                    args.Handled = true;
+                }
+                else args.Cancel = true;
+            }
+            finally { deferral.Complete(); }
+        }
+
+        private async void OnWebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs args)
+        {
+            string id = null;
+            try
+            {
+                var message = _json.Deserialize<Dictionary<string, object>>(args.WebMessageAsJson);
+                object value;
+                if (message.TryGetValue("id", out value)) id = Convert.ToString(value);
+                var action = message.TryGetValue("action", out value) ? Convert.ToString(value) : string.Empty;
+                var payload = message.TryGetValue("payload", out value) ? value as Dictionary<string, object> : null;
+                var result = await HandleNativeActionAsync(action, payload ?? new Dictionary<string, object>());
+                Reply(id, true, result, null);
+            }
+            catch (Exception ex) { Reply(id, false, null, ex.Message); }
+        }
+
+        private async Task<object> HandleNativeActionAsync(string action, Dictionary<string, object> payload)
+        {
+            switch (action)
+            {
+                case "serial.select":
+                    var selected = SerialPortDialog.Select(this);
+                    if (string.IsNullOrEmpty(selected)) throw new OperationCanceledException("Geräteauswahl abgebrochen.");
+                    return new { port = selected };
+                case "serial.open":
+                    return OpenSerial(payload);
+                case "serial.write":
+                    return await WriteSerialAsync(payload);
+                case "serial.read":
+                    return await ReadSerialAsync(payload);
+                case "serial.close":
+                    return CloseSerial(payload);
+                case "document.print":
+                    return await PrintDocumentAsync(payload);
+                default:
+                    throw new InvalidOperationException("Unbekannter HCA-Systembefehl: " + action);
+            }
+        }
+
+        private async Task<object> PrintDocumentAsync(Dictionary<string, object> payload)
+        {
+            var printer = GetString(payload, "printer");
+            var data = GetString(payload, "data");
+            if (string.IsNullOrWhiteSpace(printer)) throw new InvalidOperationException("Kein Dokumentendrucker ausgewählt.");
+            if (string.IsNullOrWhiteSpace(data)) throw new InvalidOperationException("Das PDF enthält keine Daten.");
+            var temp = Path.Combine(Path.GetTempPath(), "HCA-Dokument-" + Guid.NewGuid().ToString("N") + ".pdf");
+            WebView2 printView = null;
+            try
+            {
+                File.WriteAllBytes(temp, Convert.FromBase64String(data));
+                printView = new WebView2 { Width = 1, Height = 1, Visibility = Visibility.Hidden, IsHitTestVisible = false };
+                _root.Children.Add(printView);
+                await printView.EnsureCoreWebView2Async(_webView.CoreWebView2.Environment);
+                var loaded = new TaskCompletionSource<bool>();
+                printView.CoreWebView2.NavigationCompleted += (sender, args) => loaded.TrySetResult(args.IsSuccess);
+                printView.CoreWebView2.Navigate(new Uri(temp).AbsoluteUri);
+                if (!await loaded.Task) throw new InvalidOperationException("Das PDF konnte für den Direktdruck nicht geladen werden.");
+                var settings = printView.CoreWebView2.Environment.CreatePrintSettings();
+                settings.PrinterName = printer;
+                settings.ShouldPrintBackgrounds = true;
+                settings.ShouldPrintHeaderAndFooter = false;
+                var status = await printView.CoreWebView2.PrintAsync(settings);
+                if (status != CoreWebView2PrintStatus.Succeeded) throw new InvalidOperationException("Windows meldet beim Direktdruck: " + status);
+                return new { printed = true, printer = printer };
+            }
+            finally
+            {
+                if (printView != null) { _root.Children.Remove(printView); printView.Dispose(); }
+                try { File.Delete(temp); } catch { }
+            }
+        }
+
+        private object OpenSerial(Dictionary<string, object> payload)
+        {
+            var name = GetString(payload, "port");
+            if (string.IsNullOrWhiteSpace(name)) throw new InvalidOperationException("Kein COM-Port ausgewählt.");
+            CloseSerialPort(name);
+            var serial = new SerialPort(name)
+            {
+                BaudRate = GetInt(payload, "baudRate", 115200),
+                DataBits = GetInt(payload, "dataBits", 8),
+                StopBits = GetInt(payload, "stopBits", 1) == 2 ? StopBits.Two : StopBits.One,
+                Parity = ParseParity(GetString(payload, "parity")),
+                Handshake = ParseHandshake(GetString(payload, "flowControl")),
+                ReadTimeout = 120,
+                WriteTimeout = 5000,
+                DtrEnable = true,
+                RtsEnable = false
+            };
+            serial.Open();
+            _serialPorts[name] = serial;
+            return new { opened = true };
+        }
+
+        private async Task<object> WriteSerialAsync(Dictionary<string, object> payload)
+        {
+            var serial = RequireSerial(GetString(payload, "port"));
+            var bytes = Convert.FromBase64String(GetString(payload, "data"));
+            await Task.Run(() => serial.Write(bytes, 0, bytes.Length));
+            return new { bytes = bytes.Length };
+        }
+
+        private async Task<object> ReadSerialAsync(Dictionary<string, object> payload)
+        {
+            var serial = RequireSerial(GetString(payload, "port"));
+            return await Task.Run<object>(() =>
+            {
+                var available = serial.BytesToRead;
+                if (available <= 0)
+                {
+                    Thread.Sleep(75);
+                    available = serial.BytesToRead;
+                }
+                if (available <= 0) return new { data = string.Empty, done = false };
+                var buffer = new byte[Math.Min(available, 16384)];
+                var count = serial.Read(buffer, 0, buffer.Length);
+                return new { data = Convert.ToBase64String(buffer, 0, count), done = false };
+            });
+        }
+
+        private object CloseSerial(Dictionary<string, object> payload)
+        {
+            CloseSerialPort(GetString(payload, "port"));
+            return new { closed = true };
+        }
+
+        private void CloseSerialPort(string name)
+        {
+            SerialPort serial;
+            if (string.IsNullOrEmpty(name) || !_serialPorts.TryGetValue(name, out serial)) return;
+            _serialPorts.Remove(name);
+            try { if (serial.IsOpen) serial.Close(); } catch { }
+            serial.Dispose();
+        }
+
+        private SerialPort RequireSerial(string name)
+        {
+            SerialPort serial;
+            if (!_serialPorts.TryGetValue(name, out serial) || !serial.IsOpen)
+                throw new InvalidOperationException("Der COM-Port " + name + " ist nicht geöffnet.");
+            return serial;
+        }
+
+        private static string GetString(Dictionary<string, object> values, string key)
+        {
+            object value;
+            return values.TryGetValue(key, out value) ? Convert.ToString(value) : string.Empty;
+        }
+
+        private static int GetInt(Dictionary<string, object> values, string key, int fallback)
+        {
+            int result;
+            return int.TryParse(GetString(values, key), out result) ? result : fallback;
+        }
+
+        private static Parity ParseParity(string value)
+        {
+            switch ((value ?? string.Empty).ToLowerInvariant())
+            {
+                case "even": return Parity.Even;
+                case "odd": return Parity.Odd;
+                case "mark": return Parity.Mark;
+                case "space": return Parity.Space;
+                default: return Parity.None;
+            }
+        }
+
+        private static Handshake ParseHandshake(string value)
+        {
+            return string.Equals(value, "hardware", StringComparison.OrdinalIgnoreCase)
+                ? Handshake.RequestToSend
+                : string.Equals(value, "software", StringComparison.OrdinalIgnoreCase)
+                    ? Handshake.XOnXOff
+                    : Handshake.None;
+        }
+
+        private void Reply(string id, bool ok, object result, string error)
+        {
+            if (_webView.CoreWebView2 == null) return;
+            _webView.CoreWebView2.PostWebMessageAsJson(_json.Serialize(new { type = "hca-native-result", id, ok, result, error }));
+        }
+
+        private async void OnClosing(object sender, CancelEventArgs args)
+        {
+            if (_allowClose) return;
+            args.Cancel = true;
+            _allowClose = true;
+            foreach (var name in _serialPorts.Keys.ToArray()) CloseSerialPort(name);
+            try { await _http.PostAsync("http://127.0.0.1:" + _port + "/api/shutdown", new StringContent(string.Empty)); } catch { }
+            if (_backend != null && !_backend.HasExited)
+            {
+                if (!_backend.WaitForExit(1500))
+                {
+                    try { _backend.Kill(); } catch { }
+                }
+            }
+            Close();
+        }
+    }
+
+    internal sealed class HcaWebWindow : Window
+    {
+        private readonly WebView2 _view = new WebView2();
+        private readonly Func<WebView2, Task> _configure;
+        public CoreWebView2 Core { get { return _view.CoreWebView2; } }
+
+        public HcaWebWindow(Window owner, Func<WebView2, Task> configure)
+        {
+            Owner = owner;
+            Title = "HCA Dokument";
+            Width = 1100;
+            Height = 800;
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            Icon = owner.Icon;
+            Content = _view;
+            _configure = configure;
+        }
+
+        public async Task InitializeAsync()
+        {
+            await _view.EnsureCoreWebView2Async();
+            await _configure(_view);
+        }
+    }
+
+    internal sealed class SerialPortDialog : Window
+    {
+        private readonly ListBox _ports;
+        public string SelectedPort { get; private set; }
+
+        private SerialPortDialog(Window owner)
+        {
+            Owner = owner;
+            Title = "HCA · COM-Port auswählen";
+            Width = 430;
+            Height = 390;
+            ResizeMode = ResizeMode.NoResize;
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            Background = Brushes.White;
+            Icon = owner.Icon;
+
+            var root = new DockPanel { Margin = new Thickness(24) };
+            var title = new TextBlock { Text = "Gerät auswählen", FontSize = 24, FontWeight = FontWeights.Bold, Margin = new Thickness(0, 0, 0, 8) };
+            DockPanel.SetDock(title, Dock.Top);
+            root.Children.Add(title);
+            var help = new TextBlock { Text = "Wähle den COM-Port des angeschlossenen Geräts.", TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 0, 0, 16), Foreground = Brushes.DimGray };
+            DockPanel.SetDock(help, Dock.Top);
+            root.Children.Add(help);
+            var actions = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 16, 0, 0) };
+            var cancel = HcaDialog.Button("Abbrechen", false);
+            var ok = HcaDialog.Button("Auswählen", true);
+            cancel.Click += (sender, args) => { DialogResult = false; };
+            ok.Click += (sender, args) =>
+            {
+                SelectedPort = _ports.SelectedItem as string;
+                if (!string.IsNullOrEmpty(SelectedPort)) DialogResult = true;
+            };
+            actions.Children.Add(cancel);
+            actions.Children.Add(ok);
+            DockPanel.SetDock(actions, Dock.Bottom);
+            root.Children.Add(actions);
+            _ports = new ListBox { FontSize = 18, Padding = new Thickness(8), ItemsSource = SerialPort.GetPortNames().OrderBy(x => x).ToArray() };
+            if (_ports.Items.Count > 0) _ports.SelectedIndex = 0;
+            _ports.MouseDoubleClick += (sender, args) => { if (_ports.SelectedItem != null) { SelectedPort = (string)_ports.SelectedItem; DialogResult = true; } };
+            root.Children.Add(_ports);
+            Content = root;
+        }
+
+        public static string Select(Window owner)
+        {
+            var dialog = new SerialPortDialog(owner);
+            return dialog.ShowDialog() == true ? dialog.SelectedPort : null;
+        }
+    }
+
+    internal sealed class HcaDialog : Window
+    {
+        private readonly TextBox _input;
+        public bool Accepted { get; private set; }
+        public string InputText { get { return _input == null ? null : _input.Text; } }
+
+        private HcaDialog(Window owner, string title, string message, bool confirm, string defaultText)
+        {
+            Owner = owner;
+            Title = "HCA Produktionsmanager";
+            Width = 590;
+            SizeToContent = SizeToContent.Height;
+            MaxHeight = 760;
+            ResizeMode = ResizeMode.NoResize;
+            WindowStartupLocation = owner == null ? WindowStartupLocation.CenterScreen : WindowStartupLocation.CenterOwner;
+            WindowStyle = WindowStyle.None;
+            AllowsTransparency = true;
+            Background = Brushes.Transparent;
+            ShowInTaskbar = false;
+            Icon = owner == null ? AppIcon.Load() : owner.Icon;
+
+            var frame = new Border
+            {
+                Background = Brushes.White,
+                BorderBrush = new SolidColorBrush(Color.FromRgb(196, 196, 190)),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(18),
+                ClipToBounds = true,
+                Effect = new DropShadowEffect { BlurRadius = 28, ShadowDepth = 8, Opacity = .28, Color = Colors.Black }
+            };
+            var layout = new Grid();
+            layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            layout.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            var header = new Grid { Background = new SolidColorBrush(Color.FromRgb(31, 31, 29)), Height = 76 };
+            header.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            header.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            FrameworkElement brand;
+            var brandSource = AppIcon.LoadAsset("logo-app.png");
+            if (brandSource != null) brand = new Image { Source = brandSource, Width = 174, Height = 48, Stretch = Stretch.Uniform, Margin = new Thickness(22, 0, 18, 0), VerticalAlignment = VerticalAlignment.Center };
+            else
+            {
+                var mark = new Border { Width = 42, Height = 42, CornerRadius = new CornerRadius(10), Background = new SolidColorBrush(Color.FromRgb(239, 82, 0)), Margin = new Thickness(22, 0, 14, 0), VerticalAlignment = VerticalAlignment.Center };
+                mark.Child = new TextBlock { Text = "HCA", Foreground = Brushes.White, FontWeight = FontWeights.Bold, FontSize = 12, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center };
+                brand = mark;
+            }
+            Grid.SetColumn(brand, 0); header.Children.Add(brand);
+            var headerText = new StackPanel { VerticalAlignment = VerticalAlignment.Center };
+            headerText.Children.Add(new TextBlock { Text = "WERBESTUDIO KÖNIGSWINTER", Foreground = new SolidColorBrush(Color.FromRgb(255, 91, 20)), FontSize = 11, FontWeight = FontWeights.Bold });
+            headerText.Children.Add(new TextBlock { Text = title, Foreground = Brushes.White, FontSize = 18, FontWeight = FontWeights.SemiBold, Margin = new Thickness(0, 3, 0, 0) });
+            Grid.SetColumn(headerText, 1); header.Children.Add(headerText);
+            header.MouseLeftButtonDown += (sender, args) => { if (args.ButtonState == System.Windows.Input.MouseButtonState.Pressed) DragMove(); };
+            Grid.SetRow(header, 0); layout.Children.Add(header);
+
+            var root = new StackPanel { Margin = new Thickness(28, 24, 28, 25) };
+            root.Children.Add(new TextBlock { Text = message ?? string.Empty, TextWrapping = TextWrapping.Wrap, FontSize = 16, LineHeight = 25, Foreground = new SolidColorBrush(Color.FromRgb(65, 65, 62)), MaxHeight = 430 });
+            if (defaultText != null)
+            {
+                _input = new TextBox { Text = defaultText, FontSize = 16, Padding = new Thickness(12), Margin = new Thickness(0, 18, 0, 0), BorderBrush = new SolidColorBrush(Color.FromRgb(190, 190, 184)), BorderThickness = new Thickness(1) };
+                root.Children.Add(_input);
+            }
+            var actions = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Right, Margin = new Thickness(0, 22, 0, 0) };
+            if (confirm)
+            {
+                var cancel = Button("Abbrechen", false);
+                cancel.Click += (sender, args) => { Accepted = false; DialogResult = false; };
+                actions.Children.Add(cancel);
+            }
+            var okay = Button(confirm ? "Bestätigen" : "OK", true);
+            okay.Click += (sender, args) => { Accepted = true; DialogResult = true; };
+            actions.Children.Add(okay);
+            root.Children.Add(actions);
+            Grid.SetRow(root, 1); layout.Children.Add(root);frame.Child = layout;Content = frame;
+            Loaded += (sender, args) => { if (_input != null) { _input.Focus(); _input.SelectAll(); } else okay.Focus(); };
+        }
+
+        public static System.Windows.Controls.Button Button(string text, bool primary)
+        {
+            var button = new System.Windows.Controls.Button
+            {
+                Content = text,
+                MinWidth = 112,
+                Height = 42,
+                Margin = new Thickness(8, 0, 0, 0),
+                Padding = new Thickness(14, 0, 14, 0),
+                FontSize = 15,
+                FontWeight = FontWeights.SemiBold,
+                Foreground = primary ? Brushes.White : new SolidColorBrush(Color.FromRgb(45, 45, 43)),
+                Background = primary ? new SolidColorBrush(Color.FromRgb(239, 82, 0)) : new SolidColorBrush(Color.FromRgb(235, 235, 232)),
+                BorderThickness = new Thickness(0)
+            };
+            var border = new FrameworkElementFactory(typeof(Border));
+            border.SetValue(Border.BackgroundProperty, new TemplateBindingExtension(System.Windows.Controls.Button.BackgroundProperty));
+            border.SetValue(Border.CornerRadiusProperty, new CornerRadius(9));
+            var content = new FrameworkElementFactory(typeof(ContentPresenter));
+            content.SetValue(ContentPresenter.HorizontalAlignmentProperty, HorizontalAlignment.Center);
+            content.SetValue(ContentPresenter.VerticalAlignmentProperty, VerticalAlignment.Center);
+            border.AppendChild(content);
+            button.Template = new ControlTemplate(typeof(System.Windows.Controls.Button)) { VisualTree = border };
+            return button;
+        }
+
+        public static bool Show(Window owner, string title, string message, bool confirm, string defaultText, out string input)
+        {
+            var dialog = new HcaDialog(owner, title, message, confirm, defaultText);
+            dialog.ShowDialog();
+            input = dialog.InputText;
+            return dialog.Accepted;
+        }
+
+        public static bool Show(Window owner, string title, string message, bool confirm, string defaultText)
+        {
+            string ignored;
+            return Show(owner, title, message, confirm, defaultText, out ignored);
+        }
+
+        public static void ShowStandalone(string title, string message, bool confirm, string defaultText)
+        {
+            var app = Application.Current ?? new Application();
+            var dialog = new HcaDialog(null, title, message, confirm, defaultText);
+            dialog.ShowDialog();
+        }
+    }
+
+    internal static class AppIcon
+    {
+        public static ImageSource LoadAsset(string fileName)
+        {
+            try
+            {
+                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", fileName);
+                if (!File.Exists(path)) return null;
+                var bitmap = new BitmapImage();
+                bitmap.BeginInit();
+                bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                bitmap.UriSource = new Uri(path, UriKind.Absolute);
+                bitmap.EndInit();
+                if (bitmap.CanFreeze) bitmap.Freeze();
+                return bitmap;
+            }
+            catch { return null; }
+        }
+
+        public static ImageSource Load()
+        {
+            try
+            {
+                var path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "HCA.ico");
+                if (!File.Exists(path)) return null;
+                using (var stream = File.OpenRead(path))
+                {
+                    var frame = BitmapFrame.Create(stream, BitmapCreateOptions.PreservePixelFormat, BitmapCacheOption.OnLoad);
+                    if (frame.CanFreeze) frame.Freeze();
+                    return frame;
+                }
+            }
+            catch (Exception ex)
+            {
+                Program.Log("Fenstersymbol konnte nicht geladen werden: " + ex.Message);
+                return null;
+            }
+        }
+    }
+}
+
+===== HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/HcaWindowsHost.csproj.nuget.dgspec.json =====
+{
+  "format": 1,
+  "restore": {
+    "/workspace/scratch/15639585320d/work/v0.12.1/HCA_Client_Vollinstallation_v0.12.1/QUELLCODE_WindowsHost/HcaWindowsHost.csproj": {}
+  },
+  "projects": {
+    "/workspace/scratch/15639585320d/work/v0.12.1/HCA_Client_Vollinstallation_v0.12.1/QUELLCODE_WindowsHost/HcaWindowsHost.csproj": {
+      "version": "0.12.1",
+      "restore": {
+        "projectUniqueName": "/workspace/scratch/15639585320d/work/v0.12.1/HCA_Client_Vollinstallation_v0.12.1/QUELLCODE_WindowsHost/HcaWindowsHost.csproj",
+        "projectName": "HCA_Produktionsmanager",
+        "projectPath": "/workspace/scratch/15639585320d/work/v0.12.1/HCA_Client_Vollinstallation_v0.12.1/QUELLCODE_WindowsHost/HcaWindowsHost.csproj",
+        "packagesPath": "/root/.nuget/packages/",
+        "outputPath": "/workspace/scratch/15639585320d/work/v0.12.1/HCA_Client_Vollinstallation_v0.12.1/QUELLCODE_WindowsHost/obj/",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "/root/.nuget/NuGet/NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net48"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net48": {
+            "targetAlias": "net48",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        }
+      },
+      "frameworks": {
+        "net48": {
+          "targetAlias": "net48",
+          "dependencies": {
+            "Microsoft.NETFramework.ReferenceAssemblies": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.3, )",
+              "autoReferenced": true
+            },
+            "Microsoft.NETFramework.ReferenceAssemblies.net48": {
+              "suppressParent": "All",
+              "target": "Package",
+              "version": "[1.0.3, )"
+            },
+            "Microsoft.Web.WebView2": {
+              "target": "Package",
+              "version": "[1.0.3537.50, )"
+            }
+          },
+          "runtimeIdentifierGraphPath": "/workspace/scratch/15639585320d/work/dotnet-sdk/sdk/8.0.425/RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
+===== HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/Release/net48/.NETFramework,Version=v4.8.AssemblyAttributes.cs =====
+// <autogenerated />
+using System;
+using System.Reflection;
+[assembly: global::System.Runtime.Versioning.TargetFrameworkAttribute(".NETFramework,Version=v4.8", FrameworkDisplayName = ".NET Framework 4.8")]
+
+===== HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/Release/net48/HcaWindowsHost.AssemblyInfo.cs =====
+//------------------------------------------------------------------------------
+// <auto-generated>
+//     This code was generated by a tool.
+//
+//     Changes to this file may cause incorrect behavior and will be lost if
+//     the code is regenerated.
+// </auto-generated>
+//------------------------------------------------------------------------------
+
+using System;
+using System.Reflection;
+
+[assembly: System.Reflection.AssemblyCompanyAttribute("Werbestudio Königswinter")]
+[assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("0.12.1.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("0.12.1")]
+[assembly: System.Reflection.AssemblyProductAttribute("HCA Produktionsmanager")]
+[assembly: System.Reflection.AssemblyTitleAttribute("HCA Produktionsmanager")]
+[assembly: System.Reflection.AssemblyVersionAttribute("0.12.1.0")]
+
+// Generated by the MSBuild WriteCodeFragment class.
+
+
+===== HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/QUELLCODE_WindowsHost/obj/project.assets.json =====
+{
+  "version": 3,
+  "targets": {
+    ".NETFramework,Version=v4.8": {
+      "Microsoft.NETFramework.ReferenceAssemblies/1.0.3": {
+        "type": "package",
+        "dependencies": {
+          "Microsoft.NETFramework.ReferenceAssemblies.net48": "1.0.3"
+        }
+      },
+      "Microsoft.NETFramework.ReferenceAssemblies.net48/1.0.3": {
+        "type": "package",
+        "build": {
+          "build/Microsoft.NETFramework.ReferenceAssemblies.net48.targets": {}
+        }
+      },
+      "Microsoft.Web.WebView2/1.0.3537.50": {
+        "type": "package",
+        "compile": {
+          "lib/net462/Microsoft.Web.WebView2.Core.dll": {
+            "related": ".xml"
+          },
+          "lib/net462/Microsoft.Web.WebView2.WinForms.dll": {
+            "related": ".xml"
+          },
+          "lib/net462/Microsoft.Web.WebView2.Wpf.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net462/Microsoft.Web.WebView2.Core.dll": {
+            "related": ".xml"
+          },
+          "lib/net462/Microsoft.Web.WebView2.WinForms.dll": {
+            "related": ".xml"
+          },
+          "lib/net462/Microsoft.Web.WebView2.Wpf.dll": {
+            "related": ".xml"
+          }
+        },
+        "build": {
+          "buildTransitive/Microsoft.Web.WebView2.targets": {}
+        },
+        "runtimeTargets": {
+          "runtimes/win-arm64/native/WebView2Loader.dll": {
+            "assetType": "native",
+            "rid": "win-arm64"
+          },
+          "runtimes/win-x64/native/WebView2Loader.dll": {
+            "assetType": "native",
+            "rid": "win-x64"
+          },
+          "runtimes/win-x86/native/WebView2Loader.dll": {
+            "assetType": "native",
+            "rid": "win-x86"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Microsoft.NETFramework.ReferenceAssemblies/1.0.3": {
+      "sha512": "vUc9Npcs14QsyOD01tnv/m8sQUnGTGOw1BCmKcv77LBJY7OxhJ+zJF7UD/sCL3lYNFuqmQEVlkfS4Quif6FyYg==",
+      "type": "package",
+      "path": "microsoft.netframework.referenceassemblies/1.0.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "microsoft.netframework.referenceassemblies.1.0.3.nupkg.sha512",
+        "microsoft.netframework.referenceassemblies.nuspec"
+      ]
+    },
+    "Microsoft.NETFramework.ReferenceAssemblies.net48/1.0.3": {
+      "sha512": "zMk4D+9zyiEWByyQ7oPImPN/Jhpj166Ky0Nlla4eXlNL8hI/BtSJsgR8Inldd4NNpIAH3oh8yym0W2DrhXdSLQ==",
+      "type": "package",
+      "path": "microsoft.netframework.referenceassemblies.net48/1.0.3",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "build/.NETFramework/v4.8/Accessibility.dll",
+        "build/.NETFramework/v4.8/Accessibility.xml",
+        "build/.NETFramework/v4.8/CustomMarshalers.dll",
+        "build/.NETFramework/v4.8/CustomMarshalers.xml",
+        "build/.NETFramework/v4.8/Facades/Microsoft.Win32.Primitives.dll",
+        "build/.NETFramework/v4.8/Facades/System.AppContext.dll",
+        "build/.NETFramework/v4.8/Facades/System.Collections.Concurrent.dll",
+        "build/.NETFramework/v4.8/Facades/System.Collections.NonGeneric.dll",
+        "build/.NETFramework/v4.8/Facades/System.Collections.Specialized.dll",
+        "build/.NETFramework/v4.8/Facades/System.Collections.dll",
+        "build/.NETFramework/v4.8/Facades/System.ComponentModel.Annotations.dll",
+        "build/.NETFramework/v4.8/Facades/System.ComponentModel.EventBasedAsync.dll",
+        "build/.NETFramework/v4.8/Facades/System.ComponentModel.Primitives.dll",
+        "build/.NETFramework/v4.8/Facades/System.ComponentModel.TypeConverter.dll",
+        "build/.NETFramework/v4.8/Facades/System.ComponentModel.dll",
+        "build/.NETFramework/v4.8/Facades/System.Console.dll",
+        "build/.NETFramework/v4.8/Facades/System.Data.Common.dll",
+        "build/.NETFramework/v4.8/Facades/System.Diagnostics.Contracts.dll",
+        "build/.NETFramework/v4.8/Facades/System.Diagnostics.Debug.dll",
+        "build/.NETFramework/v4.8/Facades/System.Diagnostics.FileVersionInfo.dll",
+        "build/.NETFramework/v4.8/Facades/System.Diagnostics.Process.dll",
+        "build/.NETFramework/v4.8/Facades/System.Diagnostics.StackTrace.dll",
+        "build/.NETFramework/v4.8/Facades/System.Diagnostics.TextWriterTraceListener.dll",
+        "build/.NETFramework/v4.8/Facades/System.Diagnostics.Tools.dll",
+        "build/.NETFramework/v4.8/Facades/System.Diagnostics.TraceSource.dll",
+        "build/.NETFramework/v4.8/Facades/System.Drawing.Primitives.dll",
+        "build/.NETFramework/v4.8/Facades/System.Dynamic.Runtime.dll",
+        "build/.NETFramework/v4.8/Facades/System.Globalization.Calendars.dll",
+        "build/.NETFramework/v4.8/Facades/System.Globalization.Extensions.dll",
+        "build/.NETFramework/v4.8/Facades/System.Globalization.dll",
+        "build/.NETFramework/v4.8/Facades/System.IO.Compression.ZipFile.dll",
+        "build/.NETFramework/v4.8/Facades/System.IO.FileSystem.DriveInfo.dll",
+        "build/.NETFramework/v4.8/Facades/System.IO.FileSystem.Primitives.dll",
+        "build/.NETFramework/v4.8/Facades/System.IO.FileSystem.Watcher.dll",
+        "build/.NETFramework/v4.8/Facades/System.IO.FileSystem.dll",
+        "build/.NETFramework/v4.8/Facades/System.IO.IsolatedStorage.dll",
+        "build/.NETFramework/v4.8/Facades/System.IO.MemoryMappedFiles.dll",
+        "build/.NETFramework/v4.8/Facades/System.IO.Pipes.dll",
+        "build/.NETFramework/v4.8/Facades/System.IO.UnmanagedMemoryStream.dll",
+        "build/.NETFramework/v4.8/Facades/System.IO.dll",
+        "build/.NETFramework/v4.8/Facades/System.Linq.Expressions.dll",
+        "build/.NETFramework/v4.8/Facades/System.Linq.Parallel.dll",
+        "build/.NETFramework/v4.8/Facades/System.Linq.Queryable.dll",
+        "build/.NETFramework/v4.8/Facades/System.Linq.dll",
+        "build/.NETFramework/v4.8/Facades/System.Net.Http.Rtc.dll",
+        "build/.NETFramework/v4.8/Facades/System.Net.NameResolution.dll",
+        "build/.NETFramework/v4.8/Facades/System.Net.NetworkInformation.dll",
+        "build/.NETFramework/v4.8/Facades/System.Net.Ping.dll",
+        "build/.NETFramework/v4.8/Facades/System.Net.Primitives.dll",
+        "build/.NETFramework/v4.8/Facades/System.Net.Requests.dll",
+        "build/.NETFramework/v4.8/Facades/System.Net.Security.dll",
+        "build/.NETFramework/v4.8/Facades/System.Net.Sockets.dll",
+        "build/.NETFramework/v4.8/Facades/System.Net.WebHeaderCollection.dll",
+        "build/.NETFramework/v4.8/Facades/System.Net.WebSockets.Client.dll",
+        "build/.NETFramework/v4.8/Facades/System.Net.WebSockets.dll",
+        "build/.NETFramework/v4.8/Facades/System.ObjectModel.dll",
+        "build/.NETFramework/v4.8/Facades/System.Reflection.Emit.ILGeneration.dll",
+        "build/.NETFramework/v4.8/Facades/System.Reflection.Emit.Lightweight.dll",
+        "build/.NETFramework/v4.8/Facades/System.Reflection.Emit.dll",
+        "build/.NETFramework/v4.8/Facades/System.Reflection.Extensions.dll",
+        "build/.NETFramework/v4.8/Facades/System.Reflection.Primitives.dll",
+        "build/.NETFramework/v4.8/Facades/System.Reflection.dll",
+        "build/.NETFramework/v4.8/Facades/System.Resources.Reader.dll",
+        "build/.NETFramework/v4.8/Facades/System.Resources.ResourceManager.dll",
+        "build/.NETFramework/v4.8/Facades/System.Resources.Writer.dll",
+        "build/.NETFramework/v4.8/Facades/System.Runtime.CompilerServices.VisualC.dll",
+        "build/.NETFramework/v4.8/Facades/System.Runtime.Extensions.dll",
+        "build/.NETFramework/v4.8/Facades/System.Runtime.Handles.dll",
+        "build/.NETFramework/v4.8/Facades/System.Runtime.InteropServices.RuntimeInformation.dll",
+        "build/.NETFramework/v4.8/Facades/System.Runtime.InteropServices.WindowsRuntime.dll",
+        "build/.NETFramework/v4.8/Facades/System.Runtime.InteropServices.dll",
+        "build/.NETFramework/v4.8/Facades/System.Runtime.Numerics.dll",
+        "build/.NETFramework/v4.8/Facades/System.Runtime.Serialization.Formatters.dll",
+        "build/.NETFramework/v4.8/Facades/System.Runtime.Serialization.Json.dll",
+        "build/.NETFramework/v4.8/Facades/System.Runtime.Serialization.Primitives.dll",
+        "build/.NETFramework/v4.8/Facades/System.Runtime.Serialization.Xml.dll",
+        "build/.NETFramework/v4.8/Facades/System.Runtime.dll",
+        "build/.NETFramework/v4.8/Facades/System.Security.Claims.dll",
+        "build/.NETFramework/v4.8/Facades/System.Security.Cryptography.Algorithms.dll",
+        "build/.NETFramework/v4.8/Facades/System.Security.Cryptography.Csp.dll",
+        "build/.NETFramework/v4.8/Facades/System.Security.Cryptography.Encoding.dll",
+        "build/.NETFramework/v4.8/Facades/System.Security.Cryptography.Primitives.dll",
+        "build/.NETFramework/v4.8/Facades/System.Security.Cryptography.X509Certificates.dll",
+        "build/.NETFramework/v4.8/Facades/System.Security.Principal.dll",
+        "build/.NETFramework/v4.8/Facades/System.Security.SecureString.dll",
+        "build/.NETFramework/v4.8/Facades/System.ServiceModel.Duplex.dll",
+        "build/.NETFramework/v4.8/Facades/System.ServiceModel.Http.dll",
+        "build/.NETFramework/v4.8/Facades/System.ServiceModel.NetTcp.dll",
+        "build/.NETFramework/v4.8/Facades/System.ServiceModel.Primitives.dll",
+        "build/.NETFramework/v4.8/Facades/System.ServiceModel.Security.dll",
+        "build/.NETFramework/v4.8/Facades/System.Text.Encoding.Extensions.dll",
+        "build/.NETFramework/v4.8/Facades/System.Text.Encoding.dll",
+        "build/.NETFramework/v4.8/Facades/System.Text.RegularExpressions.dll",
+        "build/.NETFramework/v4.8/Facades/System.Threading.Overlapped.dll",
+        "build/.NETFramework/v4.8/Facades/System.Threading.Tasks.Parallel.dll",
+        "build/.NETFramework/v4.8/Facades/System.Threading.Tasks.dll",
+        "build/.NETFramework/v4.8/Facades/System.Threading.Thread.dll",
+        "build/.NETFramework/v4.8/Facades/System.Threading.ThreadPool.dll",
+        "build/.NETFramework/v4.8/Facades/System.Threading.Timer.dll",
+        "build/.NETFramework/v4.8/Facades/System.Threading.dll",
+        "build/.NETFramework/v4.8/Facades/System.ValueTuple.dll",
+        "build/.NETFramework/v4.8/Facades/System.Xml.ReaderWriter.dll",
+        "build/.NETFramework/v4.8/Facades/System.Xml.XDocument.dll",
+        "build/.NETFramework/v4.8/Facades/System.Xml.XPath.XDocument.dll",
+        "build/.NETFramework/v4.8/Facades/System.Xml.XPath.dll",
+        "build/.NETFramework/v4.8/Facades/System.Xml.XmlDocument.dll",
+        "build/.NETFramework/v4.8/Facades/System.Xml.XmlSerializer.dll",
+        "build/.NETFramework/v4.8/Facades/netstandard.dll",
+        "build/.NETFramework/v4.8/ISymWrapper.dll",
+        "build/.NETFramework/v4.8/ISymWrapper.xml",
+        "build/.NETFramework/v4.8/Microsoft.Activities.Build.dll",
+        "build/.NETFramework/v4.8/Microsoft.Activities.Build.xml",
+        "build/.NETFramework/v4.8/Microsoft.Build.Conversion.v4.0.dll",
+        "build/.NETFramework/v4.8/Microsoft.Build.Conversion.v4.0.xml",
+        "build/.NETFramework/v4.8/Microsoft.Build.Engine.dll",
+        "build/.NETFramework/v4.8/Microsoft.Build.Engine.xml",
+        "build/.NETFramework/v4.8/Microsoft.Build.Framework.dll",
+        "build/.NETFramework/v4.8/Microsoft.Build.Framework.xml",
+        "build/.NETFramework/v4.8/Microsoft.Build.Tasks.v4.0.dll",
+        "build/.NETFramework/v4.8/Microsoft.Build.Tasks.v4.0.xml",
+        "build/.NETFramework/v4.8/Microsoft.Build.Utilities.v4.0.dll",
+        "build/.NETFramework/v4.8/Microsoft.Build.Utilities.v4.0.xml",
+        "build/.NETFramework/v4.8/Microsoft.Build.dll",
+        "build/.NETFramework/v4.8/Microsoft.Build.xml",
+        "build/.NETFramework/v4.8/Microsoft.CSharp.dll",
+        "build/.NETFramework/v4.8/Microsoft.CSharp.xml",
+        "build/.NETFramework/v4.8/Microsoft.JScript.dll",
+        "build/.NETFramework/v4.8/Microsoft.JScript.xml",
+        "build/.NETFramework/v4.8/Microsoft.VisualBasic.Compatibility.Data.dll",
+        "build/.NETFramework/v4.8/Microsoft.VisualBasic.Compatibility.Data.xml",
+        "build/.NETFramework/v4.8/Microsoft.VisualBasic.Compatibility.dll",
+        "build/.NETFramework/v4.8/Microsoft.VisualBasic.Compatibility.xml",
+        "build/.NETFramework/v4.8/Microsoft.VisualBasic.dll",
+        "build/.NETFramework/v4.8/Microsoft.VisualBasic.xml",
+        "build/.NETFramework/v4.8/Microsoft.VisualC.STLCLR.dll",
+        "build/.NETFramework/v4.8/Microsoft.VisualC.STLCLR.xml",
+        "build/.NETFramework/v4.8/Microsoft.VisualC.dll",
+        "build/.NETFramework/v4.8/Microsoft.VisualC.xml",
+        "build/.NETFramework/v4.8/PermissionSets/FullTrust.xml",
+        "build/.NETFramework/v4.8/PermissionSets/Internet.xml",
+        "build/.NETFramework/v4.8/PermissionSets/LocalIntranet.xml",
+        "build/.NETFramework/v4.8/PresentationBuildTasks.dll",
+        "build/.NETFramework/v4.8/PresentationBuildTasks.xml",
+        "build/.NETFramework/v4.8/PresentationCore.dll",
+        "build/.NETFramework/v4.8/PresentationCore.xml",
+        "build/.NETFramework/v4.8/PresentationFramework.Aero.dll",
+        "build/.NETFramework/v4.8/PresentationFramework.Aero.xml",
+        "build/.NETFramework/v4.8/PresentationFramework.Aero2.dll",
+        "build/.NETFramework/v4.8/PresentationFramework.Aero2.xml",
+        "build/.NETFramework/v4.8/PresentationFramework.AeroLite.dll",
+        "build/.NETFramework/v4.8/PresentationFramework.AeroLite.xml",
+        "build/.NETFramework/v4.8/PresentationFramework.Classic.dll",
+        "build/.NETFramework/v4.8/PresentationFramework.Classic.xml",
+        "build/.NETFramework/v4.8/PresentationFramework.Luna.dll",
+        "build/.NETFramework/v4.8/PresentationFramework.Luna.xml",
+        "build/.NETFramework/v4.8/PresentationFramework.Royale.dll",
+        "build/.NETFramework/v4.8/PresentationFramework.Royale.xml",
+        "build/.NETFramework/v4.8/PresentationFramework.dll",
+        "build/.NETFramework/v4.8/PresentationFramework.xml",
+        "build/.NETFramework/v4.8/ReachFramework.dll",
+        "build/.NETFramework/v4.8/ReachFramework.xml",
+        "build/.NETFramework/v4.8/RedistList/FrameworkList.xml",
+        "build/.NETFramework/v4.8/System.Activities.Core.Presentation.dll",
+        "build/.NETFramework/v4.8/System.Activities.Core.Presentation.xml",
+        "build/.NETFramework/v4.8/System.Activities.DurableInstancing.dll",
+        "build/.NETFramework/v4.8/System.Activities.DurableInstancing.xml",
+        "build/.NETFramework/v4.8/System.Activities.Presentation.dll",
+        "build/.NETFramework/v4.8/System.Activities.Presentation.xml",
+        "build/.NETFramework/v4.8/System.Activities.dll",
+        "build/.NETFramework/v4.8/System.Activities.xml",
+        "build/.NETFramework/v4.8/System.AddIn.Contract.dll",
+        "build/.NETFramework/v4.8/System.AddIn.Contract.xml",
+        "build/.NETFramework/v4.8/System.AddIn.dll",
+        "build/.NETFramework/v4.8/System.AddIn.xml",
+        "build/.NETFramework/v4.8/System.ComponentModel.Composition.Registration.dll",
+        "build/.NETFramework/v4.8/System.ComponentModel.Composition.Registration.xml",
+        "build/.NETFramework/v4.8/System.ComponentModel.Composition.dll",
+        "build/.NETFramework/v4.8/System.ComponentModel.Composition.xml",
+        "build/.NETFramework/v4.8/System.ComponentModel.DataAnnotations.dll",
+        "build/.NETFramework/v4.8/System.ComponentModel.DataAnnotations.xml",
+        "build/.NETFramework/v4.8/System.Configuration.Install.dll",
+        "build/.NETFramework/v4.8/System.Configuration.Install.xml",
+        "build/.NETFramework/v4.8/System.Configuration.dll",
+        "build/.NETFramework/v4.8/System.Configuration.xml",
+        "build/.NETFramework/v4.8/System.Core.dll",
+        "build/.NETFramework/v4.8/System.Core.xml",
+        "build/.NETFramework/v4.8/System.Data.DataSetExtensions.dll",
+        "build/.NETFramework/v4.8/System.Data.DataSetExtensions.xml",
+        "build/.NETFramework/v4.8/System.Data.Entity.Design.dll",
+        "build/.NETFramework/v4.8/System.Data.Entity.Design.xml",
+        "build/.NETFramework/v4.8/System.Data.Entity.dll",
+        "build/.NETFramework/v4.8/System.Data.Entity.xml",
+        "build/.NETFramework/v4.8/System.Data.Linq.dll",
+        "build/.NETFramework/v4.8/System.Data.Linq.xml",
+        "build/.NETFramework/v4.8/System.Data.OracleClient.dll",
+        "build/.NETFramework/v4.8/System.Data.OracleClient.xml",
+        "build/.NETFramework/v4.8/System.Data.Services.Client.dll",
+        "build/.NETFramework/v4.8/System.Data.Services.Client.xml",
+        "build/.NETFramework/v4.8/System.Data.Services.Design.dll",
+        "build/.NETFramework/v4.8/System.Data.Services.Design.xml",
+        "build/.NETFramework/v4.8/System.Data.Services.dll",
+        "build/.NETFramework/v4.8/System.Data.Services.xml",
+        "build/.NETFramework/v4.8/System.Data.SqlXml.dll",
+        "build/.NETFramework/v4.8/System.Data.SqlXml.xml",
+        "build/.NETFramework/v4.8/System.Data.dll",
+        "build/.NETFramework/v4.8/System.Data.xml",
+        "build/.NETFramework/v4.8/System.Deployment.dll",
+        "build/.NETFramework/v4.8/System.Deployment.xml",
+        "build/.NETFramework/v4.8/System.Design.dll",
+        "build/.NETFramework/v4.8/System.Design.xml",
+        "build/.NETFramework/v4.8/System.Device.dll",
+        "build/.NETFramework/v4.8/System.Device.xml",
+        "build/.NETFramework/v4.8/System.Diagnostics.Tracing.dll",
+        "build/.NETFramework/v4.8/System.Diagnostics.Tracing.xml",
+        "build/.NETFramework/v4.8/System.DirectoryServices.AccountManagement.dll",
+        "build/.NETFramework/v4.8/System.DirectoryServices.AccountManagement.xml",
+        "build/.NETFramework/v4.8/System.DirectoryServices.Protocols.dll",
+        "build/.NETFramework/v4.8/System.DirectoryServices.Protocols.xml",
+        "build/.NETFramework/v4.8/System.DirectoryServices.dll",
+        "build/.NETFramework/v4.8/System.DirectoryServices.xml",
+        "build/.NETFramework/v4.8/System.Drawing.Design.dll",
+        "build/.NETFramework/v4.8/System.Drawing.Design.xml",
+        "build/.NETFramework/v4.8/System.Drawing.dll",
+        "build/.NETFramework/v4.8/System.Drawing.xml",
+        "build/.NETFramework/v4.8/System.Dynamic.dll",
+        "build/.NETFramework/v4.8/System.EnterpriseServices.Thunk.dll",
+        "build/.NETFramework/v4.8/System.EnterpriseServices.Wrapper.dll",
+        "build/.NETFramework/v4.8/System.EnterpriseServices.dll",
+        "build/.NETFramework/v4.8/System.EnterpriseServices.xml",
+        "build/.NETFramework/v4.8/System.IO.Compression.FileSystem.dll",
+        "build/.NETFramework/v4.8/System.IO.Compression.FileSystem.xml",
+        "build/.NETFramework/v4.8/System.IO.Compression.dll",
+        "build/.NETFramework/v4.8/System.IO.Compression.xml",
+        "build/.NETFramework/v4.8/System.IO.Log.dll",
+        "build/.NETFramework/v4.8/System.IO.Log.xml",
+        "build/.NETFramework/v4.8/System.IdentityModel.Selectors.dll",
+        "build/.NETFramework/v4.8/System.IdentityModel.Selectors.xml",
+        "build/.NETFramework/v4.8/System.IdentityModel.Services.dll",
+        "build/.NETFramework/v4.8/System.IdentityModel.Services.xml",
+        "build/.NETFramework/v4.8/System.IdentityModel.dll",
+        "build/.NETFramework/v4.8/System.IdentityModel.xml",
+        "build/.NETFramework/v4.8/System.Linq.xml",
+        "build/.NETFramework/v4.8/System.Management.Instrumentation.dll",
+        "build/.NETFramework/v4.8/System.Management.Instrumentation.xml",
+        "build/.NETFramework/v4.8/System.Management.dll",
+        "build/.NETFramework/v4.8/System.Management.xml",
+        "build/.NETFramework/v4.8/System.Messaging.dll",
+        "build/.NETFramework/v4.8/System.Messaging.xml",
+        "build/.NETFramework/v4.8/System.Net.Http.WebRequest.dll",
+        "build/.NETFramework/v4.8/System.Net.Http.WebRequest.xml",
+        "build/.NETFramework/v4.8/System.Net.Http.dll",
+        "build/.NETFramework/v4.8/System.Net.Http.xml",
+        "build/.NETFramework/v4.8/System.Net.dll",
+        "build/.NETFramework/v4.8/System.Net.xml",
+        "build/.NETFramework/v4.8/System.Numerics.dll",
+        "build/.NETFramework/v4.8/System.Numerics.xml",
+        "build/.NETFramework/v4.8/System.Printing.dll",
+        "build/.NETFramework/v4.8/System.Printing.xml",
+        "build/.NETFramework/v4.8/System.Reflection.Context.dll",
+        "build/.NETFramework/v4.8/System.Reflection.Context.xml",
+        "build/.NETFramework/v4.8/System.Runtime.Caching.dll",
+        "build/.NETFramework/v4.8/System.Runtime.Caching.xml",
+        "build/.NETFramework/v4.8/System.Runtime.DurableInstancing.dll",
+        "build/.NETFramework/v4.8/System.Runtime.DurableInstancing.xml",
+        "build/.NETFramework/v4.8/System.Runtime.Remoting.dll",
+        "build/.NETFramework/v4.8/System.Runtime.Remoting.xml",
+        "build/.NETFramework/v4.8/System.Runtime.Serialization.Formatters.Soap.dll",
+        "build/.NETFramework/v4.8/System.Runtime.Serialization.Formatters.Soap.xml",
+        "build/.NETFramework/v4.8/System.Runtime.Serialization.dll",
+        "build/.NETFramework/v4.8/System.Runtime.Serialization.xml",
+        "build/.NETFramework/v4.8/System.Security.dll",
+        "build/.NETFramework/v4.8/System.Security.xml",
+        "build/.NETFramework/v4.8/System.ServiceModel.Activation.dll",
+        "build/.NETFramework/v4.8/System.ServiceModel.Activation.xml",
+        "build/.NETFramework/v4.8/System.ServiceModel.Activities.dll",
+        "build/.NETFramework/v4.8/System.ServiceModel.Activities.xml",
+        "build/.NETFramework/v4.8/System.ServiceModel.Channels.dll",
+        "build/.NETFramework/v4.8/System.ServiceModel.Channels.xml",
+        "build/.NETFramework/v4.8/System.ServiceModel.Discovery.dll",
+        "build/.NETFramework/v4.8/System.ServiceModel.Discovery.xml",
+        "build/.NETFramework/v4.8/System.ServiceModel.Routing.dll",
+        "build/.NETFramework/v4.8/System.ServiceModel.Routing.xml",
+        "build/.NETFramework/v4.8/System.ServiceModel.Web.dll",
+        "build/.NETFramework/v4.8/System.ServiceModel.Web.xml",
+        "build/.NETFramework/v4.8/System.ServiceModel.dll",
+        "build/.NETFramework/v4.8/System.ServiceModel.xml",
+        "build/.NETFramework/v4.8/System.ServiceProcess.dll",
+        "build/.NETFramework/v4.8/System.ServiceProcess.xml",
+        "build/.NETFramework/v4.8/System.Speech.dll",
+        "build/.NETFramework/v4.8/System.Speech.xml",
+        "build/.NETFramework/v4.8/System.Threading.Tasks.Dataflow.xml",
+        "build/.NETFramework/v4.8/System.Transactions.dll",
+        "build/.NETFramework/v4.8/System.Transactions.xml",
+        "build/.NETFramework/v4.8/System.Web.Abstractions.dll",
+        "build/.NETFramework/v4.8/System.Web.ApplicationServices.dll",
+        "build/.NETFramework/v4.8/System.Web.ApplicationServices.xml",
+        "build/.NETFramework/v4.8/System.Web.DataVisualization.Design.dll",
+        "build/.NETFramework/v4.8/System.Web.DataVisualization.dll",
+        "build/.NETFramework/v4.8/System.Web.DataVisualization.xml",
+        "build/.NETFramework/v4.8/System.Web.DynamicData.Design.dll",
+        "build/.NETFramework/v4.8/System.Web.DynamicData.Design.xml",
+        "build/.NETFramework/v4.8/System.Web.DynamicData.dll",
+        "build/.NETFramework/v4.8/System.Web.DynamicData.xml",
+        "build/.NETFramework/v4.8/System.Web.Entity.Design.dll",
+        "build/.NETFramework/v4.8/System.Web.Entity.Design.xml",
+        "build/.NETFramework/v4.8/System.Web.Entity.dll",
+        "build/.NETFramework/v4.8/System.Web.Entity.xml",
+        "build/.NETFramework/v4.8/System.Web.Extensions.Design.dll",
+        "build/.NETFramework/v4.8/System.Web.Extensions.Design.xml",
+        "build/.NETFramework/v4.8/System.Web.Extensions.dll",
+        "build/.NETFramework/v4.8/System.Web.Extensions.xml",
+        "build/.NETFramework/v4.8/System.Web.Mobile.dll",
+        "build/.NETFramework/v4.8/System.Web.Mobile.xml",
+        "build/.NETFramework/v4.8/System.Web.RegularExpressions.dll",
+        "build/.NETFramework/v4.8/System.Web.RegularExpressions.xml",
+        "build/.NETFramework/v4.8/System.Web.Routing.dll",
+        "build/.NETFramework/v4.8/System.Web.Services.dll",
+        "build/.NETFramework/v4.8/System.Web.Services.xml",
+        "build/.NETFramework/v4.8/System.Web.dll",
+        "build/.NETFramework/v4.8/System.Web.xml",
+        "build/.NETFramework/v4.8/System.Windows.Controls.Ribbon.dll",
+        "build/.NETFramework/v4.8/System.Windows.Controls.Ribbon.xml",
+        "build/.NETFramework/v4.8/System.Windows.Forms.DataVisualization.Design.dll",
+        "build/.NETFramework/v4.8/System.Windows.Forms.DataVisualization.dll",
+        "build/.NETFramework/v4.8/System.Windows.Forms.DataVisualization.xml",
+        "build/.NETFramework/v4.8/System.Windows.Forms.dll",
+        "build/.NETFramework/v4.8/System.Windows.Forms.xml",
+        "build/.NETFramework/v4.8/System.Windows.Input.Manipulations.dll",
+        "build/.NETFramework/v4.8/System.Windows.Input.Manipulations.xml",
+        "build/.NETFramework/v4.8/System.Windows.Presentation.dll",
+        "build/.NETFramework/v4.8/System.Windows.Presentation.xml",
+        "build/.NETFramework/v4.8/System.Windows.dll",
+        "build/.NETFramework/v4.8/System.Workflow.Activities.dll",
+        "build/.NETFramework/v4.8/System.Workflow.Activities.xml",
+        "build/.NETFramework/v4.8/System.Workflow.ComponentModel.dll",
+        "build/.NETFramework/v4.8/System.Workflow.ComponentModel.xml",
+        "build/.NETFramework/v4.8/System.Workflow.Runtime.dll",
+        "build/.NETFramework/v4.8/System.Workflow.Runtime.xml",
+        "build/.NETFramework/v4.8/System.WorkflowServices.dll",
+        "build/.NETFramework/v4.8/System.WorkflowServices.xml",
+        "build/.NETFramework/v4.8/System.Xaml.dll",
+        "build/.NETFramework/v4.8/System.Xaml.xml",
+        "build/.NETFramework/v4.8/System.Xml.Linq.dll",
+        "build/.NETFramework/v4.8/System.Xml.Linq.xml",
+        "build/.NETFramework/v4.8/System.Xml.Serialization.dll",
+        "build/.NETFramework/v4.8/System.Xml.dll",
+        "build/.NETFramework/v4.8/System.Xml.xml",
+        "build/.NETFramework/v4.8/System.dll",
+        "build/.NETFramework/v4.8/System.xml",
+        "build/.NETFramework/v4.8/UIAutomationClient.dll",
+        "build/.NETFramework/v4.8/UIAutomationClient.xml",
+        "build/.NETFramework/v4.8/UIAutomationClientsideProviders.dll",
+        "build/.NETFramework/v4.8/UIAutomationClientsideProviders.xml",
+        "build/.NETFramework/v4.8/UIAutomationProvider.dll",
+        "build/.NETFramework/v4.8/UIAutomationProvider.xml",
+        "build/.NETFramework/v4.8/UIAutomationTypes.dll",
+        "build/.NETFramework/v4.8/UIAutomationTypes.xml",
+        "build/.NETFramework/v4.8/WindowsBase.dll",
+        "build/.NETFramework/v4.8/WindowsBase.xml",
+        "build/.NETFramework/v4.8/WindowsFormsIntegration.dll",
+        "build/.NETFramework/v4.8/WindowsFormsIntegration.xml",
+        "build/.NETFramework/v4.8/XamlBuildTask.dll",
+        "build/.NETFramework/v4.8/XamlBuildTask.xml",
+        "build/.NETFramework/v4.8/mscorlib.dll",
+        "build/.NETFramework/v4.8/mscorlib.xml",
+        "build/.NETFramework/v4.8/namespaces.xml",
+        "build/.NETFramework/v4.8/sysglobl.dll",
+        "build/.NETFramework/v4.8/sysglobl.xml",
+        "build/Microsoft.NETFramework.ReferenceAssemblies.net48.targets",
+        "microsoft.netframework.referenceassemblies.net48.1.0.3.nupkg.sha512",
+        "microsoft.netframework.referenceassemblies.net48.nuspec"
+      ]
+    },
+    "Microsoft.Web.WebView2/1.0.3537.50": {
+      "sha512": "6RQRMIcc/xnhDCdBmyc+YoPxPlYHjmg/mfVpQb4iYWr+K/cs28dTxCyOYFZjUFtiwupXN9nCqxOSMumn2ZKAIg==",
+      "type": "package",
+      "path": "microsoft.web.webview2/1.0.3537.50",
+      "hasTools": true,
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "NOTICE.txt",
+        "WebView2.idl",
+        "WebView2.tlb",
+        "build/Common.targets",
+        "build/Microsoft.Web.WebView2.targets",
+        "build/WebView2Rules.Project.xml",
+        "build/native/Microsoft.Web.WebView2.targets",
+        "build/native/arm64/WebView2Loader.dll",
+        "build/native/arm64/WebView2Loader.dll.lib",
+        "build/native/arm64/WebView2LoaderStatic.lib",
+        "build/native/include-winrt/WebView2Interop.h",
+        "build/native/include-winrt/WebView2Interop.idl",
+        "build/native/include-winrt/WebView2Interop.tlb",
+        "build/native/include/WebView2.h",
+        "build/native/include/WebView2EnvironmentOptions.h",
+        "build/native/x64/WebView2Loader.dll",
+        "build/native/x64/WebView2Loader.dll.lib",
+        "build/native/x64/WebView2LoaderStatic.lib",
+        "build/native/x86/WebView2Loader.dll",
+        "build/native/x86/WebView2Loader.dll.lib",
+        "build/native/x86/WebView2LoaderStatic.lib",
+        "build/wv2winrt.targets",
+        "buildTransitive/Microsoft.Web.WebView2.targets",
+        "lib/Microsoft.Web.WebView2.Core.winmd",
+        "lib/net462/Microsoft.Web.WebView2.Core.dll",
+        "lib/net462/Microsoft.Web.WebView2.Core.xml",
+        "lib/net462/Microsoft.Web.WebView2.WinForms.dll",
+        "lib/net462/Microsoft.Web.WebView2.WinForms.xml",
+        "lib/net462/Microsoft.Web.WebView2.Wpf.dll",
+        "lib/net462/Microsoft.Web.WebView2.Wpf.xml",
+        "lib_manual/net5.0-windows10.0.17763.0/Microsoft.Web.WebView2.Wpf.dll",
+        "lib_manual/net5.0-windows10.0.17763.0/Microsoft.Web.WebView2.Wpf.xml",
+        "lib_manual/net6.0-windows10.0.17763.0/Microsoft.Web.WebView2.Core.Projection.dll",
+        "lib_manual/net8.0-windows10.0.17763.0/Microsoft.Web.WebView2.Core.Projection.dll",
+        "lib_manual/netcoreapp3.0/Microsoft.Web.WebView2.Core.dll",
+        "lib_manual/netcoreapp3.0/Microsoft.Web.WebView2.Core.xml",
+        "lib_manual/netcoreapp3.0/Microsoft.Web.WebView2.WinForms.dll",
+        "lib_manual/netcoreapp3.0/Microsoft.Web.WebView2.WinForms.xml",
+        "lib_manual/netcoreapp3.0/Microsoft.Web.WebView2.Wpf.dll",
+        "lib_manual/netcoreapp3.0/Microsoft.Web.WebView2.Wpf.xml",
+        "microsoft.web.webview2.1.0.3537.50.nupkg.sha512",
+        "microsoft.web.webview2.nuspec",
+        "runtimes/win-arm64/native/WebView2Loader.dll",
+        "runtimes/win-arm64/native_uap/Microsoft.Web.WebView2.Core.dll",
+        "runtimes/win-x64/native/WebView2Loader.dll",
+        "runtimes/win-x64/native_uap/Microsoft.Web.WebView2.Core.dll",
+        "runtimes/win-x86/native/WebView2Loader.dll",
+        "runtimes/win-x86/native_uap/Microsoft.Web.WebView2.Core.dll",
+        "tools/VisualStudioToolsManifest.xml",
+        "tools/wv2winrt/Antlr3.Runtime.dll",
+        "tools/wv2winrt/Antlr4.StringTemplate.dll",
+        "tools/wv2winrt/System.Buffers.dll",
+        "tools/wv2winrt/System.CommandLine.DragonFruit.dll",
+        "tools/wv2winrt/System.CommandLine.Rendering.dll",
+        "tools/wv2winrt/System.CommandLine.dll",
+        "tools/wv2winrt/System.Memory.dll",
+        "tools/wv2winrt/System.Numerics.Vectors.dll",
+        "tools/wv2winrt/System.Runtime.CompilerServices.Unsafe.dll",
+        "tools/wv2winrt/codegen_util.dll",
+        "tools/wv2winrt/concrt140_app.dll",
+        "tools/wv2winrt/cs/System.CommandLine.resources.dll",
+        "tools/wv2winrt/de/System.CommandLine.resources.dll",
+        "tools/wv2winrt/es/System.CommandLine.resources.dll",
+        "tools/wv2winrt/fr/System.CommandLine.resources.dll",
+        "tools/wv2winrt/it/System.CommandLine.resources.dll",
+        "tools/wv2winrt/ja/System.CommandLine.resources.dll",
+        "tools/wv2winrt/ko/System.CommandLine.resources.dll",
+        "tools/wv2winrt/msvcp140_1_app.dll",
+        "tools/wv2winrt/msvcp140_2_app.dll",
+        "tools/wv2winrt/msvcp140_app.dll",
+        "tools/wv2winrt/pl/System.CommandLine.resources.dll",
+        "tools/wv2winrt/pt-BR/System.CommandLine.resources.dll",
+        "tools/wv2winrt/ru/System.CommandLine.resources.dll",
+        "tools/wv2winrt/tr/System.CommandLine.resources.dll",
+        "tools/wv2winrt/type_hierarchy.dll",
+        "tools/wv2winrt/vcamp140_app.dll",
+        "tools/wv2winrt/vccorlib140_app.dll",
+        "tools/wv2winrt/vcomp140_app.dll",
+        "tools/wv2winrt/vcruntime140_app.dll",
+        "tools/wv2winrt/winrt_winmd.dll",
+        "tools/wv2winrt/winrt_winmd.winmd",
+        "tools/wv2winrt/wv2winrt.exe",
+        "tools/wv2winrt/wv2winrt.exe.config",
+        "tools/wv2winrt/wv2winrt.xml",
+        "tools/wv2winrt/zh-Hans/System.CommandLine.resources.dll",
+        "tools/wv2winrt/zh-Hant/System.CommandLine.resources.dll"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    ".NETFramework,Version=v4.8": [
+      "Microsoft.NETFramework.ReferenceAssemblies >= 1.0.3",
+      "Microsoft.NETFramework.ReferenceAssemblies.net48 >= 1.0.3",
+      "Microsoft.Web.WebView2 >= 1.0.3537.50"
+    ]
+  },
+  "packageFolders": {
+    "/root/.nuget/packages/": {}
+  },
+  "project": {
+    "version": "0.12.1",
+    "restore": {
+      "projectUniqueName": "/workspace/scratch/15639585320d/work/v0.12.1/HCA_Client_Vollinstallation_v0.12.1/QUELLCODE_WindowsHost/HcaWindowsHost.csproj",
+      "projectName": "HCA_Produktionsmanager",
+      "projectPath": "/workspace/scratch/15639585320d/work/v0.12.1/HCA_Client_Vollinstallation_v0.12.1/QUELLCODE_WindowsHost/HcaWindowsHost.csproj",
+      "packagesPath": "/root/.nuget/packages/",
+      "outputPath": "/workspace/scratch/15639585320d/work/v0.12.1/HCA_Client_Vollinstallation_v0.12.1/QUELLCODE_WindowsHost/obj/",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "/root/.nuget/NuGet/NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net48"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net48": {
+          "targetAlias": "net48",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      }
+    },
+    "frameworks": {
+      "net48": {
+        "targetAlias": "net48",
+        "dependencies": {
+          "Microsoft.NETFramework.ReferenceAssemblies": {
+            "suppressParent": "All",
+            "target": "Package",
+            "version": "[1.0.3, )",
+            "autoReferenced": true
+          },
+          "Microsoft.NETFramework.ReferenceAssemblies.net48": {
+            "suppressParent": "All",
+            "target": "Package",
+            "version": "[1.0.3, )"
+          },
+          "Microsoft.Web.WebView2": {
+            "target": "Package",
+            "version": "[1.0.3537.50, )"
+          }
+        },
+        "runtimeIdentifierGraphPath": "/workspace/scratch/15639585320d/work/dotnet-sdk/sdk/8.0.425/RuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}
+===== HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/config.default.json =====
+{
+  "synology_root": "",
+  "machine_names": [
+    "HCA 1",
+    "HCA 2",
+    "HCA 3"
+  ],
+  "port": 8765,
+  "allowed_extensions": [
+    ".tap",
+    ".dst",
+    ".hp1"
+  ],
+  "window_mode": "native",
+  "serial_ports": [
+    "",
+    "",
+    ""
+  ]
+}
+
+===== HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT/payload/version.json =====
+{"product": "HCA Produktionsmanager", "version": "0.13.0", "channel": "stable"}
