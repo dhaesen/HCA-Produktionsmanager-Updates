@@ -64,9 +64,9 @@ one('base_payload={"order_no":pno,"customer":order["customer_name"],"title":titl
                       "shipping_address":shipping}''',
     "production shipping address")
 
-one('r["discount_pct"],r["tax_rate"],r["config_json"],now,now))',
-    'r["discount_pct"],r["tax_rate"],_json(_hca136_normalize_config(_loads(r["config_json"],{}))),now,now))',
-    "quote refinements conversion")
+one('r["description"],r["quantity"],r["unit"],r["unit_price"],r["discount_pct"],r["tax_rate"],r["config_json"],now,now))',
+    'r["description"],*_hca136_quote_tier_values(r,payload.get("selected_quantity_tier")),r["discount_pct"],r["tax_rate"],_json(_hca136_quote_tier_config(r,payload.get("selected_quantity_tier"))),now,now))',
+    "quote refinements and selected tier conversion")
 
 needle='''    pages: list[list[dict[str, Any]]] = []
     current: list[dict[str, Any]] = []; used = 0.0
@@ -134,6 +134,27 @@ def _hca136_normalize_config(value: Any) -> dict[str, Any]:
     config["production_steps"]=normalized
     config["packaging_unit"]=max(1,int(float(config.get("packaging_unit") or 1)))
     return config
+
+def _hca136_quote_tier_config(row: sqlite3.Row, selected: Any) -> dict[str, Any]:
+    config=_hca136_normalize_config(_loads(row["config_json"],{}))
+    try: quantity=int(float(selected or 0))
+    except Exception: quantity=0
+    if quantity>0:
+        snapshot=next((x for x in (config.get("quote_quantity_tiers") or [])
+                       if isinstance(x,dict) and int(float(x.get("quantity") or 0))==quantity),None)
+        if snapshot and isinstance(snapshot.get("production_steps"),list):
+            config["production_steps"]=snapshot["production_steps"]
+        config["selected_quantity_tier"]=quantity
+    return config
+
+def _hca136_quote_tier_values(row: sqlite3.Row, selected: Any) -> tuple[float,str,float]:
+    try: quantity=int(float(selected or 0))
+    except Exception: quantity=0
+    config=_loads(row["config_json"],{})
+    snapshot=next((x for x in ((config if isinstance(config,dict) else {}).get("quote_quantity_tiers") or [])
+                   if isinstance(x,dict) and int(float(x.get("quantity") or 0))==quantity),None) if quantity>0 else None
+    return (float(quantity if quantity>0 else row["quantity"]),str(row["unit"] or "Stk."),
+            float(snapshot.get("unit_price") if snapshot and snapshot.get("unit_price") is not None else row["unit_price"]))
 
 def _woo_search_products(query: str, limit: int = 24) -> list[dict[str, Any]]:
     rows=_HCA136_PRODUCT_SEARCH(query,limit)
