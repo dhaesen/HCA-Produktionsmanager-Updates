@@ -1,0 +1,74 @@
+name: Analyze HCA v0.13.1 client with Python
+
+on:
+  push:
+    branches:
+      - codex/v0.13.2-development
+    paths:
+      - .github/workflows/analyze-v0131-python.yml
+
+permissions:
+  contents: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+          fetch-depth: 0
+      - name: Create focused reports
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          src = Path("development/v0.13.1-package/payload")
+          out = Path("development/reports")
+          out.mkdir(parents=True, exist_ok=True)
+
+          def context_report(paths, patterns, target, radius=5):
+              compiled = re.compile("|".join(f"(?:{p})" for p in patterns), re.I)
+              blocks = []
+              for path in paths:
+                  lines = path.read_text(encoding="utf-8").splitlines()
+                  hits = [i for i,line in enumerate(lines) if compiled.search(line)]
+                  selected = set()
+                  for i in hits:
+                      selected.update(range(max(0,i-radius), min(len(lines),i+radius+1)))
+                  last = -2
+                  for i in sorted(selected):
+                      if i != last+1:
+                          blocks.append(f"\n--- {path.name}:{i+1} ---")
+                      blocks.append(f"{i+1}: {lines[i]}")
+                      last=i
+              Path(target).write_text("\n".join(blocks)+"\n", encoding="utf-8")
+
+          context_report([src/"app.js"], [
+              r"customer",r"kunde",r"kontakt",r"adresse",r"rabatt",r"guthaben",r"gutschein",
+              r"woocommerce",r"woo",r"billing_",r"shipping_"
+          ], out/"app-customer.txt")
+          context_report([src/"app.js"], [
+              r"mail",r"smtp",r"imap",r"signatur",r"anhang",r"attachment",r"postfach"
+          ], out/"app-mail.txt")
+          context_report([src/"app.js",src/"index.html"], [
+              r"Server wird geprüft",r"Keine Datei gewählt",r"server.{0,20}prüf",
+              r"update.{0,30}file",r"type=[\"']file[\"']"
+          ], out/"header-status.txt")
+          context_report([src/"index.html"], [
+              r"kunde",r"kontakt",r"adresse",r"rabatt",r"guthaben",r"gutschein",
+              r"e-mail",r"email",r"mail",r"nav"
+          ], out/"index-structure.txt", radius=7)
+
+          lines=(src/"app.js").read_text(encoding="utf-8").splitlines()
+          fn=re.compile(r"^\s*(?:async\s+)?function\s+|^\s*(?:const|let|var)\s+[A-Za-z0-9_$]+\s*=\s*(?:async\s*)?\(")
+          (out/"function-index.txt").write_text("\n".join(f"{i+1}: {line}" for i,line in enumerate(lines) if fn.search(line))+"\n",encoding="utf-8")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add development/reports
+          git diff --cached --quiet && exit 0
+          git commit -m "Generate complete focused v0.13.1 analysis"
+          git push origin HEAD:codex/v0.13.2-development
