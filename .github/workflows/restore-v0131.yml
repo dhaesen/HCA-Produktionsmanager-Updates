@@ -26,7 +26,7 @@ jobs:
           shopt -s nullglob
           parts=(incoming/HCA_Update_v0.13.1.hcaupdate.b64part.*)
           test "${#parts[@]}" -gt 0
-          cat "${parts[@]}" | base64 --decode > /tmp/HCA_Update_v0.13.1.hcaupdate
+          cat "${parts[@]}" > /tmp/HCA_Update_v0.13.1.hcaupdate
           echo "f7f6248d578366a4dc3e294db33cfd929526fb2d6320cd481103d337f7203007  /tmp/HCA_Update_v0.13.1.hcaupdate" | sha256sum -c -
           python - <<'PY'
           import zipfile
@@ -35,9 +35,10 @@ jobs:
           target = Path("development/v0.13.1-package")
           target.mkdir(parents=True, exist_ok=True)
           with zipfile.ZipFile(archive) as z:
+              root = target.resolve()
               for member in z.infolist():
                   destination = (target / member.filename).resolve()
-                  if target.resolve() not in destination.parents and destination != target.resolve():
+                  if root not in destination.parents and destination != root:
                       raise RuntimeError(f"Unsafe archive path: {member.filename}")
               z.extractall(target)
               bad = z.testzip()
