@@ -1,0 +1,38 @@
+name: Inspect HCA full installer source
+on:
+  push:
+    branches: [codex/v0.13.2-development]
+    paths: [.github/workflows/inspect-full-installer.yml]
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Inspect archive
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/hca-full
+          mkdir /tmp/hca-full
+          unzip -q incoming/HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT.zip -d /tmp/hca-full
+          mkdir -p development
+          {
+            echo '# Full installer inventory'
+            echo
+            find /tmp/hca-full -type f -printf '%P | %s bytes\n' | sort
+            echo
+            echo '# Relevant source files'
+            while IFS= read -r file; do
+              echo
+              echo "===== ${file#/tmp/hca-full/} ====="
+              sed -n '1,800p' "$file"
+            done < <(find /tmp/hca-full -type f \( -iname '*.cs' -o -iname '*.xaml' -o -iname '*.csproj' -o -iname '*.cmd' -o -iname '*.ps1' -o -iname '*.json' \) | sort)
+          } > development/full-install-inspection.txt
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add development/full-install-inspection.txt
+          git commit -m "Inspect uploaded HCA full installer"
+          git push origin HEAD:codex/v0.13.2-development
