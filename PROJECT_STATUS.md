@@ -1,7 +1,7 @@
 # HCA Produktionsmanager – Projektstatus
 
 Stand: 14. September 2026  
-Aktuelle Testversion: **0.13.5**  
+Aktuelle Testversion: **0.13.5.2**  
 Quellbranch: `codex/v0.13.2-development`
 
 ## Aktueller Lieferumfang
@@ -15,6 +15,16 @@ Quellbranch: `codex/v0.13.2-development`
 - Mehrpostfach-E-Mail-Client mit HTML-/WYSIWYG-Nachrichten
 - Lexware-Office-Übergabe von Rechnungen und Rechnungskorrekturen
 - Sendcloud-, Produktions-, Lager- und Logistikfunktionen
+
+## Version 0.13.5.2 – Login-Sperrfehler behoben
+
+- Die gespeicherte Produktionsserver-Konfiguration wird vor der Authentifizierungsabfrage aus der lokalen API geladen.
+- Die Anmeldung kann nicht mehr fälschlich wegen einer noch nicht geladenen Serveradresse sperren.
+- Bei tatsächlich fehlender Serveradresse bietet die Anmeldeseite einen Notfallzugang zu den Servereinstellungen.
+- Für bereits ausgesperrte Clients existiert ein separates Reparaturpaket, das nur drei Clientdateien ersetzt und Sicherungskopien anlegt.
+- Konfiguration, Belege, lokale Produktionsdaten und NAS-Datenbank bleiben unverändert.
+- Der NAS-Login-Hotfix 0.13.5.1 bleibt erforderlich.
+- Das WooCommerce-Plugin wurde nicht verändert.
 
 ## Version 0.13.5
 
