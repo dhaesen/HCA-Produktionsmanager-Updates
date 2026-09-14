@@ -1,0 +1,365 @@
+name: Build HCA full installation v0.13.5.3
+on:
+  push:
+    branches: [codex/v0.13.2-development]
+    paths: [.github/workflows/build-full-v01353.yml]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Restore base and current client
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Expand-Archive incoming/HCA_Client_Vollinstallation_v0.13.0_KORRIGIERT.zip -DestinationPath work
+          $root = Get-ChildItem work -Directory | Select-Object -First 1
+          if (-not $root) { throw 'Base installer root missing' }
+          Rename-Item $root.FullName HCA_Client_Vollinstallation_v0.13.5.3
+          Invoke-WebRequest -Uri 'https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.5.2/HCA_Update_v0.13.5.2.hcaupdate' -OutFile "$env:RUNNER_TEMP\client.zip"
+          $hash = (Get-FileHash "$env:RUNNER_TEMP\client.zip" -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($hash -ne 'eb10fb89e1855034526d1334752e05350afbf1863e86f07dadefd25ed8ac4eb6') { throw "Client hash mismatch: $hash" }
+          Expand-Archive "$env:RUNNER_TEMP\client.zip" -DestinationPath update
+          Copy-Item update/payload/* work/HCA_Client_Vollinstallation_v0.13.5.3/payload/ -Recurse -Force
+          Copy-Item incoming/logo-app.png work/HCA_Client_Vollinstallation_v0.13.5.3/payload/assets/logo-app.png -Force
+          Copy-Item incoming/app-icon.png work/HCA_Client_Vollinstallation_v0.13.5.3/payload/assets/app-icon.png -Force
+      - name: Build native splash host
+        shell: pwsh
+        run: |
+          @'
+          from pathlib import Path
+          import json
+          root=Path("work/HCA_Client_Vollinstallation_v0.13.5.3")
+          src=root/"QUELLCODE_WindowsHost"
+          p=src/"Program.cs"
+          s=p.read_text(encoding="utf-8-sig")
+          s=s.replace('Log("Programmstart v0.12.1")','Log("Programmstart v0.13.5.3")')
+          fields="""        private readonly WebView2 _webView;
+                  private readonly Grid _root;
+                  private readonly TextBlock _status;
+          """
+          new_fields="""        private readonly WebView2 _webView;
+                  private readonly Grid _root;
+                  private readonly Grid _splash;
+                  private readonly TextBlock _status;
+                  private readonly ProgressBar _progress;
+          """
+          if s.count(fields)!=1: raise SystemExit("Host fields not found")
+          s=s.replace(fields,new_fields,1)
+          old="""            Background = new SolidColorBrush(Color.FromRgb(245, 245, 242));
+                      Icon = AppIcon.Load();
+
+                      _root = new Grid();
+                      _webView = new WebView2 { Visibility = Visibility.Collapsed };
+                      _status = new TextBlock
+                      {
+                          Text = "HCA wird gestartet …",
+                          HorizontalAlignment = HorizontalAlignment.Center,
+                          VerticalAlignment = VerticalAlignment.Center,
+                          FontSize = 24,
+                          FontWeight = FontWeights.SemiBold,
+                          Foreground = new SolidColorBrush(Color.FromRgb(40, 40, 38))
+                      };
+                      _root.Children.Add(_webView);
+                      _root.Children.Add(_status);
+                      Content = _root;
+          """
+          new="""            Background = new SolidColorBrush(Color.FromRgb(13, 14, 16));
+                      Icon = AppIcon.Load();
+
+                      _root = new Grid { Background = new SolidColorBrush(Color.FromRgb(13, 14, 16)) };
+                      _webView = new WebView2 { Visibility = Visibility.Collapsed };
+
+                      var splashBrush = new RadialGradientBrush
+                      {
+                          Center = new Point(0.5, 0.35),
+                          GradientOrigin = new Point(0.5, 0.35),
+                          RadiusX = 0.78,
+                          RadiusY = 0.9
+                      };
+                      splashBrush.GradientStops.Add(new GradientStop(Color.FromRgb(48, 52, 58), 0));
+                      splashBrush.GradientStops.Add(new GradientStop(Color.FromRgb(23, 25, 29), 0.48));
+                      splashBrush.GradientStops.Add(new GradientStop(Color.FromRgb(13, 14, 16), 1));
+
+                      _splash = new Grid { Background = splashBrush };
+                      var card = new StackPanel
+                      {
+                          Width = 520,
+                          HorizontalAlignment = HorizontalAlignment.Center,
+                          VerticalAlignment = VerticalAlignment.Center
+                      };
+                      var logoPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "assets", "logo-app.png");
+                      if (File.Exists(logoPath))
+                      {
+                          var bitmap = new BitmapImage();
+                          bitmap.BeginInit();
+                          bitmap.CacheOption = BitmapCacheOption.OnLoad;
+                          bitmap.UriSource = new Uri(logoPath, UriKind.Absolute);
+                          bitmap.EndInit();
+                          bitmap.Freeze();
+                          card.Children.Add(new Image
+                          {
+                              Source = bitmap,
+                              MaxWidth = 420,
+                              MaxHeight = 110,
+                              Stretch = Stretch.Uniform,
+                              HorizontalAlignment = HorizontalAlignment.Center,
+                              Margin = new Thickness(0, 0, 0, 34),
+                              Effect = new DropShadowEffect { BlurRadius = 22, ShadowDepth = 8, Opacity = 0.30, Color = Colors.Black }
+                          });
+                      }
+                      card.Children.Add(new TextBlock
+                      {
+                          Text = "HCA wird gestartet",
+                          TextAlignment = TextAlignment.Center,
+                          FontSize = 25,
+                          FontWeight = FontWeights.SemiBold,
+                          Foreground = Brushes.White,
+                          Margin = new Thickness(0, 0, 0, 8)
+                      });
+                      card.Children.Add(new TextBlock
+                      {
+                          Text = "Produktionsmanager und Warenwirtschaft",
+                          TextAlignment = TextAlignment.Center,
+                          FontSize = 15,
+                          Foreground = new SolidColorBrush(Color.FromRgb(200, 203, 208)),
+                          Margin = new Thickness(0, 0, 0, 25)
+                      });
+                      _progress = new ProgressBar
+                      {
+                          Minimum = 0,
+                          Maximum = 100,
+                          Value = 5,
+                          Height = 8,
+                          Foreground = new SolidColorBrush(Color.FromRgb(239, 82, 28)),
+                          Background = new SolidColorBrush(Color.FromRgb(52, 55, 61)),
+                          BorderThickness = new Thickness(0)
+                      };
+                      card.Children.Add(_progress);
+                      _status = new TextBlock
+                      {
+                          Text = "Komponenten werden geladen …",
+                          TextAlignment = TextAlignment.Center,
+                          FontSize = 12,
+                          Foreground = new SolidColorBrush(Color.FromRgb(174, 178, 184)),
+                          Margin = new Thickness(0, 10, 0, 0)
+                      };
+                      card.Children.Add(_status);
+                      _splash.Children.Add(card);
+                      _root.Children.Add(_webView);
+                      _root.Children.Add(_splash);
+                      Content = _root;
+          """
+          if s.count(old)!=1: raise SystemExit(f"Host constructor matches: {s.count(old)}")
+          s=s.replace(old,new,1)
+          old_start="""                Program.Log("Startkonfiguration wird gelesen.");
+                          _port = ReadConfiguredPort();
+                          Program.Log("Lokaler Port: " + _port);
+                          if (!await ServerAvailableAsync())
+                          {
+                              Program.Log("Lokaler Dienst wird gestartet.");
+                              StartBackend();
+                          }
+                          if (!await WaitForServerAsync(TimeSpan.FromSeconds(25)))
+                              throw new InvalidOperationException("Der lokale HCA-Dienst konnte nicht gestartet werden.");
+
+                          Program.Log("Lokaler Dienst ist erreichbar.");
+                          var dataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HCA Produktionsmanager", "WebView2");
+                          Directory.CreateDirectory(dataFolder);
+                          Program.Log("WebView2 Runtime: " + CoreWebView2Environment.GetAvailableBrowserVersionString());
+                          var environment = await CoreWebView2Environment.CreateAsync(null, dataFolder);
+                          await _webView.EnsureCoreWebView2Async(environment);
+                          await ConfigureWebViewAsync(_webView);
+                          _webView.Source = new Uri("http://127.0.0.1:" + _port + "/");
+                          _status.Visibility = Visibility.Collapsed;
+                          _webView.Visibility = Visibility.Visible;
+                          _webView.Focus();
+                          Program.Log("HCA-Oberfläche wurde geöffnet.");
+          """
+          new_start="""                SetStartupProgress(14, "Startkonfiguration wird gelesen …");
+                          Program.Log("Startkonfiguration wird gelesen.");
+                          _port = ReadConfiguredPort();
+                          Program.Log("Lokaler Port: " + _port);
+                          SetStartupProgress(30, "Lokaler Dienst wird geprüft …");
+                          if (!await ServerAvailableAsync())
+                          {
+                              Program.Log("Lokaler Dienst wird gestartet.");
+                              SetStartupProgress(38, "Lokaler Dienst wird gestartet …");
+                              StartBackend();
+                          }
+                          if (!await WaitForServerAsync(TimeSpan.FromSeconds(25)))
+                              throw new InvalidOperationException("Der lokale HCA-Dienst konnte nicht gestartet werden.");
+
+                          Program.Log("Lokaler Dienst ist erreichbar.");
+                          SetStartupProgress(55, "WebView2 wird vorbereitet …");
+                          var dataFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "HCA Produktionsmanager", "WebView2");
+                          Directory.CreateDirectory(dataFolder);
+                          Program.Log("WebView2 Runtime: " + CoreWebView2Environment.GetAvailableBrowserVersionString());
+                          var environment = await CoreWebView2Environment.CreateAsync(null, dataFolder);
+                          await _webView.EnsureCoreWebView2Async(environment);
+                          SetStartupProgress(74, "Oberfläche wird vorbereitet …");
+                          await ConfigureWebViewAsync(_webView);
+
+                          var navigation = new TaskCompletionSource<bool>();
+                          CoreWebView2NavigationCompletedEventHandler completedHandler = null;
+                          completedHandler = (sender, args) =>
+                          {
+                              _webView.CoreWebView2.NavigationCompleted -= completedHandler;
+                              navigation.TrySetResult(args.IsSuccess);
+                          };
+                          _webView.CoreWebView2.NavigationCompleted += completedHandler;
+                          SetStartupProgress(88, "Arbeitsbereiche werden geladen …");
+                          _webView.Source = new Uri("http://127.0.0.1:" + _port + "/");
+                          var finished = await Task.WhenAny(navigation.Task, Task.Delay(TimeSpan.FromSeconds(25)));
+                          if (finished != navigation.Task || !await navigation.Task)
+                              throw new InvalidOperationException("Die HCA-Oberfläche konnte nicht geladen werden.");
+
+                          SetStartupProgress(100, "HCA ist bereit.");
+                          await Task.Delay(120);
+                          _webView.Visibility = Visibility.Visible;
+                          _splash.Visibility = Visibility.Collapsed;
+                          _webView.Focus();
+                          Program.Log("HCA-Oberfläche wurde geöffnet.");
+          """
+          if s.count(old_start)!=1: raise SystemExit(f"Start block matches: {s.count(old_start)}")
+          s=s.replace(old_start,new_start,1)
+          insert="""        private int ReadConfiguredPort()
+                  {
+          """
+          method="""        private void SetStartupProgress(double value, string message)
+                  {
+                      _progress.Value = Math.Max(_progress.Minimum, Math.Min(_progress.Maximum, value));
+                      _status.Text = message;
+                  }
+
+                  private int ReadConfiguredPort()
+                  {
+          """
+          if s.count(insert)!=1: raise SystemExit("ReadConfiguredPort marker not found")
+          s=s.replace(insert,method,1)
+          s=s.replace('_status.Text = "HCA konnte nicht gestartet werden.";','SetStartupProgress(100, "HCA konnte nicht gestartet werden.");')
+          p.write_text(s,encoding="utf-8-sig")
+
+          cp=src/"HcaWindowsHost.csproj"
+          cs=cp.read_text(encoding="utf-8-sig")
+          cs=cs.replace("<Version>0.12.1.0</Version>","<Version>0.13.5.2</Version>")
+          cs=cs.replace("<FileVersion>0.12.1.0</FileVersion>","<FileVersion>0.13.5.2</FileVersion>")
+          cs=cs.replace("<InformationalVersion>0.12.1</InformationalVersion>","<InformationalVersion>0.13.5.3</InformationalVersion>")
+          cp.write_text(cs,encoding="utf-8-sig")
+          (src/"Assets").mkdir(exist_ok=True)
+          (src/"Assets"/"logo-app.png").write_bytes((Path("incoming")/"logo-app.png").read_bytes())
+
+          vp=root/"payload"/"version.json"
+          data=json.loads(vp.read_text(encoding="utf-8")); data["version"]="0.13.5.3"
+          vp.write_text(json.dumps(data,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          ip=root/"payload"/"index.html"
+          html=ip.read_text(encoding="utf-8").replace("?v=0.13.5.2","?v=0.13.5.3")
+          html=html.replace('id="appVersion">v0.13.2','id="appVersion">v0.13.5.3')
+          ip.write_text(html,encoding="utf-8")
+          PY
+          Push-Location work/HCA_Client_Vollinstallation_v0.13.5.3/QUELLCODE_WindowsHost
+          dotnet restore .\HcaWindowsHost.csproj
+          dotnet build .\HcaWindowsHost.csproj -c Release --no-restore
+          Pop-Location
+      - name: Assemble and validate installation
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $root = 'work/HCA_Client_Vollinstallation_v0.13.5.3'
+          $out = Join-Path $root 'QUELLCODE_WindowsHost/bin/Release/net48'
+          Copy-Item "$out/HCA_Produktionsmanager.exe" "$root/payload/HCA_Produktionsmanager.exe" -Force
+          Copy-Item "$out/HCA_Produktionsmanager.exe.config" "$root/payload/HCA_Produktionsmanager.exe.config" -Force
+          Copy-Item "$out/Microsoft.Web.WebView2.Core.dll" "$root/payload/Microsoft.Web.WebView2.Core.dll" -Force
+          Copy-Item "$out/Microsoft.Web.WebView2.Wpf.dll" "$root/payload/Microsoft.Web.WebView2.Wpf.dll" -Force
+          Copy-Item "$out/native-bridge.js" "$root/payload/native-bridge.js" -Force
+          Copy-Item "$out/runtimes/win-x64/native/WebView2Loader.dll" "$root/payload/WebView2Loader.dll" -Force
+
+          @'
+          from pathlib import Path
+          import hashlib
+          root=Path("work/HCA_Client_Vollinstallation_v0.13.5.3")
+          installer=root/"INSTALLIEREN.ps1"
+          s=installer.read_text(encoding="utf-8-sig")
+          s=s.replace("v0.13.0 - korrigierte Vollinstallation","v0.13.5.3 - Vollinstallation")
+          s=s.replace("-Name 'DisplayVersion' -Value '0.13.0'","-Name 'DisplayVersion' -Value '0.13.5.3'")
+          installer.write_text(s,encoding="utf-8-sig")
+          cmd=root/"HCA_INSTALLIEREN.cmd"
+          s=cmd.read_text(encoding="utf-8-sig").replace("v0.13.0 - korrigierte Installation","v0.13.5.3 - Vollinstallation")
+          cmd.write_text(s,encoding="utf-8-sig")
+          (root/"INSTALLATION_v0.13.5.3.txt").write_text("""HCA Produktionsmanager v0.13.5.3 – Vollinstallation
+
+          Die Installation enthält den vollständigen Desktopclient bis v0.13.5.2
+          sowie den neuen nativen Startbildschirm v0.13.5.3.
+
+          Installation:
+          1. ZIP vollständig entpacken.
+          2. HCA_INSTALLIEREN.cmd starten.
+          3. Vorhandene config.json und der data-Ordner werden übernommen.
+          4. Für die Benutzeranmeldung muss auf dem NAS der Login-Hotfix v0.13.5.1 installiert sein.
+
+          Das WooCommerce-Plugin wird von dieser Installation nicht verändert.
+          """,encoding="utf-8-sig")
+          payload=root/"payload"
+          lines=[]
+          for p in sorted(x for x in payload.rglob("*") if x.is_file() and x.name!="SHA256SUMS.txt"):
+              lines.append(hashlib.sha256(p.read_bytes()).hexdigest()+"  "+p.relative_to(payload).as_posix())
+          (payload/"SHA256SUMS.txt").write_text("\n".join(lines)+"\n",encoding="utf-8")
+          setup=[]
+          for p in sorted(x for x in root.rglob("*") if x.is_file() and x.name!="SHA256SUMS_SETUP.txt" and "obj" not in x.parts):
+              setup.append(hashlib.sha256(p.read_bytes()).hexdigest()+"  "+p.relative_to(root).as_posix())
+          (root/"SHA256SUMS_SETUP.txt").write_text("\n".join(setup)+"\n",encoding="utf-8")
+          PY
+
+          node --check "$root/payload/app.js"
+          node --check "$root/payload/hca-auth-early.js"
+          node --check "$root/payload/hca-v0132.js"
+          node --check "$root/payload/hca-v0134.js"
+          node --check "$root/payload/hca-v0135.js"
+          if (-not (Test-Path "$root/payload/assets/logo-app.png")) { throw 'Logo missing' }
+          if (-not (Test-Path "$root/payload/assets/app-icon.png")) { throw 'Icon missing' }
+          if ((Get-Item "$root/payload/HCA_Produktionsmanager.exe").Length -lt 50000) { throw 'Host build invalid' }
+          $source = Get-Content "$root/QUELLCODE_WindowsHost/Program.cs" -Raw
+          foreach ($needle in @('HCA wird gestartet','SetStartupProgress(100, "HCA ist bereit.")','NavigationCompleted','_splash.Visibility = Visibility.Collapsed')) {
+            if (-not $source.Contains($needle)) { throw "Native splash validation failed: $needle" }
+          }
+          $project = Get-Content "$root/QUELLCODE_WindowsHost/HcaWindowsHost.csproj" -Raw
+          if (-not $project.Contains('<InformationalVersion>0.13.5.3</InformationalVersion>')) { throw 'Host version invalid' }
+
+          New-Item -ItemType Directory -Force dist | Out-Null
+          Compress-Archive -Path "$root" -DestinationPath dist/HCA_Client_Vollinstallation_v0.13.5.3.zip
+          $hash=(Get-FileHash dist/HCA_Client_Vollinstallation_v0.13.5.3.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          "$hash  HCA_Client_Vollinstallation_v0.13.5.3.zip" | Set-Content dist/HCA_Client_Vollinstallation_v0.13.5.3.sha256
+          Expand-Archive dist/HCA_Client_Vollinstallation_v0.13.5.3.zip -DestinationPath verify
+          if (-not (Test-Path verify/HCA_Client_Vollinstallation_v0.13.5.3/HCA_INSTALLIEREN.cmd)) { throw 'Final ZIP invalid' }
+      - name: Publish and verify
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          @'
+          HCA Client-Vollinstallation v0.13.5.3
+
+          - vollständiger Clientstand einschließlich Login-Reparatur v0.13.5.2
+          - nativer Logo-Startbildschirm ab dem ersten sichtbaren Fenster
+          - Ladebalken an reale Startphasen gekoppelt
+          - WebView2 bleibt bis zur vollständig geladenen Oberfläche verborgen
+          - Original-Logo und Original-App-Symbol fest enthalten
+          - bestehende Konfiguration und lokale Daten werden übernommen
+          - WooCommerce-Plugin unverändert
+
+          Voraussetzung für die Benutzeranmeldung: NAS-Login-Hotfix v0.13.5.1.
+          '@ | Set-Content notes.md -Encoding UTF8
+          gh release create v0.13.5.3 dist/* --repo dhaesen/HCA-Produktionsmanager-Updates --title 'HCA Client-Vollinstallation 0.13.5.3' --notes-file notes.md --prerelease
+          New-Item -ItemType Directory verify-release | Out-Null
+          foreach ($f in @('HCA_Client_Vollinstallation_v0.13.5.3.zip','HCA_Client_Vollinstallation_v0.13.5.3.sha256')) {
+            Invoke-WebRequest -Uri "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.5.3/$f" -OutFile "verify-release/$f"
+          }
+          Push-Location verify-release
+          $expected=(Get-Content HCA_Client_Vollinstallation_v0.13.5.3.sha256).Split()[0]
+          $actual=(Get-FileHash HCA_Client_Vollinstallation_v0.13.5.3.zip -Algorithm SHA256).Hash.ToLowerInvariant()
+          if ($actual -ne $expected) { throw 'Published package checksum mismatch' }
+          Pop-Location
