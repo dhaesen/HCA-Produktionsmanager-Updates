@@ -1,0 +1,22 @@
+name: Repair HCA v0.13.2 checksums
+on:
+  push:
+    branches:
+      - codex/v0.13.2-development
+    paths:
+      - .github/workflows/repair-v0132-checksums.yml
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create updater-compatible checksum files
+        run: |
+          printf '%s  %s\n' 'fb4ab02ae88e3da2f677677569128a2dbc02a648d781e91c4e145a19f8a3030e' 'HCA_Update_v0.13.2.hcaupdate' > HCA_Update_v0.13.2.sha256
+          printf '%s  %s\n' '5094f0ac46e00b0876cc5ef1e7ba65e67454f860898324e391c06e3eac5faa9b' 'HCA_NAS_Erweiterung_CRM_Mail_v0.13.2.zip' > HCA_NAS_Erweiterung_CRM_Mail_v0.13.2.sha256
+      - name: Replace release checksum assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release upload v0.13.2 HCA_Update_v0.13.2.sha256 HCA_NAS_Erweiterung_CRM_Mail_v0.13.2.sha256 --repo dhaesen/HCA-Produktionsmanager-Updates --clobber
