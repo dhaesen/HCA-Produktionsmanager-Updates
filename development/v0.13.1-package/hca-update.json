@@ -1,0 +1,5 @@
+{
+  "product": "HCA Produktionsmanager",
+  "version": "0.13.1",
+  "description": "Der automatische Neustart nach Clientupdates wurde entfernt. Nach Abschluss erscheint eine Meldung; HCA wird anschließend manuell geschlossen und erneut geöffnet."
+}
