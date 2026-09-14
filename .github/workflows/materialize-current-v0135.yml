@@ -1,0 +1,34 @@
+name: Materialize current v0.13.5 sources
+on:
+  push:
+    branches: [codex/v0.13.2-development]
+    paths: [.github/workflows/materialize-current-v0135.yml]
+permissions:
+  contents: write
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Extract current client and NAS sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf development/current-v0.13.5
+          mkdir -p development/current-v0.13.5/client development/current-v0.13.5/nas /tmp/hca-client /tmp/hca-nas
+          curl -fL 'https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.5.2/HCA_Update_v0.13.5.2.hcaupdate' -o /tmp/client.zip
+          echo 'eb10fb89e1855034526d1334752e05350afbf1863e86f07dadefd25ed8ac4eb6  /tmp/client.zip' | sha256sum -c -
+          unzip -q /tmp/client.zip -d /tmp/hca-client
+          find /tmp/hca-client/payload -maxdepth 1 -type f \( -name '*.js' -o -name '*.css' -o -name '*.html' -o -name '*.json' -o -name '*.txt' \) -exec cp {} development/current-v0.13.5/client/ \;
+          cp /tmp/hca-client/hca-update.json development/current-v0.13.5/client/
+          curl -fL 'https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.5.1/HCA_NAS_Hotfix_Login_v0.13.5.1.zip' -o /tmp/nas.zip
+          echo 'cbda86a7b2265023f5894d36084faaf3635e7494561b49afa062b53e1313a86a  /tmp/nas.zip' | sha256sum -c -
+          unzip -q /tmp/nas.zip -d /tmp/hca-nas
+          find /tmp/hca-nas -type f \( -name '*.py' -o -name '*.json' -o -name '*.txt' -o -name '*.md' \) -exec cp {} development/current-v0.13.5/nas/ \;
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add development/current-v0.13.5
+          git commit -m 'Materialize current v0.13.5 client and NAS sources'
+          git push origin HEAD:codex/v0.13.2-development
