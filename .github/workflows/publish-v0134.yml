@@ -1,0 +1,286 @@
+name: Build and publish HCA v0.13.4
+on:
+  push:
+    branches:
+      - codex/v0.13.2-development
+    paths:
+      - .github/workflows/publish-v0134.yml
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Restore verified NAS v0.13.2
+        run: |
+          set -euo pipefail
+          curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.2/HCA_NAS_Erweiterung_CRM_Mail_v0.13.2.zip" -o /tmp/nas.zip
+          echo "5094f0ac46e00b0876cc5ef1e7ba65e67454f860898324e391c06e3eac5faa9b  /tmp/nas.zip" | sha256sum -c -
+          mkdir work
+          unzip -q /tmp/nas.zip -d work/nas
+      - name: Patch NAS finance and mail backend
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=next(Path("work/nas").rglob("hca_shared.py"))
+          s=p.read_text(encoding="utf-8")
+          def once(old,new,label):
+              global s
+              count=s.count(old)
+              if count != 1:
+                  raise SystemExit(f"{label}: expected 1 match, got {count}")
+              s=s.replace(old,new,1)
+
+          once('HCA_BUSINESS_SCHEMA_VERSION = "0.13.2"','HCA_BUSINESS_SCHEMA_VERSION = "0.13.4"',"schema")
+          marker='    contact_cols = {str(r[1]) for r in conn.execute("PRAGMA table_info(crm_contacts)").fetchall()}'
+          migration='''    finance_cols = {str(r[1]) for r in conn.execute("PRAGMA table_info(finance_invoices)").fetchall()}
+              if "credit_note_id" not in finance_cols:
+                  conn.execute("ALTER TABLE finance_invoices ADD COLUMN credit_note_id TEXT NOT NULL DEFAULT ''")
+              if "credit_note_no" not in finance_cols:
+                  conn.execute("ALTER TABLE finance_invoices ADD COLUMN credit_note_no TEXT NOT NULL DEFAULT ''")
+              conn.executescript("""
+                  CREATE TABLE IF NOT EXISTS finance_credit_notes (
+                      id TEXT PRIMARY KEY,
+                      credit_note_no TEXT NOT NULL UNIQUE,
+                      invoice_id TEXT NOT NULL UNIQUE,
+                      customer_id TEXT NOT NULL DEFAULT '',
+                      customer_name TEXT NOT NULL DEFAULT '',
+                      reason TEXT NOT NULL DEFAULT '',
+                      settlement_method TEXT NOT NULL DEFAULT 'offset',
+                      settlement_status TEXT NOT NULL DEFAULT '',
+                      total_net REAL NOT NULL DEFAULT 0,
+                      total_tax REAL NOT NULL DEFAULT 0,
+                      total_gross REAL NOT NULL DEFAULT 0,
+                      lexware_voucher_id TEXT NOT NULL DEFAULT '',
+                      lexware_status TEXT NOT NULL DEFAULT '',
+                      lexware_deeplink TEXT NOT NULL DEFAULT '',
+                      created_at TEXT NOT NULL,
+                      updated_at TEXT NOT NULL
+                  );
+                  CREATE INDEX IF NOT EXISTS idx_finance_credit_notes_invoice ON finance_credit_notes(invoice_id);
+              """)
+          '''
+          once(marker,migration+marker,"credit migration")
+
+          old='''    d["lexware_deeplink"] = d.get("lexware_deeplink") or _finance_deeplink(str(d.get("lexware_voucher_type") or ""), str(d.get("lexware_voucher_id") or ""))
+              return d
+          '''
+          new='''    d["lexware_deeplink"] = d.get("lexware_deeplink") or _finance_deeplink(str(d.get("lexware_voucher_type") or ""), str(d.get("lexware_voucher_id") or ""))
+              credit = conn.execute("SELECT * FROM finance_credit_notes WHERE invoice_id=? ORDER BY created_at DESC LIMIT 1", (row["id"],)).fetchone()
+              if credit:
+                  c = dict(credit)
+                  labels = {"offset":"Mit offener Forderung verrechnet","refund":"Rückzahlung an Kunden ausstehend","customer_credit":"Als Kundenguthaben verbucht"}
+                  d["credit_note_id"] = c.get("id") or ""
+                  d["credit_note_no"] = c.get("credit_note_no") or ""
+                  d["credit_settlement_method"] = c.get("settlement_method") or ""
+                  d["credit_settlement_label"] = labels.get(str(c.get("settlement_method") or ""), "")
+                  d["credit_lexware_deeplink"] = c.get("lexware_deeplink") or ""
+              return d
+          '''
+          once(old,new,"invoice response")
+
+          once('@router.post("/finance/invoices/{invoice_id}/lexware", dependencies=auth)','@router.post("/finance/invoices/{invoice_id}/lexware-legacy", dependencies=auth)',"legacy lexware route")
+
+          mail_old='''                  msg.set_content(str(body.get("message") or ""))
+                      for filename,mime,raw in attachments:
+          '''
+          mail_new='''                  msg.set_content(str(body.get("message") or ""))
+                      html_body = str(body.get("html") or "").strip()
+                      if html_body:
+                          msg.add_alternative(html_body, subtype="html")
+                      for filename,mime,raw in attachments:
+          '''
+          once(mail_old,mail_new,"HTML mail")
+
+          appendix=r'''
+
+          # ---------------------------------------------------------------------------
+          # HCA v0.13.4 · echte Lexware-Rechnungen und Rechnungskorrekturen
+          # ---------------------------------------------------------------------------
+          def _hca134_date(value: Any) -> str:
+              text=str(value or _finance_today()).strip()[:10]
+              return f"{text}T00:00:00.000Z"
+
+          def _hca134_address(row: sqlite3.Row) -> dict[str, Any]:
+              data=_loads(row["billing_json"],{}) if row["billing_json"] else {}
+              name=str(data.get("name") or data.get("company_name") or row["customer_name"] or "Kunde").strip()
+              country=str(data.get("countryCode") or data.get("country") or "DE").strip().upper()
+              if len(country)!=2: country="DE"
+              result={"name":name,"countryCode":country}
+              mapping={"supplement":"attention","street":"street","zip":"zip","city":"city"}
+              for target,source in mapping.items():
+                  value=str(data.get(source) or "").strip()
+                  if value: result[target]=value
+              return result
+
+          def _hca134_line_items(conn: sqlite3.Connection, invoice_id: str, credit: bool=False) -> list[dict[str, Any]]:
+              rows=conn.execute("SELECT * FROM finance_invoice_items WHERE invoice_id=? ORDER BY position_no,id",(invoice_id,)).fetchall()
+              items=[]
+              for row in rows:
+                  description=str(row["description"] or "Position").strip()
+                  item={"type":"custom","name":description[:255],"quantity":abs(float(row["quantity"] or 1)),"unitName":str(row["unit"] or "Stk.")[:25],"unitPrice":{"currency":"EUR","netAmount":round(abs(float(row["unit_price"] or 0)),4),"taxRatePercentage":float(row["tax_rate"] or 0)}}
+                  if not credit: item["discountPercentage"]=max(0.0,min(100.0,float(row["discount_pct"] or 0)))
+                  items.append(item)
+              if not items: raise RuntimeError("Die Rechnung enthält keine Positionen.")
+              return items
+
+          def _hca134_invoice_payload(conn: sqlite3.Connection, row: sqlite3.Row) -> dict[str, Any]:
+              days=14
+              try:
+                  start=datetime.fromisoformat(str(row["invoice_date"])[:10]).date()
+                  due=datetime.fromisoformat(str(row["due_date"])[:10]).date()
+                  days=max(0,(due-start).days)
+              except Exception: pass
+              return {"archived":False,"voucherDate":_hca134_date(row["invoice_date"]),"address":_hca134_address(row),"lineItems":_hca134_line_items(conn,str(row["id"]),False),"totalPrice":{"currency":"EUR"},"taxConditions":{"taxType":"net"},"paymentConditions":{"paymentTermLabel":str(row["payment_term_text"] or f"Zahlbar innerhalb von {days} Tagen."),"paymentTermDuration":days},"shippingConditions":{"shippingType":"none"},"title":"Rechnung","introduction":f"Rechnung {row['invoice_no']}","remark":str(row["notes"] or "Vielen Dank für Ihren Auftrag.")}
+
+          def _hca134_credit_payload(conn: sqlite3.Connection, row: sqlite3.Row, reason: str) -> dict[str, Any]:
+              return {"archived":False,"voucherDate":_hca134_date(_finance_today()),"address":_hca134_address(row),"lineItems":_hca134_line_items(conn,str(row["id"]),True),"totalPrice":{"currency":"EUR"},"taxConditions":{"taxType":"net"},"title":"Rechnungskorrektur","introduction":f"Rechnungskorrektur zur Rechnung {row['invoice_no']}","remark":reason}
+
+          def _hca134_send_invoice(invoice_id: str) -> dict[str, Any]:
+              with _db() as conn:
+                  row=conn.execute("SELECT * FROM finance_invoices WHERE id=?",(invoice_id,)).fetchone()
+                  if not row: raise RuntimeError("Rechnung nicht gefunden.")
+                  if row["status"]=="draft": raise RuntimeError("Bitte die Kundenrechnung zuerst festschreiben.")
+                  if row["direction"]!="customer": raise RuntimeError("Nur Kundenrechnungen werden als Lexware-Verkaufsbeleg übertragen.")
+                  if row["lexware_voucher_id"] and str(row["lexware_voucher_type"] or "")=="invoice":
+                      return _finance_invoice_dict(conn,row,True)
+                  payload=_hca134_invoice_payload(conn,row)
+              created=_lexware_request("/v1/invoices?finalize=true","POST",payload,"application/json",45)
+              vid=str(created.get("id") or "") if isinstance(created,dict) else ""
+              if not vid: raise RuntimeError("Lexware hat keine Rechnungs-ID zurückgegeben.")
+              now=_now()
+              with _db() as conn:
+                  conn.execute("UPDATE finance_invoices SET lexware_voucher_id=?,lexware_voucher_type='invoice',lexware_status='open',lexware_open_amount=?,lexware_deeplink=?,lexware_synced_at=?,updated_at=? WHERE id=?",(vid,float(conn.execute("SELECT total_gross FROM finance_invoices WHERE id=?",(invoice_id,)).fetchone()[0] or 0),_finance_deeplink("invoice",vid),now,now,invoice_id))
+                  return _finance_invoice_dict(conn,conn.execute("SELECT * FROM finance_invoices WHERE id=?",(invoice_id,)).fetchone(),True)
+
+          @router.post("/finance/invoices/{invoice_id}/lexware", dependencies=auth)
+          async def hca134_invoice_to_lexware(invoice_id: str) -> dict[str, Any]:
+              try:
+                  item=await asyncio.to_thread(_hca134_send_invoice,invoice_id)
+                  return {"ok":True,"item":item}
+              except Exception as exc:
+                  raise HTTPException(status_code=502,detail=str(exc)) from exc
+
+          @router.post("/finance/invoices/{invoice_id}/credit-note", dependencies=auth)
+          async def hca134_create_credit_note(invoice_id: str, request: Request) -> dict[str, Any]:
+              body=await request.json(); body=body if isinstance(body,dict) else {}
+              reason=str(body.get("reason") or "").strip()
+              requested=str(body.get("settlement_method") or "").strip()
+              if not reason: raise HTTPException(status_code=400,detail="Bitte einen Grund für die Stornierung angeben.")
+              with _db() as conn:
+                  row=conn.execute("SELECT * FROM finance_invoices WHERE id=?",(invoice_id,)).fetchone()
+                  if not row: raise HTTPException(status_code=404,detail="Rechnung nicht gefunden.")
+                  if row["direction"]!="customer" or row["status"]=="draft": raise HTTPException(status_code=409,detail="Nur festgeschriebene Kundenrechnungen können storniert werden.")
+                  existing=conn.execute("SELECT * FROM finance_credit_notes WHERE invoice_id=?",(invoice_id,)).fetchone()
+                  if existing: return {"ok":True,"invoice":_finance_invoice_dict(conn,row,True),"credit_note":dict(existing),"already_exists":True}
+              try:
+                  invoice=await asyncio.to_thread(_hca134_send_invoice,invoice_id)
+              except Exception as exc:
+                  raise HTTPException(status_code=502,detail=f"Die Rechnung konnte nicht korrekt an Lexware übertragen werden: {exc}") from exc
+              lexware_id=str(invoice.get("lexware_voucher_id") or "")
+              paid=str(invoice.get("payment_status") or "").lower() in {"paid","paidoff"} or (invoice.get("lexware_open_amount") is not None and float(invoice.get("lexware_open_amount") or 0)==0)
+              if lexware_id:
+                  try:
+                      payment=await asyncio.to_thread(_lexware_request,f"/v1/payments/{urllib.parse.quote(lexware_id,safe='')}","GET",None,"application/json",30)
+                      paid=str(payment.get("paymentStatus") or "")=="balanced" or str(payment.get("voucherStatus") or "") in {"paid","paidoff"}
+                  except Exception:
+                      pass
+              settlement=requested if paid and requested in {"refund","customer_credit"} else "offset"
+              with _db() as conn:
+                  row=conn.execute("SELECT * FROM finance_invoices WHERE id=?",(invoice_id,)).fetchone()
+                  payload=_hca134_credit_payload(conn,row,reason)
+              path=f"/v1/credit-notes?precedingSalesVoucherId={urllib.parse.quote(lexware_id,safe='')}&finalize=true"
+              try:
+                  created=await asyncio.to_thread(_lexware_request,path,"POST",payload,"application/json",45)
+              except Exception as exc:
+                  raise HTTPException(status_code=502,detail=f"Lexware hat die Rechnungskorrektur abgelehnt: {exc}") from exc
+              credit_lexware_id=str(created.get("id") or "") if isinstance(created,dict) else ""
+              if not credit_lexware_id: raise HTTPException(status_code=502,detail="Lexware hat keine Gutschrift-ID zurückgegeben.")
+              now=_now()
+              with _db() as conn:
+                  row=conn.execute("SELECT * FROM finance_invoices WHERE id=?",(invoice_id,)).fetchone()
+                  cid=str(uuid.uuid4()); number=_business_next_no(conn,"credit_note","GS")
+                  settlement_status="pending" if settlement=="refund" else "booked"
+                  deeplink=_finance_deeplink("creditnote",credit_lexware_id)
+                  conn.execute("INSERT INTO finance_credit_notes(id,credit_note_no,invoice_id,customer_id,customer_name,reason,settlement_method,settlement_status,total_net,total_tax,total_gross,lexware_voucher_id,lexware_status,lexware_deeplink,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",(cid,number,invoice_id,str(row["customer_id"] or ""),str(row["customer_name"] or ""),reason,settlement,settlement_status,float(row["total_net"] or 0),float(row["total_tax"] or 0),float(row["total_gross"] or 0),credit_lexware_id,"paidoff" if lexware_id else "open",deeplink,now,now))
+                  if settlement=="customer_credit" and row["customer_id"]:
+                      conn.execute("UPDATE crm_customers SET credit_balance=COALESCE(credit_balance,0)+?,updated_at=? WHERE id=?",(float(row["total_gross"] or 0),now,row["customer_id"]))
+                  conn.execute("UPDATE finance_invoices SET status='voided',credit_note_id=?,credit_note_no=?,updated_at=? WHERE id=?",(cid,number,now,invoice_id))
+                  updated=conn.execute("SELECT * FROM finance_invoices WHERE id=?",(invoice_id,)).fetchone()
+                  credit=conn.execute("SELECT * FROM finance_credit_notes WHERE id=?",(cid,)).fetchone()
+                  return {"ok":True,"invoice":_finance_invoice_dict(conn,updated,True),"credit_note":dict(credit)}
+          '''
+          s += appendix
+          p.write_text(s,encoding="utf-8")
+          PY
+      - name: Validate sources
+        run: |
+          set -euo pipefail
+          backend=$(find work/nas -name hca_shared.py -print -quit)
+          python -m py_compile "$backend"
+          node --check development/v0.13.1-package/payload/app.js
+          node --check development/v0.13.1-package/payload/hca-v0132.js
+          node --check development/v0.13.1-package/payload/hca-v0134.js
+          python - <<'PY'
+          from pathlib import Path
+          import json,re
+          root=Path("development/v0.13.1-package")
+          assert json.loads((root/"hca-update.json").read_text())["version"]=="0.13.4"
+          assert json.loads((root/"payload/version.json").read_text())["version"]=="0.13.4"
+          html=(root/"payload/index.html").read_text()
+          for item in ["hcaStartupSplash","hca-v0134.js?v=0.13.4","hca-v0134.css?v=0.13.4"]: assert item in html
+          backend=next(Path("work/nas").rglob("hca_shared.py")).read_text()
+          for item in ["/v1/invoices?finalize=true","precedingSalesVoucherId=","finance_credit_notes","msg.add_alternative","customer_credit"]: assert item in backend
+          ids=re.findall(r'id="([^"]+)"',html)
+          assert len(ids)==len(set(ids))
+          PY
+      - name: Build packages
+        run: |
+          set -euo pipefail
+          rm -f work/nas/INSTALLATION_v0.13.2.txt
+          cat > work/nas/INSTALLATION_v0.13.4.txt <<'EOF'
+          HCA NAS-Erweiterung v0.13.4
+
+          1. Vorhandene hca_shared.py sichern.
+          2. app/hca_shared.py und app/assets in die bestehende NAS-App kopieren.
+          3. HCA-Dienst beziehungsweise Container neu starten.
+          4. Danach das Clientupdate v0.13.4 installieren.
+
+          Die Datenbankmigration legt die Rechnungskorrekturen automatisch an.
+          EOF
+          mkdir dist
+          (cd development/v0.13.1-package && zip -qr "$GITHUB_WORKSPACE/dist/HCA_Update_v0.13.4.hcaupdate" hca-update.json payload)
+          (cd work/nas && zip -qr "$GITHUB_WORKSPACE/dist/HCA_NAS_Erweiterung_Finanzen_v0.13.4.zip" .)
+          (cd dist && sha256sum HCA_Update_v0.13.4.hcaupdate > HCA_Update_v0.13.4.sha256)
+          (cd dist && sha256sum HCA_NAS_Erweiterung_Finanzen_v0.13.4.zip > HCA_NAS_Erweiterung_Finanzen_v0.13.4.sha256)
+          (cd dist && sha256sum -c HCA_Update_v0.13.4.sha256 && sha256sum -c HCA_NAS_Erweiterung_Finanzen_v0.13.4.sha256)
+          unzip -t dist/HCA_Update_v0.13.4.hcaupdate
+          unzip -t dist/HCA_NAS_Erweiterung_Finanzen_v0.13.4.zip
+      - name: Publish and verify release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.md <<'EOF'
+          HCA Produktionsmanager v0.13.4
+
+          - Startbildschirm mit Logo und Ladeanzeige
+          - WYSIWYG-E-Mail-Editor und HTML-Mailversand
+          - Produktgruppe Printprodukte
+          - gemeinsame Positionserfassung für Angebot, Auftrag und Rechnung
+          - Rechnungskorrektur/Gutschrift für festgeschriebene Rechnungen
+          - echte Lexware-Rechnungen und verknüpfte Lexware-Gutschriften
+          - Rückzahlungsausstand oder Kundenguthaben für bereits bezahlte Rechnungen
+
+          Zuerst das NAS-Paket installieren, danach das Clientupdate.
+          Das WooCommerce-Plugin wurde nicht verändert.
+          EOF
+          gh release create v0.13.4 dist/* --repo dhaesen/HCA-Produktionsmanager-Updates --title "HCA Produktionsmanager 0.13.4" --notes-file /tmp/notes.md --latest
+          mkdir verify
+          for file in HCA_Update_v0.13.4.hcaupdate HCA_Update_v0.13.4.sha256 HCA_NAS_Erweiterung_Finanzen_v0.13.4.zip HCA_NAS_Erweiterung_Finanzen_v0.13.4.sha256; do
+            curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.4/$file" -o "verify/$file"
+          done
+          (cd verify && sha256sum -c HCA_Update_v0.13.4.sha256 && sha256sum -c HCA_NAS_Erweiterung_Finanzen_v0.13.4.sha256)
