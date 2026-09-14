@@ -1,0 +1,9 @@
+HCA Produktionsmanager v0.13.2
+
+- Kunden ohne Firma werden aus WooCommerce-Feldern korrekt mit Vor- und Nachname normalisiert.
+- Kundenkartei: Kontakte, Adressen, Angebote, Aufträge, Rechnungen und E-Mail sind echte Register.
+- Kundenrabatt, Guthaben und Gutscheincodes sind in der Kundenmaske ergänzt.
+- Kopfzeile von dauerhaftem Server-Prüftext und Dateiauswahltext bereinigt.
+- E-Mail ist ein eigener Hauptmenüpunkt.
+- Mail-Editor um CC, BCC, Signatur und mehrere Anhänge erweitert.
+- Angebots- und Auftragslisten starten mit dem Filter Alle.
