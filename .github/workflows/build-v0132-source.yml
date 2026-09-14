@@ -1,0 +1,89 @@
+name: Build HCA v0.13.2 source
+on:
+  push:
+    branches: [codex/v0.13.2-development]
+    paths: [.github/workflows/build-v0132-source.yml]
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Apply v0.13.2 changes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re, json
+          root=Path("development/v0.13.1-package")
+          hp=root/"payload/index.html"
+          jp=root/"payload/app.js"
+          h=hp.read_text(encoding="utf-8")
+          j=jp.read_text(encoding="utf-8")
+
+          def once(text, old, new, label):
+              n=text.count(old)
+              if n != 1: raise SystemExit(f"{label}: expected 1 match, got {n}")
+              return text.replace(old,new,1)
+
+          h=once(h,'  <link rel="stylesheet" href="/hca-ui.css">','  <link rel="stylesheet" href="/hca-ui.css">\n  <link rel="stylesheet" href="/hca-v0132.css?v=0.13.2">','css link')
+          h=once(h,'<div class="app-name">HCA Manager <span id="appVersion">v0.13.1</span></div>','<div class="app-name">HCA Manager <span id="appVersion">v0.13.2</span></div>','visible version')
+          h=once(h,'      <button class="nav-item" data-view="mail" data-category="crm"><span class="nav-icon">✉</span><span>E-Mail</span></button>','      <div class="nav-section-label">E-MAIL</div>\n      <button class="nav-item" data-view="mail" data-category="mail"><span class="nav-icon">✉</span><span>E-Mail</span></button>','mail sidebar')
+          h=once(h,'      <button type="button" class="main-category" data-category="crm">CRM</button>','      <button type="button" class="main-category" data-category="crm">CRM</button>\n      <button type="button" class="main-category" data-category="mail">E-Mail</button>','mail main nav')
+          h=once(h,'        <div class="server-connection-summary" id="serverConnectionSummary"><span class="mini-dot" id="serverConnectionDot"></span><span id="serverConnectionText">Server wird geprüft …</span></div>\n        <span id="topSelectedFile">Keine Datei gewählt</span>\n','', 'header noise')
+          old_mail='''      <div class="hca-mail-layout"><div class="panel"><div class="panel-head"><h3>Posteingang</h3></div><div id="mailMessageList" class="hca-mail-list"><div class="business-empty">Bitte ein Postfach auswählen.</div></div></div><div class="panel" id="mailMessageDetail"><div class="business-empty">E-Mail auswählen.</div></div></div>'''
+          new_mail='''      <div class="hca-mail-shell"><aside class="panel hca-mail-folders"><button class="hca-mail-folder active" type="button">▣ Posteingang</button><button class="hca-mail-folder" type="button" disabled title="Wird mit der serverseitigen Ordnerunterstützung freigeschaltet">↗ Gesendet</button><button class="hca-mail-folder" type="button" disabled title="Wird mit der serverseitigen Ordnerunterstützung freigeschaltet">◇ Entwürfe</button></aside><div class="panel hca-mail-list-panel"><div class="panel-head"><h3>Posteingang</h3></div><div id="mailMessageList" class="hca-mail-list"><div class="business-empty">Bitte ein Postfach auswählen.</div></div></div><div class="panel hca-mail-detail-panel" id="mailMessageDetail"><div class="business-empty">E-Mail auswählen.</div></div></div>'''
+          h=once(h,old_mail,new_mail,'mail layout')
+          h=once(h,'      <div class="span-2"><label>Standard-Zahlungsbedingung</label><select class="text-input" id="bcPaymentTerm"><option value="">Globale Standardzahlungsbedingung</option></select></div>','      <div class="span-2"><label>Standard-Zahlungsbedingung</label><select class="text-input" id="bcPaymentTerm"><option value="">Globale Standardzahlungsbedingung</option></select></div>\n      <div><label>Kundenrabatt %</label><input class="text-input" id="bcDiscount" type="number" min="0" max="100" step="0.1" value="0"></div><div><label>Guthaben EUR</label><input class="text-input" id="bcCredit" type="number" step="0.01" value="0"></div><div class="span-2"><label>Gutscheincodes</label><textarea class="text-input business-textarea compact" id="bcVouchers" placeholder="Ein Code pro Zeile"></textarea></div>','customer commercial fields')
+          h=once(h,'<div><label>Antwortadresse</label><input id="mailAccountReplyTo" class="text-input" type="email"></div><div class="span-2"><label class="check-line">','<div><label>Antwortadresse</label><input id="mailAccountReplyTo" class="text-input" type="email"></div><div class="span-2"><label>Signatur</label><textarea id="mailAccountSignature" class="text-input business-textarea compact" rows="5" placeholder="Signatur dieses Postfachs"></textarea></div><div class="span-2"><label class="check-line">','mail signature setting')
+          old_compose='<dialog id="mailComposeDialog" class="modal wide-modal"><form method="dialog"><div class="modal-head"><div><div class="eyebrow">E-MAIL</div><h2>Neue Nachricht</h2></div><button value="cancel" class="modal-close">×</button></div><label>Empfänger</label><input id="mailComposeTo" class="text-input" type="email"><label>Betreff</label><input id="mailComposeSubject" class="text-input"><label>Nachricht</label><textarea id="mailComposeBody" class="text-input business-textarea" rows="12"></textarea><div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" id="mailSend" class="btn primary">Senden</button></div></form></dialog>'
+          new_compose='<dialog id="mailComposeDialog" class="modal wide-modal"><form method="dialog"><div class="modal-head"><div><div class="eyebrow">E-MAIL</div><h2>Neue Nachricht</h2></div><button value="cancel" class="modal-close">×</button></div><div class="hca-mail-compose-grid"><div class="span-2"><label>Empfänger</label><input id="mailComposeTo" class="text-input" type="email"></div><div><label>CC</label><input id="mailComposeCc" class="text-input" type="text"></div><div><label>BCC</label><input id="mailComposeBcc" class="text-input" type="text"></div><div class="span-2"><label>Betreff</label><input id="mailComposeSubject" class="text-input"></div><div class="span-2"><label>Nachricht</label><textarea id="mailComposeBody" class="text-input business-textarea" rows="12"></textarea></div><div class="span-2"><label>Anhänge</label><input id="mailComposeAttachments" class="text-input" type="file" multiple><div id="mailComposeAttachmentList" class="hca-mail-attachments"><span class="settings-note">Keine Anhänge ausgewählt.</span></div></div></div><div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" id="mailSend" class="btn primary">Senden</button></div></form></dialog>'
+          h=once(h,old_compose,new_compose,'mail composer')
+          h=once(h,'<script src="/app.js?v=0.13.1"></script>','<script src="/app.js?v=0.13.2"></script>\n<script src="/hca-v0132.js?v=0.13.2"></script>','extension script')
+
+          j=once(j,"let businessQuoteFilter='open';\nlet businessSalesOrderFilter='open';","let businessQuoteFilter='all';\nlet businessSalesOrderFilter='all';",'default filters')
+          j=once(j,"const HCA_VIEW_CATEGORY={dashboard:'start',customers:'crm',suppliers:'crm',mail:'crm',","const HCA_VIEW_CATEGORY={dashboard:'start',customers:'crm',suppliers:'crm',mail:'mail',",'mail category map')
+          j=once(j,"const viewTitles={dashboard:'Dashboard',customers:'Kunden',suppliers:'Lieferanten',quotes:","const viewTitles={dashboard:'Dashboard',customers:'Kunden',suppliers:'Lieferanten',mail:'E-Mail',quotes:",'mail title')
+          j=j.replace("businessCustomerCache=d.items||[]","businessCustomerCache=(d.items||[]).map(hcaNormalizeCustomer)")
+          if j.count("(d.items||[]).map(hcaNormalizeCustomer)") < 2: raise SystemExit("customer normalization replacements missing")
+          j=once(j,"businessCustomerDetailCache[id]=d.item||null;return businessCustomerDetailCache[id];","businessCustomerDetailCache[id]=d.item?hcaNormalizeCustomer(d.item):null;return businessCustomerDetailCache[id];",'customer detail normalization')
+          j=once(j,"$('#bcNotes').value=c.notes||'';if($('#bcDefaultCustomer'))","$('#bcNotes').value=c.notes||'';$('#bcDiscount').value=Number(c.discount_pct??c.customer_discount_pct??c.discount??0)||0;$('#bcCredit').value=Number(c.credit_balance??c.credit??c.customer_credit??0)||0;$('#bcVouchers').value=String(c.vouchers??c.voucher_codes??c.customer_vouchers??'');if($('#bcDefaultCustomer'))",'customer commercial reset')
+          j=once(j,"notes:$('#bcNotes').value.trim(),active:true,is_default:","notes:$('#bcNotes').value.trim(),discount_pct:Number($('#bcDiscount').value)||0,credit_balance:Number($('#bcCredit').value)||0,vouchers:$('#bcVouchers').value.trim(),active:true,is_default:",'customer commercial save')
+          j=once(j,"['mailAccountFromName','from_name'],['mailAccountReplyTo','reply_to']","['mailAccountFromName','from_name'],['mailAccountReplyTo','reply_to'],['mailAccountSignature','signature']",'signature load')
+          j=once(j,"reply_to:$('#mailAccountReplyTo').value.trim(),is_default:","reply_to:$('#mailAccountReplyTo').value.trim(),signature:$('#mailAccountSignature').value.trim(),is_default:",'signature save')
+
+          hp.write_text(h,encoding="utf-8")
+          jp.write_text(j,encoding="utf-8")
+          (root/"payload/version.json").write_text(json.dumps({"product":"HCA Produktionsmanager","version":"0.13.2","channel":"stable"},ensure_ascii=False,separators=(',',':'))+"\n",encoding="utf-8")
+          (root/"hca-update.json").write_text(json.dumps({"product":"HCA Produktionsmanager","version":"0.13.2","description":"Kundenkartei mit funktionsfähigen Registern, bereinigte Kopfzeile und erweiterter E-Mail-Client."},ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          (root/"payload/AENDERUNGEN_v0.13.2.txt").write_text("""HCA Produktionsmanager v0.13.2
+
+- Kunden ohne Firma werden aus WooCommerce-Feldern korrekt mit Vor- und Nachname normalisiert.
+- Kundenkartei: Kontakte, Adressen, Angebote, Aufträge, Rechnungen und E-Mail sind echte Register.
+- Kundenrabatt, Guthaben und Gutscheincodes sind in der Kundenmaske ergänzt.
+- Kopfzeile von dauerhaftem Server-Prüftext und Dateiauswahltext bereinigt.
+- E-Mail ist ein eigener Hauptmenüpunkt.
+- Mail-Editor um CC, BCC, Signatur und mehrere Anhänge erweitert.
+- Angebots- und Auftragslisten starten mit dem Filter Alle.
+""",encoding="utf-8")
+          PY
+          node --check development/v0.13.1-package/payload/app.js
+          node --check development/v0.13.1-package/payload/hca-v0132.js
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          h=Path("development/v0.13.1-package/payload/index.html").read_text(encoding="utf-8")
+          ids=re.findall(r'\bid="([^"]+)"',h)
+          dup=sorted({x for x in ids if ids.count(x)>1})
+          if dup: raise SystemExit("Duplicate IDs: "+", ".join(dup))
+          for f in ["hca-v0132.js","hca-v0132.css","app.js","version.json"]:
+              if not (Path("development/v0.13.1-package/payload")/f).is_file(): raise SystemExit("Missing "+f)
+          print("HTML IDs and payload references checked")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add development/v0.13.1-package
+          git commit -m "Develop HCA client v0.13.2" || exit 0
+          git push
