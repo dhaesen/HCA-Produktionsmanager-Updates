@@ -1,0 +1,57 @@
+name: Restore HCA v0.13.1 development source
+
+on:
+  push:
+    branches:
+      - codex/v0.13.2-development
+    paths:
+      - .github/workflows/restore-v0131.yml
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+          fetch-depth: 0
+
+      - name: Reassemble and validate update
+        shell: bash
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          parts=(incoming/HCA_Update_v0.13.1.hcaupdate.b64part.*)
+          test "${#parts[@]}" -gt 0
+          cat "${parts[@]}" | base64 --decode > /tmp/HCA_Update_v0.13.1.hcaupdate
+          echo "f7f6248d578366a4dc3e294db33cfd929526fb2d6320cd481103d337f7203007  /tmp/HCA_Update_v0.13.1.hcaupdate" | sha256sum -c -
+          python - <<'PY'
+          import zipfile
+          from pathlib import Path
+          archive = Path("/tmp/HCA_Update_v0.13.1.hcaupdate")
+          target = Path("development/v0.13.1-package")
+          target.mkdir(parents=True, exist_ok=True)
+          with zipfile.ZipFile(archive) as z:
+              for member in z.infolist():
+                  destination = (target / member.filename).resolve()
+                  if target.resolve() not in destination.parents and destination != target.resolve():
+                      raise RuntimeError(f"Unsafe archive path: {member.filename}")
+              z.extractall(target)
+              bad = z.testzip()
+              if bad:
+                  raise RuntimeError(f"Corrupt archive entry: {bad}")
+          PY
+
+      - name: Commit restored source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add development/v0.13.1-package
+          git diff --cached --quiet && exit 0
+          git commit -m "Restore v0.13.1 package for v0.13.2 development"
+          git push origin HEAD:codex/v0.13.2-development
