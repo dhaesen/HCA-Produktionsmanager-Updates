@@ -29,7 +29,6 @@ jobs:
           Copy-Item incoming/app-icon.png work/HCA_Client_Vollinstallation_v0.13.5.3/payload/assets/app-icon.png -Force
       - name: Build native splash host
         id: native
-        continue-on-error: true
         shell: pwsh
         run: |
           Start-Transcript -Path native-build.log -Force
@@ -264,33 +263,12 @@ jobs:
           html=ip.read_text(encoding="utf-8").replace("?v=0.13.5.2","?v=0.13.5.3")
           html=html.replace('id="appVersion">v0.13.2','id="appVersion">v0.13.5.3')
           ip.write_text(html,encoding="utf-8")
-          PY
+          '@ | python
           Push-Location work/HCA_Client_Vollinstallation_v0.13.5.3/QUELLCODE_WindowsHost
           dotnet restore .\HcaWindowsHost.csproj
           dotnet build .\HcaWindowsHost.csproj -c Release --no-restore
           Pop-Location
           Stop-Transcript
-      - name: Upload native build diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: native-build-diagnostics
-          path: native-build.log
-      - name: Commit native diagnostics on failure
-        if: steps.native.outcome == 'failure'
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force development/diagnostics | Out-Null
-          Copy-Item native-build.log development/diagnostics/native-build-v01353.log -Force
-          git config user.name github-actions
-          git config user.email github-actions@github.com
-          git add development/diagnostics/native-build-v01353.log
-          git commit -m "Record native v0.13.5.3 build failure"
-          git push origin HEAD:codex/v0.13.2-development
-      - name: Stop after native build failure
-        if: steps.native.outcome == 'failure'
-        shell: pwsh
-        run: throw 'Native build failed; see diagnostic artifact.'
       - name: Assemble and validate installation
         shell: pwsh
         run: |
@@ -338,7 +316,7 @@ jobs:
           for p in sorted(x for x in root.rglob("*") if x.is_file() and x.name!="SHA256SUMS_SETUP.txt" and "obj" not in x.parts):
               setup.append(hashlib.sha256(p.read_bytes()).hexdigest()+"  "+p.relative_to(root).as_posix())
           (root/"SHA256SUMS_SETUP.txt").write_text("\n".join(setup)+"\n",encoding="utf-8")
-          PY
+          '@ | python
 
           node --check "$root/payload/app.js"
           node --check "$root/payload/hca-auth-early.js"
