@@ -108,11 +108,11 @@ Quellbranch: `codex/v0.13.2-development`
 - Benutzerbezogene Audit-Protokolle für Änderungen an Belegen und Stammdaten
 
 
-## Version 0.13.6 – Angebot, Produktion und Versand
+## Version 0.13.6.1 – Angebot, Produktion und Versand
 
 - WooCommerce-Artikel werden im HCA-Artikelstamm anhand der Kombination aus Produkt-ID und exakter SKU identifiziert. Gleiche Artikelnamen führen nicht mehr zur Zusammenführung verschiedener SKUs.
 - Die WooCommerce-Suche dedupliziert ausschließlich über technische Identitäten, nicht über den Artikelnamen.
-- Angebote unterstützen alternative Mengenstaffeln. Staffelpreise werden je Angebotsposition gespeichert und im PDF als Netto-, Steuer- und Bruttosumme ausgewiesen.
+- Angebote unterstützen alternative Mengenstaffeln. Staffelpreise werden je Angebotsposition gespeichert und im PDF als Netto-, Steuer- und Bruttosumme ausgewiesen. Bei der Umwandlung zum Auftrag wird die tatsächlich beauftragte Staffelmenge ausgewählt.
 - Die Kundenauswahl in der Angebotserfassung ist nach Kundennummer, Firma, Person und E-Mail durchsuchbar.
 - Veredelungsdaten werden beim Übergang vom Angebot zum Auftrag serverseitig normalisiert und vollständig als Produktionsschritte übernommen.
 - Bei Aufträgen mit Veredelung wird zwischen Eigenproduktion und Lieferantenproduktion gewählt.
@@ -124,9 +124,9 @@ Quellbranch: `codex/v0.13.2-development`
 - Client- und NAS-Paket wurden mit Python-/JavaScript-Syntaxprüfung, Strukturprüfung, ZIP-Test und SHA-256-Verifikation veröffentlicht.
 - Das WooCommerce-Plugin wurde nicht verändert.
 
-### Installation 0.13.6
+### Installation 0.13.6.1
 
-1. NAS-Erweiterung 0.13.6 installieren und den NAS-Dienst neu starten.
-2. Clientupdate 0.13.6 einspielen.
+1. NAS-Erweiterung 0.13.6.1 installieren und den NAS-Dienst neu starten.
+2. Clientupdate 0.13.6.1 einspielen.
 3. HCA manuell schließen und neu starten.
 4. Zuerst mit einem Testangebot und einer Testsendung prüfen.
