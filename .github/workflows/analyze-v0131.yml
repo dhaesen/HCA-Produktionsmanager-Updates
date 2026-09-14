@@ -1,0 +1,56 @@
+name: Analyze HCA v0.13.1 client
+
+on:
+  push:
+    branches:
+      - codex/v0.13.2-development
+    paths:
+      - .github/workflows/analyze-v0131.yml
+
+permissions:
+  contents: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+          fetch-depth: 0
+      - name: Create focused source reports
+        shell: bash
+        run: |
+          set -euo pipefail
+          src=development/v0.13.1-package/payload
+          out=development/reports
+          mkdir -p "$out"
+          {
+            echo "APP LINE COUNT"
+            wc -l "$src/app.js"
+            echo
+            echo "CUSTOMER / CRM MATCHES"
+            rg -n -i -C 6 'customer|kunde|kontakt|adresse|rabatt|guthaben|gutschein|woocommerce|woo' "$src/app.js" || true
+          } > "$out/app-customer.txt"
+          {
+            echo "MAIL MATCHES"
+            rg -n -i -C 6 'mail|smtp|imap|signatur|anhang|attachment|postfach' "$src/app.js" || true
+          } > "$out/app-mail.txt"
+          {
+            echo "HEADER / SERVER STATUS MATCHES"
+            rg -n -i -C 6 'Server wird geprüft|Keine Datei gewählt|server.*prüf|file.*chosen|update.*file' "$src/app.js" "$src/index.html" || true
+          } > "$out/header-status.txt"
+          {
+            echo "INDEX CUSTOMER / MAIL STRUCTURE"
+            rg -n -i -C 8 'kunde|kontakt|adresse|rabatt|guthaben|gutschein|e-mail|email|mail|navigation|nav-' "$src/index.html" || true
+          } > "$out/index-structure.txt"
+          {
+            echo "FUNCTION INDEX"
+            rg -n '^(async )?function |^(const|let|var) [A-Za-z0-9_$]+ *= *(async *)?\(' "$src/app.js" || true
+          } > "$out/function-index.txt"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$out"
+          git diff --cached --quiet && exit 0
+          git commit -m "Add focused v0.13.1 client analysis"
+          git push origin HEAD:codex/v0.13.2-development
