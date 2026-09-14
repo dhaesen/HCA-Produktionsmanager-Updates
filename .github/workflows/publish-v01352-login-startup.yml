@@ -1,0 +1,181 @@
+name: Publish HCA v0.13.5.2 login startup recovery
+on:
+  push:
+    branches: [codex/v0.13.2-development]
+    paths: [.github/workflows/publish-v01352-login-startup.yml]
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Restore verified client v0.13.5
+        run: |
+          set -euo pipefail
+          curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.5/HCA_Update_v0.13.5.hcaupdate" -o /tmp/client.zip
+          echo "3a7385f8edc9f364b59a2e1095a0d13864694fb677b05ffec0abd831364a99ef  /tmp/client.zip" | sha256sum -c -
+          mkdir work
+          unzip -q /tmp/client.zip -d work
+      - name: Fix authentication startup order
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          root=Path("work")
+          p=root/"payload"/"hca-v0135.js"
+          s=p.read_text(encoding="utf-8")
+          old="""  async function initialiseAuthentication() {
+              try {
+                const status = await authApi('status');
+          """
+          new="""  async function loadProductionServerConfiguration() {
+              if (productionServerConfigured()) return true;
+              try {
+                const response = await fetch('/api/state', {cache:'no-store'});
+                if (response.ok) {
+                  const state = await response.json();
+                  const settings = state && typeof state.settings === 'object' ? state.settings : {};
+                  appState.settings = {...(appState.settings || {}), ...settings};
+                }
+              } catch (_) {}
+              return productionServerConfigured();
+            }
+
+            function showServerRecovery(message) {
+              loginShell('login', message);
+              const form = $a('#hcaLoginForm');
+              if (form) form.classList.add('hidden');
+              let recovery = $a('#hcaServerRecovery');
+              if (!recovery) {
+                recovery = document.createElement('div');
+                recovery.id = 'hcaServerRecovery';
+                recovery.className = 'actions-row';
+                recovery.innerHTML = '<button class="btn primary" type="button">Servereinstellungen öffnen</button>';
+                $a('#hcaLoginOverlay .hca-login-card')?.appendChild(recovery);
+              }
+              recovery.classList.remove('hidden');
+              recovery.querySelector('button').onclick = () => {
+                window.hcaAuthSession.release();
+                $a('#hcaLoginOverlay')?.classList.add('hidden');
+                window.setTimeout(() => {
+                  if (typeof showView === 'function') showView('settings');
+                  $a('#settingProductionServerUrl')?.focus();
+                }, 100);
+              };
+            }
+
+            async function initialiseAuthentication() {
+              try {
+                await loadProductionServerConfiguration();
+                if (!productionServerConfigured()) {
+                  showServerRecovery('Die gespeicherte Serveradresse fehlt. Öffne die Servereinstellungen und trage den Produktionsserver erneut ein.');
+                  return;
+                }
+                const status = await authApi('status');
+          """
+          if s.count(old)!=1: raise SystemExit(f"startup block matches: {s.count(old)}")
+          p.write_text(s.replace(old,new,1),encoding="utf-8")
+          ip=root/"payload"/"index.html"
+          html=ip.read_text(encoding="utf-8").replace("?v=0.13.5","?v=0.13.5.2")
+          ip.write_text(html,encoding="utf-8")
+          for q in [root/"hca-update.json",root/"payload"/"version.json"]:
+              d=json.loads(q.read_text(encoding="utf-8")); d["version"]="0.13.5.2"
+              q.write_text(json.dumps(d,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          PY
+          node --check work/payload/hca-auth-early.js
+          node --check work/payload/hca-v0135.js
+          node --check work/payload/app.js
+          grep -F "fetch('/api/state'" work/payload/hca-v0135.js
+          grep -F "Servereinstellungen öffnen" work/payload/hca-v0135.js
+          grep -F "hca-v0135.js?v=0.13.5.2" work/payload/index.html
+      - name: Build normal update and emergency repair
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          repair=Path("repair"); (repair/"payload").mkdir(parents=True)
+          for name in ("index.html","hca-v0135.js","version.json"):
+              (repair/"payload"/name).write_bytes((Path("work/payload")/name).read_bytes())
+          ps=r"""$ErrorActionPreference = 'Stop'
+          $roots = @(
+            (Join-Path $env:LOCALAPPDATA 'HCA Produktionsmanager'),
+            (Join-Path $env:LOCALAPPDATA 'Programs\HCA Produktionsmanager'),
+            (Join-Path $env:ProgramFiles 'HCA Produktionsmanager')
+          )
+          $pf86 = [Environment]::GetEnvironmentVariable('ProgramFiles(x86)')
+          if ($pf86) { $roots += (Join-Path $pf86 'HCA Produktionsmanager') }
+          $targets = @()
+          foreach ($root in $roots | Select-Object -Unique) {
+            if (Test-Path $root) {
+              $targets += Get-ChildItem -LiteralPath $root -Filter 'hca-v0135.js' -File -Recurse -ErrorAction SilentlyContinue |
+                Where-Object { Test-Path (Join-Path $_.DirectoryName 'index.html') } |
+                Select-Object -ExpandProperty DirectoryName
+            }
+          }
+          $target = $targets | Select-Object -Unique | Select-Object -First 1
+          if (-not $target) { throw 'Die HCA-Installation wurde nicht gefunden.' }
+          Get-Process | Where-Object { $_.ProcessName -in @('HCA Produktionsmanager','HCA_Backend') } | Stop-Process -Force -ErrorAction SilentlyContinue
+          foreach ($name in @('index.html','hca-v0135.js','version.json')) {
+            $destination = Join-Path $target $name
+            if (Test-Path $destination) { Copy-Item $destination ($destination + '.bak-v0.13.5') -Force }
+            Copy-Item (Join-Path $PSScriptRoot ('payload\' + $name)) $destination -Force
+          }
+          Write-Host ''
+          Write-Host 'Die HCA-Anmeldung wurde repariert.' -ForegroundColor Green
+          Write-Host 'HCA kann jetzt wieder gestartet werden.'
+          """
+          cmd="""@echo off
+          chcp 65001 >nul
+          title HCA Login reparieren
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File "%~dp0HCA_LOGIN_REPARIEREN.ps1"
+          if errorlevel 1 (
+            echo.
+            echo Reparatur fehlgeschlagen. Bitte diese Meldung fotografieren.
+          )
+          echo.
+          pause
+          """
+          note="""HCA Login-Reparatur v0.13.5.2
+
+          1. ZIP vollständig entpacken.
+          2. HCA_LOGIN_REPARIEREN.cmd doppelt anklicken.
+          3. Nach der Erfolgsmeldung HCA neu starten.
+
+          Konfiguration, Belege und Datenbank werden nicht verändert.
+          Ersetzte Clientdateien erhalten eine Sicherung mit .bak-v0.13.5.
+          """
+          (repair/"HCA_LOGIN_REPARIEREN.ps1").write_text(ps,encoding="utf-8-sig")
+          (repair/"HCA_LOGIN_REPARIEREN.cmd").write_text(cmd,encoding="ascii",errors="replace")
+          (repair/"ANLEITUNG.txt").write_text(note,encoding="utf-8-sig")
+          PY
+          mkdir dist
+          (cd work && zip -qr ../dist/HCA_Update_v0.13.5.2.hcaupdate hca-update.json payload)
+          (cd repair && zip -qr ../dist/HCA_Login_Reparatur_v0.13.5.2.zip .)
+          (cd dist && sha256sum HCA_Update_v0.13.5.2.hcaupdate > HCA_Update_v0.13.5.2.sha256)
+          (cd dist && sha256sum HCA_Login_Reparatur_v0.13.5.2.zip > HCA_Login_Reparatur_v0.13.5.2.sha256)
+          unzip -t dist/HCA_Update_v0.13.5.2.hcaupdate
+          unzip -t dist/HCA_Login_Reparatur_v0.13.5.2.zip
+      - name: Publish and verify release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          Path("/tmp/notes.md").write_text("""HCA v0.13.5.2 behebt den Sperrfehler der Anmeldung:
+
+          - Serverkonfiguration wird vor der Anmeldung geladen
+          - Notfallzugang zu den Servereinstellungen
+          - Reparaturpaket für bereits ausgesperrte Clients
+          - keine Änderung an Konfiguration, Belegen oder Datenbank
+          - WooCommerce-Plugin unverändert
+          """,encoding="utf-8")
+          PY
+          gh release create v0.13.5.2 dist/* --repo dhaesen/HCA-Produktionsmanager-Updates --title "HCA Login-Reparatur 0.13.5.2" --notes-file /tmp/notes.md --prerelease
+          mkdir verify
+          for f in HCA_Update_v0.13.5.2.hcaupdate HCA_Update_v0.13.5.2.sha256 HCA_Login_Reparatur_v0.13.5.2.zip HCA_Login_Reparatur_v0.13.5.2.sha256; do
+            curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.5.2/$f" -o "verify/$f"
+          done
+          (cd verify && sha256sum -c HCA_Update_v0.13.5.2.sha256 && sha256sum -c HCA_Login_Reparatur_v0.13.5.2.sha256)
