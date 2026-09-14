@@ -18,7 +18,7 @@ jobs:
         run: |
           set -euo pipefail
           root=development/v0.13.1-package
-          sed -i 's/"version": "0.13.2"/"version": "0.13.3"/g' "$root/hca-update.json" "$root/payload/version.json"
+          sed -i 's/0.13.2/0.13.3/g' "$root/hca-update.json" "$root/payload/version.json"
           sed -i 's/?v=0.13.2/?v=0.13.3/g' "$root/payload/index.html"
           node --check "$root/payload/app.js"
           node --check "$root/payload/hca-v0132.js"
