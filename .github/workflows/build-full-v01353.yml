@@ -28,8 +28,12 @@ jobs:
           Copy-Item incoming/logo-app.png work/HCA_Client_Vollinstallation_v0.13.5.3/payload/assets/logo-app.png -Force
           Copy-Item incoming/app-icon.png work/HCA_Client_Vollinstallation_v0.13.5.3/payload/assets/app-icon.png -Force
       - name: Build native splash host
+        id: native
+        continue-on-error: true
         shell: pwsh
         run: |
+          Start-Transcript -Path native-build.log -Force
+          trap { $_ | Out-String | Add-Content native-build.log; Stop-Transcript -ErrorAction SilentlyContinue; exit 1 }
           @'
           from pathlib import Path
           import json
@@ -265,6 +269,17 @@ jobs:
           dotnet restore .\HcaWindowsHost.csproj
           dotnet build .\HcaWindowsHost.csproj -c Release --no-restore
           Pop-Location
+          Stop-Transcript
+      - name: Upload native build diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: native-build-diagnostics
+          path: native-build.log
+      - name: Stop after native build failure
+        if: steps.native.outcome == 'failure'
+        shell: pwsh
+        run: throw 'Native build failed; see diagnostic artifact.'
       - name: Assemble and validate installation
         shell: pwsh
         run: |
