@@ -6,10 +6,20 @@
   <title>HCA Produktionsmanager · Werbestudio Königswinter</title>
   <link rel="stylesheet" href="/style.css">
   <link rel="stylesheet" href="/hca-ui.css">
-  <link rel="stylesheet" href="/hca-v0132.css?v=0.13.2">
+  <link rel="stylesheet" href="/hca-v0132.css?v=0.13.4">
   <link rel="icon" id="appFavicon" type="image/png" href="/assets/app-icon.png">
+  <link rel="stylesheet" href="/hca-v0134.css?v=0.13.4">
 </head>
 <body>
+  <div id="hcaStartupSplash" class="hca-startup-splash" aria-live="polite">
+    <div class="hca-startup-card">
+      <img src="/assets/logo-app.png" alt="Werbestudio Königswinter">
+      <h1>HCA wird gestartet</h1>
+      <p>Produktionsmanager und Warenwirtschaft</p>
+      <div class="hca-startup-progress"><span></span></div>
+      <small class="hca-startup-status" data-startup-status>Komponenten werden geladen …</small>
+    </div>
+  </div>
 <div class="app-shell">
   <aside class="sidebar">
     <div class="brand" id="brandArea">
@@ -1282,8 +1292,8 @@
   <dialog id="hcaOwnArticleDialog" class="hca-dialog"><form method="dialog"><div class="dialog-head"><h3>Eigenen Artikel anlegen</h3><button value="cancel" class="icon-btn" type="submit">×</button></div><div class="dialog-body"><div class="business-form-grid"><div class="span-2"><label>Artikelname</label><input class="text-input" id="hcaOwnArticleName"></div><div><label>SKU / Artikelnummer</label><input class="text-input" id="hcaOwnArticleSku"></div><div><label>Hersteller</label><input class="text-input" id="hcaOwnArticleManufacturer"></div><div><label>Lieferant</label><select class="text-input" id="hcaOwnArticleSupplier"></select></div><div><label>Verkaufspreis netto</label><input class="text-input" id="hcaOwnArticlePrice" type="number" min="0" step="0.01" value="0"></div><div><label>MwSt.</label><input class="text-input" id="hcaOwnArticleTax" type="number" min="0" step="0.01" value="19"></div><div class="span-2"><label>Beschreibung</label><textarea class="text-input business-textarea" id="hcaOwnArticleDescription"></textarea></div><div class="span-2"><label class="check-line"><input id="hcaOwnArticleShop" type="checkbox"> Im Onlineshop anlegen</label></div><div id="hcaOwnArticleShopStatusWrap" class="span-2 hidden"><label>Shopstatus</label><select class="text-input" id="hcaOwnArticleShopStatus"><option value="draft">Entwurf – noch nicht sichtbar</option><option value="publish">Veröffentlicht – sofort sichtbar</option></select></div></div></div><div class="dialog-actions"><button class="btn secondary" value="cancel" type="submit">Abbrechen</button><button class="btn primary" id="saveHcaOwnArticle" value="" type="button">Artikel anlegen</button></div></form></dialog>
 
 <script src="/hca-ui.js?v=0.13.1"></script>
-<script src="/app.js?v=0.13.2"></script>
-<script src="/hca-v0132.js?v=0.13.2"></script>
+<script src="/app.js?v=0.13.4"></script>
+<script src="/hca-v0132.js?v=0.13.4"></script>
 
   <dialog id="inventoryLabelPreviewDialog" class="modal">
     <form method="dialog">
@@ -1301,5 +1311,6 @@
       </div>
     </form>
   </dialog>
+  <script src="/hca-v0134.js?v=0.13.4"></script>
 </body>
 </html>
