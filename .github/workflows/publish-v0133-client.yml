@@ -1,0 +1,61 @@
+name: Publish HCA client v0.13.3
+on:
+  push:
+    branches:
+      - codex/v0.13.2-development
+    paths:
+      - .github/workflows/publish-v0133-client.yml
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Prepare v0.13.3 package
+        run: |
+          set -euo pipefail
+          root=development/v0.13.1-package
+          sed -i 's/"version": "0.13.2"/"version": "0.13.3"/g' "$root/hca-update.json" "$root/payload/version.json"
+          sed -i 's/?v=0.13.2/?v=0.13.3/g' "$root/payload/index.html"
+          node --check "$root/payload/app.js"
+          node --check "$root/payload/hca-v0132.js"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root=Path("development/v0.13.1-package")
+          assert json.loads((root/"hca-update.json").read_text())["version"]=="0.13.3"
+          assert json.loads((root/"payload/version.json").read_text())["version"]=="0.13.3"
+          PY
+          mkdir dist
+          (cd "$root" && zip -qr "$GITHUB_WORKSPACE/dist/HCA_Update_v0.13.3.hcaupdate" hca-update.json payload)
+          (cd dist && sha256sum HCA_Update_v0.13.3.hcaupdate > HCA_Update_v0.13.3.sha256)
+          (cd dist && sha256sum -c HCA_Update_v0.13.3.sha256)
+          test "$(awk '{print length($1)}' dist/HCA_Update_v0.13.3.sha256)" = "64"
+          test "$(awk '{print $2}' dist/HCA_Update_v0.13.3.sha256)" = "HCA_Update_v0.13.3.hcaupdate"
+          unzip -t dist/HCA_Update_v0.13.3.hcaupdate
+          test "$(unzip -Z1 dist/HCA_Update_v0.13.3.hcaupdate | grep -v '^payload/' | grep -v '^hca-update.json$' | wc -l)" = "0"
+      - name: Publish clean release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.md <<'EOF'
+          HCA Produktionsmanager v0.13.3
+
+          Technisch identischer Funktionsstand zu v0.13.2, neu veröffentlicht, damit keine zwischengespeicherte fehlerhafte SHA256-Datei mehr verwendet wird.
+
+          Zuerst die NAS-Erweiterung v0.13.2 installieren. Danach dieses Clientupdate einspielen und HCA manuell neu starten.
+
+          Das WooCommerce-Plugin 2.10.43 wurde nicht verändert.
+          EOF
+          gh release create v0.13.3 dist/HCA_Update_v0.13.3.hcaupdate dist/HCA_Update_v0.13.3.sha256 --repo dhaesen/HCA-Produktionsmanager-Updates --title "HCA Produktionsmanager 0.13.3" --notes-file /tmp/notes.md --latest
+      - name: Verify published download
+        run: |
+          set -euo pipefail
+          mkdir verify
+          curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.3/HCA_Update_v0.13.3.hcaupdate" -o verify/HCA_Update_v0.13.3.hcaupdate
+          curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.3/HCA_Update_v0.13.3.sha256" -o verify/HCA_Update_v0.13.3.sha256
+          (cd verify && sha256sum -c HCA_Update_v0.13.3.sha256)
