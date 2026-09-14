@@ -1,7 +1,7 @@
 # HCA Produktionsmanager – Projektstatus
 
 Stand: 14. September 2026  
-Aktuelle Testversion: **0.13.5.3**  
+Aktuelle Testversion: **0.13.5.4**  
 Quellbranch: `codex/v0.13.2-development`
 
 ## Aktueller Lieferumfang
@@ -15,6 +15,20 @@ Quellbranch: `codex/v0.13.2-development`
 - Mehrpostfach-E-Mail-Client mit HTML-/WYSIWYG-Nachrichten
 - Lexware-Office-Übergabe von Rechnungen und Rechnungskorrekturen
 - Sendcloud-, Produktions-, Lager- und Logistikfunktionen
+
+## Version 0.13.5.4 – Einzelne Setup-EXE und einfacher Startbildschirm
+
+- Der native Windows-Startbildschirm ist die einzige Startanzeige im Desktopclient.
+- Der bisher anschließend sichtbare HTML-Startbildschirm wird ausschließlich im nativen WebView2-Host vor dem ersten Seitenbild ausgeblendet; der Webtest behält seine eigene Startanzeige.
+- Vollinstallation als einzelne Inno-Setup-Datei mit eingebettetem HCA-Anwendungssymbol.
+- Installation erfolgt benutzerbezogen nach `%LOCALAPPDATA%\Programs\HCA Produktionsmanager` und benötigt normalerweise keine Administratorrechte.
+- HCA-Client und Backend werden vor dem Austausch kontrolliert beendet.
+- Vorhandene `config.json` und lokale Daten werden weder überschrieben noch deinstalliert.
+- Desktop-Verknüpfung ist auswählbar; Startmenüeintrag und reguläre Deinstallation werden angelegt.
+- Setup-EXE, eingebettetes Icon und veröffentlichte SHA-256-Prüfsumme wurden im Windows-Build automatisiert geprüft.
+- Download: `HCA_Produktionsmanager_Setup_v0.13.5.4.exe`
+- SHA-256: `694b3cc73755ec1a32eaf6467ea917984bad9726136b4ce7b6885b8c8ae4f789`
+- Das WooCommerce-Plugin wurde nicht verändert.
 
 ## Version 0.13.5.3 – Vollinstallation und nativer Startbildschirm
 
