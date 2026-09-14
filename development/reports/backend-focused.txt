@@ -1,0 +1,684 @@
+## NAS · hca_shared.py
+-- line 23 --
+23: import time
+24: import unicodedata
+25: import urllib.error
+26: import urllib.parse
+27: import urllib.request
+28: import uuid
+29: from datetime import datetime, timezone, timedelta
+30: from pathlib import Path
+31: from typing import Any
+32: 
+33: from fastapi import APIRouter, Depends, Header, HTTPException, Request
+34: from fastapi.responses import FileResponse, Response, HTMLResponse
+35: 
+36: router = APIRouter(prefix="/api/hca-shared", tags=["hca-shared"])
+37: 
+38: DATA_DIR = Path(os.getenv("HCA_DATA_DIR", "/data"))
+39: DB_PATH = DATA_DIR / "hca_shared.sqlite3"
+40: LABEL_DIR = DATA_DIR / "hca_shipping_labels"
+41: SENDCLOUD_BASE = "https://panel.sendcloud.sc/api/v3"
+42: INTERNAL_BASE = "http://127.0.0.1:8787"
+43: BASE_DB_PATH = DATA_DIR / "hca_production.sqlite3"
+44: INVOICE_FILE_DIR = DATA_DIR / "hca_invoice_files"
+45: LEXWARE_SETTINGS_FILE = DATA_DIR / "hca_lexware_settings.json"
+46: LEXWARE_BASE = "https://api.lexware.io"
+47: MAIL_SETTINGS_FILE = DATA_DIR / "hca_mail_settings.json"
+48: MAIL_ACCOUNTS_FILE = DATA_DIR / "hca_mail_accounts.json"
+49: _PRODUCT_SEARCH_CACHE: dict[str, tuple[float, list[dict[str, Any]]]] = {}
+50: _PRODUCT_SEARCH_CACHE_TTL = 300
+51: 
+52: MOBILE_PAIRINGS: dict[str, float] = {}
+53: MOBILE_PAIRING_TTL_SECONDS = 300
+54: HCA_BUSINESS_SCHEMA_VERSION = "0.13.0"
+55: 
+56: DOCUMENT_SETTINGS_KEY = "document_profile"
+57: DOCUMENT_DEFAULTS = {
+58:     "company_name": "Werbestudio Königswinter",
+59:     "street": "Eulenbacherstraße 142",
+60:     "postal_code": "53639",
+61:     "city": "Königswinter",
+62:     "country": "Deutschland",
+63:     "phone": "02223 752 999 2",
+64:     "email": "info@werbestudio-koenigswinter.de",
+65:     "website": "www.werbestudio-koenigswinter.de",
+66:     "vat_id": "DE293284680",
+67:     "account_holder": "Werbestudio Königswinter",
+68:     "bank_name": "",
+69:     "iban": "",
+70:     "bic": "",
+71: }
+72: 
+73: 
+-- line 195 --
+195:             id TEXT PRIMARY KEY, warehouse_id TEXT NOT NULL, name TEXT NOT NULL, code TEXT NOT NULL DEFAULT '', sort_order INTEGER NOT NULL DEFAULT 0, active INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
+196:             UNIQUE(warehouse_id,code)
+197:         );
+198:         CREATE INDEX IF NOT EXISTS idx_inventory_racks_warehouse ON inventory_racks(warehouse_id,active,sort_order);
+199:         CREATE TABLE IF NOT EXISTS inventory_bins (
+200:             id TEXT PRIMARY KEY, warehouse_id TEXT NOT NULL, rack_id TEXT NOT NULL, name TEXT NOT NULL, code TEXT NOT NULL DEFAULT '', barcode TEXT NOT NULL UNIQUE, sort_order INTEGER NOT NULL DEFAULT 0, active INTEGER NOT NULL DEFAULT 1, created_at TEXT NOT NULL, updated_at TEXT NOT NULL,
+201:             UNIQUE(rack_id,code)
+202:         );
+203:         CREATE INDEX IF NOT EXISTS idx_inventory_bins_rack ON inventory_bins(rack_id,active,sort_order);
+204:         CREATE INDEX IF NOT EXISTS idx_inventory_bins_barcode ON inventory_bins(barcode);
+205:         CREATE TABLE IF NOT EXISTS inventory_bin_stock (
+206:             bin_id TEXT NOT NULL, stock_item_id TEXT NOT NULL, quantity INTEGER NOT NULL DEFAULT 0, updated_at TEXT NOT NULL,
+207:             PRIMARY KEY(bin_id,stock_item_id)
+208:         );
+209:         CREATE INDEX IF NOT EXISTS idx_inventory_bin_stock_item ON inventory_bin_stock(stock_item_id);
+210:         """
+211:     )
+212:     conn.executescript(
+213:         """
+214:         CREATE TABLE IF NOT EXISTS business_sequences (
+215:             doc_type TEXT PRIMARY KEY,
+216:             year INTEGER NOT NULL,
+217:             last_no INTEGER NOT NULL DEFAULT 0,
+218:             updated_at TEXT NOT NULL
+219:         );
+220:         CREATE TABLE IF NOT EXISTS crm_customers (
+221:             id TEXT PRIMARY KEY,
+222:             customer_no TEXT NOT NULL UNIQUE,
+223:             customer_type TEXT NOT NULL DEFAULT 'customer',
+224:             company_name TEXT NOT NULL DEFAULT '',
+225:             salutation TEXT NOT NULL DEFAULT '',
+226:             first_name TEXT NOT NULL DEFAULT '',
+227:             last_name TEXT NOT NULL DEFAULT '',
+228:             email TEXT NOT NULL DEFAULT '',
+229:             phone TEXT NOT NULL DEFAULT '',
+230:             mobile TEXT NOT NULL DEFAULT '',
+231:             website TEXT NOT NULL DEFAULT '',
+232:             vat_id TEXT NOT NULL DEFAULT '',
+233:             tax_no TEXT NOT NULL DEFAULT '',
+234:             billing_street TEXT NOT NULL DEFAULT '',
+235:             billing_zip TEXT NOT NULL DEFAULT '',
+236:             billing_city TEXT NOT NULL DEFAULT '',
+237:             billing_country TEXT NOT NULL DEFAULT 'DE',
+238:             shipping_street TEXT NOT NULL DEFAULT '',
+239:             shipping_zip TEXT NOT NULL DEFAULT '',
+240:             shipping_city TEXT NOT NULL DEFAULT '',
+241:             shipping_country TEXT NOT NULL DEFAULT 'DE',
+242:             notes TEXT NOT NULL DEFAULT '',
+243:             active INTEGER NOT NULL DEFAULT 1,
+244:             created_at TEXT NOT NULL,
+245:             updated_at TEXT NOT NULL
+-- line 484 --
+484:         CREATE INDEX IF NOT EXISTS idx_delivery_notes_invoice ON delivery_notes(invoice_id,created_at);
+485:         CREATE UNIQUE INDEX IF NOT EXISTS ux_delivery_notes_shipment ON delivery_notes(shipment_id) WHERE shipment_id<>'';
+486:         CREATE TABLE IF NOT EXISTS delivery_note_items (
+487:             id TEXT PRIMARY KEY,
+488:             delivery_note_id TEXT NOT NULL,
+489:             position_no INTEGER NOT NULL DEFAULT 10,
+490:             source_item_id TEXT NOT NULL DEFAULT '',
+491:             variant_key TEXT NOT NULL DEFAULT '',
+492:             sku TEXT NOT NULL DEFAULT '',
+493:             description TEXT NOT NULL DEFAULT '',
+494:             color TEXT NOT NULL DEFAULT '',
+495:             size TEXT NOT NULL DEFAULT '',
+496:             quantity REAL NOT NULL DEFAULT 1,
+497:             unit TEXT NOT NULL DEFAULT 'Stk.',
+498:             created_at TEXT NOT NULL,
+499:             updated_at TEXT NOT NULL
+500:         );
+501:         CREATE INDEX IF NOT EXISTS idx_delivery_note_items_note ON delivery_note_items(delivery_note_id,position_no);
+502:         CREATE INDEX IF NOT EXISTS idx_delivery_note_items_source ON delivery_note_items(source_item_id,variant_key);
+503:         """
+504:     )
+505: 
+506:     # CRM v0.10.1 migrations: default customer, multiple addresses and per-contact address defaults.
+507:     customer_cols = {str(r[1]) for r in conn.execute("PRAGMA table_info(crm_customers)").fetchall()}
+508:     if "is_default" not in customer_cols:
+509:         conn.execute("ALTER TABLE crm_customers ADD COLUMN is_default INTEGER NOT NULL DEFAULT 0")
+510:     if "default_billing_address_id" not in customer_cols:
+511:         conn.execute("ALTER TABLE crm_customers ADD COLUMN default_billing_address_id TEXT NOT NULL DEFAULT ''")
+512:     if "default_shipping_address_id" not in customer_cols:
+513:         conn.execute("ALTER TABLE crm_customers ADD COLUMN default_shipping_address_id TEXT NOT NULL DEFAULT ''")
+514:     contact_cols = {str(r[1]) for r in conn.execute("PRAGMA table_info(crm_contacts)").fetchall()}
+515:     if "default_billing_address_id" not in contact_cols:
+516:         conn.execute("ALTER TABLE crm_contacts ADD COLUMN default_billing_address_id TEXT NOT NULL DEFAULT ''")
+517:     if "default_shipping_address_id" not in contact_cols:
+518:         conn.execute("ALTER TABLE crm_contacts ADD COLUMN default_shipping_address_id TEXT NOT NULL DEFAULT ''")
+519:     quote_cols = {str(r[1]) for r in conn.execute("PRAGMA table_info(sales_quotes)").fetchall()}
+520:     if "billing_address_id" not in quote_cols:
+521:         conn.execute("ALTER TABLE sales_quotes ADD COLUMN billing_address_id TEXT NOT NULL DEFAULT ''")
+522:     if "shipping_address_id" not in quote_cols:
+523:         conn.execute("ALTER TABLE sales_quotes ADD COLUMN shipping_address_id TEXT NOT NULL DEFAULT ''")
+524: 
+525:     # HCA v0.12.0: document metadata, payment terms and editable templates.
+526:     conn.execute("""
+527:         CREATE TABLE IF NOT EXISTS payment_terms (
+528:             id TEXT PRIMARY KEY,
+529:             name TEXT NOT NULL,
+530:             days INTEGER NOT NULL DEFAULT 14,
+531:             text TEXT NOT NULL DEFAULT '',
+532:             is_default INTEGER NOT NULL DEFAULT 0,
+533:             active INTEGER NOT NULL DEFAULT 1,
+534:             created_at TEXT NOT NULL,
+535:             updated_at TEXT NOT NULL
+536:         )
+537:     """)
+538:     if not conn.execute("SELECT 1 FROM payment_terms LIMIT 1").fetchone():
+-- line 4407 --
+4407:             raise RuntimeError(str((d or {}).get("data") or "Shopkalkulation fehlgeschlagen"))
+4408:         x=d.get("data") or {}
+4409:         return {"ok":True,"product_id":pid,"qty":qty,"base_unit":round(float(x.get("base") or 0),4),"unit_netto":round(float(x.get("unit_netto") or 0),4),"article_total":round(float(x.get("article_total") or 0),2),"print_total":round(float(x.get("print_total") or 0),2),"setup_total":round(float(x.get("setup_total") or 0),2),"setup_discount_total":round(float(x.get("setup_discount_total") or 0),2),"handling_total":round(float(x.get("bearbeitung_total") or 0),2),"normal_total":round(float(x.get("normal_total") or x.get("total_netto") or 0),2),"total_netto":round(float(x.get("total_netto") or 0),2),"positions":x.get("positions") or [],"bundle_applied":x.get("bundle_applied"),"bundle_suggestion":x.get("bundle_suggestion"),"source":"woocommerce-wizard"}
+4410:     except Exception as exc:
+4411:         # Sicherer Fallback auf den WooCommerce-Produktpreis, falls ein Produkt den WSK-Rechner nicht nutzt.
+4412:         try:
+4413:             p=await asyncio.to_thread(_woo_json,f"/products/{pid}")
+4414:             price=float((p or {}).get("price") or 0)
+4415:             return {"ok":True,"product_id":pid,"qty":qty,"base_unit":price,"unit_netto":price,"article_total":round(price*qty,2),"print_total":0,"setup_total":0,"handling_total":0,"total_netto":round(price*qty,2),"positions":[],"source":"woocommerce-product","warning":str(exc)}
+4416:         except Exception as exc2: raise HTTPException(status_code=502,detail=f"Shoppreis konnte nicht geladen werden: {exc2}")
+4417: 
+4418: @router.get("/mail/settings", dependencies=auth)
+4419: async def get_mail_settings() -> dict[str, Any]:
+4420:     d=_mail_settings(); return {"ok":True,"settings":{k:v for k,v in d.items() if k!="password"},"password_set":bool(d.get("password"))}
+4421: 
+4422: @router.put("/mail/settings", dependencies=auth)
+4423: async def put_mail_settings(request: Request) -> dict[str, Any]:
+4424:     body=await request.json(); old=_mail_settings();
+4425:     if not str(body.get("password") or "").strip() and old.get("password"): body["password"]=old["password"]
+4426:     _save_mail_settings({"host":str(body.get("host") or "").strip(),"port":int(body.get("port") or 587),"username":str(body.get("username") or "").strip(),"password":str(body.get("password") or ""),"from_email":str(body.get("from_email") or "").strip(),"from_name":str(body.get("from_name") or "HCA Manager").strip(),"security":str(body.get("security") or "starttls")})
+4427:     return {"ok":True}
+4428: 
+4429: def _send_smtp(to_email:str,subject:str,html:str,text:str="",attachments: list[tuple[str,str,bytes]] | None=None) -> None:
+4430:     s=_mail_settings(); host=str(s.get("host") or ""); port=int(s.get("port") or 587)
+4431:     if not host:
+4432:         accounts=_mail_accounts() if "_mail_accounts" in globals() else []
+4433:         account=next((x for x in accounts if x.get("is_default")),accounts[0] if accounts else None)
+4434:         if account:
+4435:             s={"host":account.get("smtp_host"),"port":account.get("smtp_port"),"username":account.get("username") or account.get("email"),"password":account.get("smtp_password") or account.get("imap_password"),"from_email":account.get("email"),"from_name":account.get("from_name"),"security":account.get("smtp_security"),"reply_to":account.get("reply_to")}
+4436:             host=str(s.get("host") or "");port=int(s.get("port") or 587)
+4437:     if not host: raise RuntimeError("SMTP ist noch nicht eingerichtet.")
+4438:     msg=EmailMessage(); msg["Subject"]=subject; msg["From"]=f'{s.get("from_name") or "HCA Manager"} <{s.get("from_email") or s.get("username") or ""}>'; msg["To"]=to_email
+4439:     if s.get("reply_to"): msg["Reply-To"]=str(s.get("reply_to"))
+4440:     msg.set_content(text or re.sub(r"<[^>]+>"," ",html)); msg.add_alternative(html,subtype="html")
+4441:     for filename,mime,raw in attachments or []:
+4442:         main,sub=(str(mime or "application/octet-stream").split("/",1)+["octet-stream"])[:2]
+4443:         msg.add_attachment(raw,maintype=main,subtype=sub,filename=str(filename or "Anhang"))
+4444:     if str(s.get("security") or "starttls")=="ssl": smtp=smtplib.SMTP_SSL(host,port,timeout=30)
+4445:     else:
+4446:         smtp=smtplib.SMTP(host,port,timeout=30); smtp.ehlo()
+4447:         if str(s.get("security") or "starttls")=="starttls": smtp.starttls(); smtp.ehlo()
+4448:     try:
+4449:         if s.get("username"): smtp.login(str(s.get("username")),str(s.get("password") or ""))
+4450:         smtp.send_message(msg)
+4451:     finally: smtp.quit()
+4452: 
+4453: @router.post("/sales/quotes/{quote_id}/email", dependencies=auth)
+4454: async def email_quote(quote_id: str, request: Request) -> dict[str, Any]:
+4455:     body=await request.json(); to=str(body.get("to") or "").strip(); subject=str(body.get("subject") or "").strip(); message=str(body.get("message") or "").strip()
+4456:     if not to or "@" not in to: raise HTTPException(status_code=400,detail="Empfänger-E-Mail fehlt.")
+4457:     with _db() as conn:
+-- line 5534 --
+5534: @router.put("/delivery-notes/{delivery_note_id}/draft", dependencies=auth)
+5535: async def delivery_note_draft_update(delivery_note_id: str, request: Request) -> dict[str, Any]:
+5536:     body=await request.json(); body=body if isinstance(body,dict) else {}
+5537:     with _db() as conn:
+5538:         row=conn.execute("SELECT * FROM delivery_notes WHERE id=?",(delivery_note_id,)).fetchone()
+5539:         if not row: raise HTTPException(status_code=404,detail="Lieferschein nicht gefunden.")
+5540:         if row["status"]!="draft": raise HTTPException(status_code=409,detail="Nur Lieferscheinentwürfe können bearbeitet werden.")
+5541:         items=body.get("items") if isinstance(body.get("items"),list) else []
+5542:         conn.execute("DELETE FROM delivery_note_items WHERE delivery_note_id=?",(delivery_note_id,)); now=_now()
+5543:         for i,x in enumerate(items):
+5544:             if not isinstance(x,dict) or not str(x.get("description") or "").strip():continue
+5545:             conn.execute("INSERT INTO delivery_note_items(id,delivery_note_id,position_no,source_item_id,variant_key,sku,description,color,size,quantity,unit,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)",
+5546:                          (str(uuid.uuid4()),delivery_note_id,(i+1)*10,str(x.get("source_item_id") or ""),str(x.get("variant_key") or ""),str(x.get("sku") or ""),str(x.get("description") or ""),str(x.get("color") or ""),str(x.get("size") or ""),_delivery_qty(x.get("quantity") or 1),str(x.get("unit") or "Stk."),now,now))
+5547:         conn.execute("UPDATE delivery_notes SET notes=?,updated_at=? WHERE id=?",(str(body.get("notes") or ""),now,delivery_note_id))
+5548:         return {"ok":True,"item":_delivery_note_dict(conn,conn.execute("SELECT * FROM delivery_notes WHERE id=?",(delivery_note_id,)).fetchone(),True)}
+5549: 
+5550: 
+5551: @router.post("/delivery-notes/{delivery_note_id}/confirm", dependencies=auth)
+5552: async def delivery_note_draft_confirm(delivery_note_id: str) -> dict[str, Any]:
+5553:     with _db() as conn:
+5554:         if not conn.execute("SELECT 1 FROM delivery_notes WHERE id=?",(delivery_note_id,)).fetchone(): raise HTTPException(status_code=404,detail="Lieferschein nicht gefunden.")
+5555:         conn.execute("UPDATE delivery_notes SET status='ready',updated_at=? WHERE id=?",(_now(),delivery_note_id))
+5556:         return {"ok":True,"item":_delivery_note_dict(conn,conn.execute("SELECT * FROM delivery_notes WHERE id=?",(delivery_note_id,)).fetchone(),True)}
+5557: 
+5558: 
+5559: def _mail_accounts() -> list[dict[str, Any]]:
+5560:     try:
+5561:         data=json.loads(MAIL_ACCOUNTS_FILE.read_text(encoding="utf-8")) if MAIL_ACCOUNTS_FILE.exists() else []
+5562:         return data if isinstance(data,list) else []
+5563:     except Exception: return []
+5564: 
+5565: 
+5566: def _save_mail_accounts(items: list[dict[str, Any]]) -> None:
+5567:     DATA_DIR.mkdir(parents=True,exist_ok=True); MAIL_ACCOUNTS_FILE.write_text(json.dumps(items,ensure_ascii=False,indent=2),encoding="utf-8")
+5568:     try: os.chmod(MAIL_ACCOUNTS_FILE,0o600)
+5569:     except Exception: pass
+5570: 
+5571: 
+5572: def _mail_public_account(a: dict[str, Any]) -> dict[str, Any]:
+5573:     return {k:v for k,v in a.items() if k not in {"imap_password","smtp_password"}} | {"password_set":bool(a.get("imap_password") or a.get("smtp_password"))}
+5574: 
+5575: 
+5576: def _decode_mail_header(value: str) -> str:
+5577:     parts=[]
+5578:     for raw, charset in decode_header(value or ""):
+5579:         parts.append(raw.decode(charset or "utf-8","replace") if isinstance(raw,bytes) else str(raw))
+5580:     return "".join(parts)
+5581: 
+5582: 
+5583: def _imap_connect(account: dict[str, Any]):
+5584:     host=str(account.get("imap_host") or ""); port=int(account.get("imap_port") or 993)
+5585:     if not host: raise RuntimeError("IMAP-Server fehlt.")
+5586:     client=imaplib.IMAP4_SSL(host,port,timeout=30) if str(account.get("imap_security") or "ssl")=="ssl" else imaplib.IMAP4(host,port,timeout=30)
+5587:     if str(account.get("imap_security") or "ssl")=="starttls": client.starttls()
+5588:     client.login(str(account.get("username") or account.get("email") or ""),str(account.get("imap_password") or "")); return client
+5589: 
+5590: 
+5591: @router.get("/mail/accounts", dependencies=auth)
+5592: async def mail_accounts_get() -> dict[str, Any]:
+5593:     return {"ok":True,"items":[_mail_public_account(x) for x in _mail_accounts()]}
+5594: 
+5595: 
+5596: @router.put("/mail/accounts", dependencies=auth)
+5597: async def mail_accounts_put(request: Request) -> dict[str, Any]:
+5598:     body=await request.json(); body=body if isinstance(body,dict) else {}; incoming=body.get("items") if isinstance(body.get("items"),list) else []
+5599:     old={str(x.get("id") or ""):x for x in _mail_accounts()}; out=[]
+5600:     for raw in incoming:
+5601:         if not isinstance(raw,dict): continue
+5602:         mid=str(raw.get("id") or uuid.uuid4()); previous=old.get(mid,{})
+5603:         item={"id":mid,"name":str(raw.get("name") or raw.get("email") or "Postfach").strip(),"email":str(raw.get("email") or "").strip(),"username":str(raw.get("username") or raw.get("email") or "").strip(),"imap_host":str(raw.get("imap_host") or "").strip(),"imap_port":int(raw.get("imap_port") or 993),"imap_security":str(raw.get("imap_security") or "ssl"),"smtp_host":str(raw.get("smtp_host") or "").strip(),"smtp_port":int(raw.get("smtp_port") or 587),"smtp_security":str(raw.get("smtp_security") or "starttls"),"from_name":str(raw.get("from_name") or "Werbestudio Königswinter").strip(),"reply_to":str(raw.get("reply_to") or "").strip(),"is_default":bool(raw.get("is_default"))}
+5604:         item["imap_password"]=str(raw.get("imap_password") or previous.get("imap_password") or ""); item["smtp_password"]=str(raw.get("smtp_password") or previous.get("smtp_password") or item["imap_password"])
+5605:         out.append(item)
+5606:     if out and not any(x.get("is_default") for x in out): out[0]["is_default"]=True
+5607:     _save_mail_accounts(out); return {"ok":True,"items":[_mail_public_account(x) for x in out]}
+5608: 
+5609: 
+5610: def _mail_account(account_id: str) -> dict[str, Any]:
+5611:     account=next((x for x in _mail_accounts() if str(x.get("id"))==str(account_id)),None)
+5612:     if not account: raise RuntimeError("Postfach nicht gefunden.")
+5613:     return account
+5614: 
+5615: 
+5616: @router.get("/mail/accounts/{account_id}/messages", dependencies=auth)
+5617: async def mail_messages(account_id: str, folder: str = "INBOX", limit: int = 50) -> dict[str, Any]:
+5618:     def load():
+5619:         c=_imap_connect(_mail_account(account_id))
+5620:         try:
+5621:             status,_=c.select(folder,readonly=True)
+5622:             if status!="OK": raise RuntimeError("Ordner konnte nicht geöffnet werden.")
+5623:             _,data=c.search(None,"ALL"); ids=(data[0].split() if data and data[0] else [])[-max(1,min(limit,200)):]
+5624:             out=[]
+5625:             for uid in reversed(ids):
+5626:                 _,parts=c.fetch(uid,"(BODY.PEEK[HEADER.FIELDS (FROM TO SUBJECT DATE)] FLAGS)")
+5627:                 raw=next((p[1] for p in parts if isinstance(p,tuple)),b""); msg=email.message_from_bytes(raw,policy=email_policy.default)
+5628:                 out.append({"uid":uid.decode(),"from":_decode_mail_header(str(msg.get("From") or "")),"to":_decode_mail_header(str(msg.get("To") or "")),"subject":_decode_mail_header(str(msg.get("Subject") or "(ohne Betreff)")),"date":str(msg.get("Date") or "")})
+5629:             return out
+5630:         finally:
+5631:             try:c.logout()
+5632:             except Exception:pass
+5633:     try:return {"ok":True,"items":await asyncio.to_thread(load)}
+5634:     except Exception as exc:raise HTTPException(status_code=502,detail=f"Postfach konnte nicht geladen werden: {exc}") from exc
+5635: 
+5636: 
+5637: @router.get("/mail/accounts/{account_id}/messages/{uid}", dependencies=auth)
+5638: async def mail_message_get(account_id: str, uid: str, folder: str = "INBOX") -> dict[str, Any]:
+5639:     def load():
+5640:         c=_imap_connect(_mail_account(account_id))
+5641:         try:
+5642:             c.select(folder,readonly=True); _,parts=c.fetch(str(uid),"(RFC822)"); raw=next((p[1] for p in parts if isinstance(p,tuple)),b""); msg=email.message_from_bytes(raw,policy=email_policy.default)
+5643:             body=""
+5644:             parts_iter=msg.walk() if msg.is_multipart() else [msg]
+5645:             for part in parts_iter:
+5646:                 if part.get_content_disposition()=="attachment":continue
+5647:                 if part.get_content_type()=="text/plain": body=part.get_content(); break
+5648:                 if not body and part.get_content_type()=="text/html": body=re.sub(r"<[^>]+>"," ",part.get_content())
+5649:             return {"uid":uid,"from":_decode_mail_header(str(msg.get("From") or "")),"to":_decode_mail_header(str(msg.get("To") or "")),"subject":_decode_mail_header(str(msg.get("Subject") or "")),"date":str(msg.get("Date") or ""),"body":str(body or "")}
+5650:         finally:
+5651:             try:c.logout()
+5652:             except Exception:pass
+5653:     try:return {"ok":True,"item":await asyncio.to_thread(load)}
+5654:     except Exception as exc:raise HTTPException(status_code=502,detail=f"E-Mail konnte nicht geöffnet werden: {exc}") from exc
+5655: 
+5656: 
+5657: @router.post("/mail/accounts/{account_id}/send", dependencies=auth)
+5658: async def mail_account_send(account_id: str, request: Request) -> dict[str, Any]:
+5659:     body=await request.json(); body=body if isinstance(body,dict) else {}; account=_mail_account(account_id)
+5660:     to=str(body.get("to") or "").strip()
+5661:     if not to or "@" not in to: raise HTTPException(status_code=400,detail="Empfängeradresse fehlt.")
+5662:     def send():
+5663:         sender_address = str(account.get("email") or account.get("username") or "")
+5664:         msg=EmailMessage(); msg["Subject"]=str(body.get("subject") or ""); msg["From"]=f'{account.get("from_name") or "HCA"} <{sender_address}>'; msg["To"]=to
+5665:         if account.get("reply_to"):msg["Reply-To"]=str(account["reply_to"])
+5666:         msg.set_content(str(body.get("message") or "")); host=str(account.get("smtp_host") or ""); port=int(account.get("smtp_port") or 587); security=str(account.get("smtp_security") or "starttls")
+5667:         smtp=smtplib.SMTP_SSL(host,port,timeout=30) if security=="ssl" else smtplib.SMTP(host,port,timeout=30)
+5668:         try:
+5669:             if security=="starttls":smtp.starttls()
+5670:             smtp.login(str(account.get("username") or account.get("email") or ""),str(account.get("smtp_password") or account.get("imap_password") or "")); smtp.send_message(msg)
+5671:         finally:smtp.quit()
+5672:     try:await asyncio.to_thread(send);return {"ok":True}
+5673:     except Exception as exc:raise HTTPException(status_code=502,detail=f"E-Mail konnte nicht gesendet werden: {exc}") from exc
+5674: 
+5675: 
+5676: # ---------------------------------------------------------------------------
+5677: # HCA v0.13.0 · suppliers, own products and isolated Woo customer portal
+5678: # ---------------------------------------------------------------------------
+5679: 
+5680: def _email_key(value: Any) -> str:
+5681:     return str(value or "").strip().lower()
+5682: 
+5683: 
+-- line 5760 --
+5760:     with _db() as conn:
+5761:         article_id = _ensure_inventory_article(conn, woo_product_id=woo_product_id, name=name, sku=sku, manufacturer=manufacturer, supplier=supplier, raw=raw)
+5762:         conn.execute("UPDATE inventory_articles SET description=?,unit_price=?,tax_rate=?,source='hca',shop_status=?,updated_at=? WHERE id=?", (description, unit_price, tax_rate, shop_status, _now(), article_id))
+5763:         _ensure_stock_item(conn, article_id=article_id, woo_product_id=woo_product_id, sku=sku, erp_code="", color="", size="")
+5764:         return {"ok": True, "article": _inventory_article_detail(conn, article_id), "woo_created": bool(woo_product_id)}
+5765: 
+5766: 
+5767: def _merge_customer_duplicates(conn: sqlite3.Connection, email_key: str) -> tuple[sqlite3.Row | None, int]:
+5768:     rows = conn.execute("SELECT * FROM crm_customers WHERE active=1 AND lower(trim(email))=? ORDER BY CASE WHEN woo_customer_id<>'' THEN 0 ELSE 1 END,created_at,id", (email_key,)).fetchall()
+5769:     if not rows: return None, 0
+5770:     keep = rows[0]; merged = 0
+5771:     for duplicate in rows[1:]:
+5772:         source_id = str(duplicate["id"]); target_id = str(keep["id"])
+5773:         merge_fields = ("company_name","salutation","first_name","last_name","phone","mobile","website","vat_id","tax_no","billing_street","billing_zip","billing_city","billing_country","shipping_street","shipping_zip","shipping_city","shipping_country","payment_term_id","woo_customer_id")
+5774:         merged_values = {field: (str(keep[field] or "") or str(duplicate[field] or "")) for field in merge_fields}
+5775:         conn.execute("""UPDATE crm_customers SET company_name=?,salutation=?,first_name=?,last_name=?,phone=?,mobile=?,website=?,vat_id=?,tax_no=?,billing_street=?,billing_zip=?,billing_city=?,billing_country=?,shipping_street=?,shipping_zip=?,shipping_city=?,shipping_country=?,payment_term_id=?,woo_customer_id=?,updated_at=? WHERE id=?""", (*[merged_values[field] for field in merge_fields], _now(), target_id))
+5776:         for table in ("crm_contacts", "crm_addresses", "sales_quotes", "sales_orders", "finance_invoices", "delivery_notes"):
+5777:             conn.execute(f"UPDATE {table} SET customer_id=? WHERE customer_id=?", (target_id, source_id))
+5778:         note = f"\nZusammengeführt mit {keep['customer_no']} am {_now()[:10]}.".strip()
+5779:         conn.execute("UPDATE crm_customers SET active=0,notes=trim(notes || ?),updated_at=? WHERE id=?", ("\n" + note, _now(), source_id))
+5780:         merged += 1
+5781:         keep = conn.execute("SELECT * FROM crm_customers WHERE id=?", (target_id,)).fetchone()
+5782:     return conn.execute("SELECT * FROM crm_customers WHERE id=?", (keep["id"],)).fetchone(), merged
+5783: 
+5784: 
+5785: def _woo_customer_pages() -> list[dict[str, Any]]:
+5786:     items: list[dict[str, Any]] = []
+5787:     for page in range(1, 101):
+5788:         data = _woo_request(f"/customers?per_page=100&page={page}&orderby=id&order=asc")
+5789:         if not isinstance(data, list) or not data: break
+5790:         items.extend(x for x in data if isinstance(x, dict))
+5791:         if len(data) < 100: break
+5792:     return items
+5793: 
+5794: 
+5795: def _portal_customer_directory(conn: sqlite3.Connection) -> list[dict[str, Any]]:
+5796:     rows = conn.execute("SELECT * FROM crm_customers WHERE active=1 AND trim(email)<>'' ORDER BY customer_no").fetchall()
+5797:     return [{"hca_customer_id": str(x["id"]), "customer_no": str(x["customer_no"]), "woo_customer_id": str(x["woo_customer_id"] or ""), "email": _email_key(x["email"]), "company_name": str(x["company_name"] or ""), "first_name": str(x["first_name"] or ""), "last_name": str(x["last_name"] or ""), "street": str(x["billing_street"] or ""), "zip": str(x["billing_zip"] or ""), "city": str(x["billing_city"] or ""), "country": str(x["billing_country"] or "DE"), "complete": bool(str(x["email"] or "").strip() and str(x["billing_street"] or "").strip() and str(x["billing_zip"] or "").strip() and str(x["billing_city"] or "").strip())} for x in rows]
+5798: 
+5799: 
+5800: def _woocommerce_customer_sync_blocking() -> dict[str, Any]:
+5801:     remote = _woo_customer_pages(); created = updated = merged = 0; warnings: list[str] = []
+5802:     with _db() as conn:
+5803:         for wc in remote:
+5804:             email_key = _email_key(wc.get("email"))
+5805:             if not email_key: continue
+5806:             customer, duplicate_count = _merge_customer_duplicates(conn, email_key); merged += duplicate_count
+5807:             billing = wc.get("billing") if isinstance(wc.get("billing"), dict) else {}
+5808:             shipping = wc.get("shipping") if isinstance(wc.get("shipping"), dict) else {}
+5809:             incoming = {"company_name": wc.get("billing", {}).get("company") if isinstance(wc.get("billing"), dict) else "", "first_name": wc.get("first_name") or billing.get("first_name"), "last_name": wc.get("last_name") or billing.get("last_name"), "email": email_key, "phone": billing.get("phone"), "billing_street": " ".join(x for x in [str(billing.get("address_1") or "").strip(), str(billing.get("address_2") or "").strip()] if x), "billing_zip": billing.get("postcode"), "billing_city": billing.get("city"), "billing_country": billing.get("country") or "DE", "shipping_street": " ".join(x for x in [str(shipping.get("address_1") or "").strip(), str(shipping.get("address_2") or "").strip()] if x), "shipping_zip": shipping.get("postcode"), "shipping_city": shipping.get("city"), "shipping_country": shipping.get("country") or billing.get("country") or "DE"}
+5810:             if not customer:
+5811:                 cid = str(uuid.uuid4()); now = _now(); no = _business_next_no(conn, "customer", "KD")
+5812:                 conn.execute("""INSERT INTO crm_customers(id,customer_no,customer_type,company_name,first_name,last_name,email,phone,billing_street,billing_zip,billing_city,billing_country,shipping_street,shipping_zip,shipping_city,shipping_country,woo_customer_id,woo_synced_at,active,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""", (cid,no,"customer",str(incoming["company_name"] or ""),str(incoming["first_name"] or ""),str(incoming["last_name"] or ""),email_key,str(incoming["phone"] or ""),str(incoming["billing_street"] or ""),str(incoming["billing_zip"] or ""),str(incoming["billing_city"] or ""),str(incoming["billing_country"] or "DE"),str(incoming["shipping_street"] or ""),str(incoming["shipping_zip"] or ""),str(incoming["shipping_city"] or ""),str(incoming["shipping_country"] or "DE"),str(wc.get("id") or ""),now,1,now,now))
+5813:                 _business_sync_customer_default_addresses(conn, cid, incoming); created += 1
+5814:             else:
+5815:                 updates = {key: (str(customer[key] or "") or str(value or "")) for key, value in incoming.items() if key in customer.keys()}
+5816:                 conn.execute("""UPDATE crm_customers SET company_name=?,first_name=?,last_name=?,email=?,phone=?,billing_street=?,billing_zip=?,billing_city=?,billing_country=?,shipping_street=?,shipping_zip=?,shipping_city=?,shipping_country=?,woo_customer_id=?,woo_synced_at=?,updated_at=? WHERE id=?""", (updates.get("company_name",""),updates.get("first_name",""),updates.get("last_name",""),email_key,updates.get("phone",""),updates.get("billing_street",""),updates.get("billing_zip",""),updates.get("billing_city",""),updates.get("billing_country","DE"),updates.get("shipping_street",""),updates.get("shipping_zip",""),updates.get("shipping_city",""),updates.get("shipping_country","DE"),str(wc.get("id") or ""),_now(),_now(),customer["id"]))
+5817:                 _business_sync_customer_default_addresses(conn, str(customer["id"]), updates); updated += 1
+5818:         directory = _portal_customer_directory(conn)
+5819:     try:
+5820:         _woo_request("/customer-directory", "POST", {"customers": directory}, api_namespace="wsk-hca/v1")
+5821:     except Exception as exc:
+5822:         warnings.append(f"Kundenportal-Verzeichnis: {exc}")
+5823:     return {"remote": len(remote), "created": created, "updated": updated, "merged": merged, "directory": len(directory), "warnings": warnings}
+5824: 
+5825: 
+5826: @router.post("/woocommerce/customers/sync", dependencies=auth)
+5827: async def woocommerce_customers_sync() -> dict[str, Any]:
+5828:     try: return {"ok": True, **(await asyncio.to_thread(_woocommerce_customer_sync_blocking))}
+5829:     except Exception as exc: raise HTTPException(status_code=502, detail=f"Kundenabgleich fehlgeschlagen: {exc}") from exc
+5830: 
+5831: 
+5832: def _portal_documents() -> list[dict[str, Any]]:
+5833:     # Gather all records first. PDF rendering reads shared settings through a
+5834:     # separate connection, so the source connection must be closed beforehand.
+5835:     jobs: list[dict[str, Any]] = []
+5836:     with _db() as conn:
+5837:         def link_for(customer_id: str) -> dict[str, str] | None:
+5838:             customer = conn.execute("SELECT email,woo_customer_id FROM crm_customers WHERE id=? AND active=1", (customer_id,)).fetchone()
+5839:             if not customer or not _email_key(customer["email"]): return None
+5840:             return {"email": _email_key(customer["email"]), "woo_customer_id": str(customer["woo_customer_id"] or "")}
+5841:         for row in conn.execute("SELECT * FROM sales_quotes WHERE status<>'draft' AND customer_id<>''").fetchall():
+5842:             link = link_for(str(row["customer_id"])); customer = conn.execute("SELECT * FROM crm_customers WHERE id=?", (row["customer_id"],)).fetchone()
+5843:             if link: jobs.append({"kind":"quote","row":dict(row),"document":_business_quote_dict(conn,row,True),"address":_business_customer_snapshot(conn,customer,str(row["contact_id"] or ""),str(row["billing_address_id"] or ""),str(row["shipping_address_id"] or ""))[0] if customer else {},"link":link})
+5844:         for row in conn.execute("SELECT * FROM sales_orders WHERE status NOT IN ('draft','cancelled') AND customer_id<>''").fetchall():
+5845:             link = link_for(str(row["customer_id"])); document = _business_order_dict(conn,row,True)
+5846:             if link: jobs.append({"kind":"order","row":dict(row),"document":document,"address":document.get("billing") or {},"link":link})
+5847:         for row in conn.execute("SELECT * FROM finance_invoices WHERE direction='customer' AND status NOT IN ('draft','voided','cancelled') AND customer_id<>''").fetchall():
+5848:             link = link_for(str(row["customer_id"])); document = _finance_invoice_dict(conn,row,True)
+5849:             if link: jobs.append({"kind":"invoice","row":dict(row),"document":document,"address":document.get("billing") or {},"link":link})
+5850:         for row in conn.execute("SELECT * FROM delivery_notes WHERE status<>'draft' AND customer_id<>''").fetchall():
+5851:             link = link_for(str(row["customer_id"])); document = _delivery_note_dict(conn,row,True)
+## PLUGIN · wk-werbeartikel-konfigurator.php
+-- line 34 --
+34: require_once WK_WK_PLUGIN_DIR . 'includes/printcom-provider-core.php';
+35: require_once WK_WK_PLUGIN_DIR . 'includes/printcom-configurator-sandbox.php';
+36: require_once WK_WK_PLUGIN_DIR . 'includes/printcom-frontend-configurator.php';
+37: require_once WK_WK_PLUGIN_DIR . 'includes/printcom-catalog-manager.php';
+38: // Flatsome: Standard-Produktlayout für Produkttyp "Werbeartikel" auf UX Block "Werbeartikel" setzen
+39: require_once WK_WK_PLUGIN_DIR . 'includes/flatsome-default-product-layout-werbeartikel.php';
+40: 
+41: // Diagnose fuer WordPress-Startseiteneinstellungen (nur Backend, keine Aenderung der Optionen)
+42: require_once WK_WK_PLUGIN_DIR . 'includes/class-wk-homepage-diagnostics.php';
+43: WK_Homepage_Diagnostics::init();
+44: 
+45: // Isoliertes HCA-Kundenportal. Keine Eingriffe in Wizard, Preise oder Warenkorb.
+46: require_once WK_WK_PLUGIN_DIR . 'includes/hca-customer-portal.php';
+47: 
+48: // -----------------------------------------------------------------------------
+49: // Module laden
+50: // -----------------------------------------------------------------------------
+51: 
+52: // 1) WSK-Werbeartikelkonfigurator
+53: require_once WK_WK_PLUGIN_DIR . 'modules/wsk-werbeartikelkonfigurator/wsk-werbeartikelkonfigurator.php';
+54: 
+55: // 2) WSK Werbeartikel Wizard
+56: require_once WK_WK_PLUGIN_DIR . 'modules/wsk-werbeartikel-wizard/wsk-werbeartikel-wizard.php';
+57: 
+58: // 3) WSK-Druckpreisverwaltung
+## PLUGIN · hca-customer-portal.php
+-- line 1 --
+1: <?php
+2: /**
+3:  * HCA customer matching and document portal.
+4:  * Deliberately isolated from the product wizard, cart and price calculation.
+5:  */
+6: if ( ! defined( 'ABSPATH' ) ) exit;
+7: 
+8: final class WSK_HCA_Customer_Portal {
+9:     const DB_VERSION = '1.0.0';
+10:     const ENDPOINT = 'dokumente';
+11: 
+12:     public static function init() {
+13:         add_action( 'init', array( __CLASS__, 'maybe_install' ), 5 );
+14:         add_action( 'init', array( __CLASS__, 'register_endpoint' ) );
+15:         add_action( 'rest_api_init', array( __CLASS__, 'register_routes' ) );
+16:         add_filter( 'woocommerce_account_menu_items', array( __CLASS__, 'account_menu' ) );
+17:         add_action( 'woocommerce_account_' . self::ENDPOINT . '_endpoint', array( __CLASS__, 'account_content' ) );
+18:         add_action( 'admin_post_wsk_hca_document', array( __CLASS__, 'download_document' ) );
+19:         add_filter( 'woocommerce_registration_errors', array( __CLASS__, 'registration_notice' ), 10, 3 );
+20:         add_action( 'woocommerce_created_customer', array( __CLASS__, 'link_created_customer' ), 10, 1 );
+21:     }
+22: 
+23:     private static function links_table() { global $wpdb; return $wpdb->prefix . 'wsk_hca_customer_links'; }
+24:     private static function docs_table() { global $wpdb; return $wpdb->prefix . 'wsk_hca_documents'; }
+25: 
+26:     public static function maybe_install() {
+27:         if ( get_option( 'wsk_hca_portal_db_version' ) === self::DB_VERSION ) return;
+28:         global $wpdb;
+29:         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+30:         $charset = $wpdb->get_charset_collate();
+31:         $links = self::links_table(); $docs = self::docs_table();
+32:         dbDelta( "CREATE TABLE {$links} (
+33:             email varchar(190) NOT NULL,
+34:             hca_customer_id varchar(64) NOT NULL DEFAULT '',
+35:             customer_no varchar(64) NOT NULL DEFAULT '',
+36:             woo_customer_id bigint unsigned NOT NULL DEFAULT 0,
+37:             company_name varchar(255) NOT NULL DEFAULT '',
+38:             first_name varchar(100) NOT NULL DEFAULT '',
+39:             last_name varchar(100) NOT NULL DEFAULT '',
+40:             address_complete tinyint(1) NOT NULL DEFAULT 0,
+41:             updated_at datetime NOT NULL,
+42:             PRIMARY KEY  (email),
+43:             KEY woo_customer_id (woo_customer_id)
+44:         ) {$charset};" );
+45:         dbDelta( "CREATE TABLE {$docs} (
+46:             id bigint unsigned NOT NULL AUTO_INCREMENT,
+47:             hca_document_id varchar(64) NOT NULL,
+48:             document_type varchar(32) NOT NULL,
+49:             document_number varchar(100) NOT NULL DEFAULT '',
+50:             customer_email varchar(190) NOT NULL,
+51:             woo_customer_id bigint unsigned NOT NULL DEFAULT 0,
+52:             title varchar(255) NOT NULL DEFAULT '',
+53:             document_status varchar(64) NOT NULL DEFAULT '',
+54:             document_date varchar(32) NOT NULL DEFAULT '',
+55:             file_path text NOT NULL,
+56:             file_name varchar(255) NOT NULL DEFAULT '',
+57:             updated_at datetime NOT NULL,
+58:             PRIMARY KEY  (id),
+59:             UNIQUE KEY hca_document (hca_document_id,document_type),
+60:             KEY customer_email (customer_email),
+61:             KEY woo_customer_id (woo_customer_id)
+62:         ) {$charset};" );
+63:         update_option( 'wsk_hca_portal_db_version', self::DB_VERSION, false );
+64:         self::register_endpoint();
+65:         flush_rewrite_rules( false );
+66:     }
+67: 
+68:     public static function register_endpoint() { add_rewrite_endpoint( self::ENDPOINT, EP_ROOT | EP_PAGES ); }
+69: 
+70:     public static function register_routes() {
+71:         register_rest_route( 'wsk-hca/v1', '/customer-directory', array(
+72:             'methods' => 'POST', 'callback' => array( __CLASS__, 'rest_customer_directory' ),
+73:             'permission_callback' => array( __CLASS__, 'permission' ),
+74:         ) );
+75:         register_rest_route( 'wsk-hca/v1', '/customer-documents', array(
+76:             'methods' => 'POST', 'callback' => array( __CLASS__, 'rest_customer_documents' ),
+77:             'permission_callback' => array( __CLASS__, 'permission' ),
+78:         ) );
+79:     }
+80: 
+81:     public static function permission() { return current_user_can( 'manage_woocommerce' ); }
+82:     private static function email( $value ) { return strtolower( sanitize_email( $value ) ); }
+83: 
+84:     public static function rest_customer_directory( WP_REST_Request $request ) {
+85:         global $wpdb; $items = $request->get_param( 'customers' ); $count = 0;
+86:         if ( ! is_array( $items ) ) return new WP_Error( 'hca_invalid_customers', 'Kundenliste fehlt.', array( 'status' => 400 ) );
+87:         foreach ( $items as $item ) {
+88:             if ( ! is_array( $item ) ) continue;
+89:             $email = self::email( isset( $item['email'] ) ? $item['email'] : '' );
+90:             if ( ! $email ) continue;
+91:             $user = get_user_by( 'email', $email );
+92:             $woo_id = $user ? (int) $user->ID : absint( isset( $item['woo_customer_id'] ) ? $item['woo_customer_id'] : 0 );
+93:             $wpdb->replace( self::links_table(), array(
+94:                 'email' => $email, 'hca_customer_id' => sanitize_text_field( $item['hca_customer_id'] ?? '' ),
+95:                 'customer_no' => sanitize_text_field( $item['customer_no'] ?? '' ), 'woo_customer_id' => $woo_id,
+96:                 'company_name' => sanitize_text_field( $item['company_name'] ?? '' ), 'first_name' => sanitize_text_field( $item['first_name'] ?? '' ),
+97:                 'last_name' => sanitize_text_field( $item['last_name'] ?? '' ), 'address_complete' => empty( $item['complete'] ) ? 0 : 1,
+98:                 'updated_at' => current_time( 'mysql', true ),
+99:             ), array( '%s','%s','%s','%d','%s','%s','%s','%d','%s' ) );
+100:             $count++;
+101:         }
+102:         return rest_ensure_response( array( 'ok' => true, 'updated' => $count ) );
+103:     }
+104: 
+105:     private static function storage_dir() {
+106:         $upload = wp_upload_dir(); $dir = trailingslashit( $upload['basedir'] ) . 'hca-kundendokumente';
+107:         if ( ! is_dir( $dir ) ) wp_mkdir_p( $dir );
+108:         if ( ! file_exists( $dir . '/index.php' ) ) file_put_contents( $dir . '/index.php', "<?php exit;\n" );
+109:         if ( ! file_exists( $dir . '/.htaccess' ) ) file_put_contents( $dir . '/.htaccess', "Deny from all\n" );
+110:         return $dir;
+111:     }
+112: 
+113:     public static function rest_customer_documents( WP_REST_Request $request ) {
+114:         global $wpdb; $items = $request->get_param( 'documents' ); $count = 0;
+115:         if ( ! is_array( $items ) ) return new WP_Error( 'hca_invalid_documents', 'Dokumentenliste fehlt.', array( 'status' => 400 ) );
+116:         $dir = self::storage_dir();
+117:         foreach ( $items as $item ) {
+118:             if ( ! is_array( $item ) ) continue;
+119:             $hca_id = sanitize_text_field( $item['hca_document_id'] ?? '' ); $type = sanitize_key( $item['document_type'] ?? '' );
+120:             $email = self::email( $item['customer_email'] ?? '' ); $encoded = (string) ( $item['pdf_base64'] ?? '' );
+121:             if ( ! $hca_id || ! $type || ! $email || ! $encoded ) continue;
+122:             $pdf = base64_decode( $encoded, true );
+123:             if ( false === $pdf || 0 !== strpos( $pdf, '%PDF' ) || strlen( $pdf ) > 15 * MB_IN_BYTES ) continue;
+124:             $safe = sanitize_file_name( $item['filename'] ?? ( $type . '-' . $hca_id . '.pdf' ) );
+125:             if ( '.pdf' !== strtolower( substr( $safe, -4 ) ) ) $safe .= '.pdf';
+126:             $path = trailingslashit( $dir ) . hash( 'sha256', $type . '|' . $hca_id ) . '.pdf';
+127:             if ( false === file_put_contents( $path, $pdf, LOCK_EX ) ) continue;
+128:             $user = get_user_by( 'email', $email ); $woo_id = $user ? (int) $user->ID : absint( $item['woo_customer_id'] ?? 0 );
+129:             $wpdb->replace( self::docs_table(), array(
+130:                 'hca_document_id' => $hca_id, 'document_type' => $type, 'document_number' => sanitize_text_field( $item['document_number'] ?? '' ),
+131:                 'customer_email' => $email, 'woo_customer_id' => $woo_id, 'title' => sanitize_text_field( $item['title'] ?? '' ),
+132:                 'document_status' => sanitize_text_field( $item['status'] ?? '' ), 'document_date' => sanitize_text_field( $item['document_date'] ?? '' ),
+133:                 'file_path' => $path, 'file_name' => $safe, 'updated_at' => current_time( 'mysql', true ),
+134:             ), array( '%s','%s','%s','%s','%d','%s','%s','%s','%s','%s','%s' ) );
+135:             $count++;
+136:         }
+137:         return rest_ensure_response( array( 'ok' => true, 'updated' => $count ) );
+138:     }
+139: 
+140:     public static function account_menu( $items ) {
+141:         $logout = isset( $items['customer-logout'] ) ? $items['customer-logout'] : null;
+142:         unset( $items['customer-logout'] ); $items[ self::ENDPOINT ] = __( 'Dokumente', 'wk-wak' );
+143:         if ( null !== $logout ) $items['customer-logout'] = $logout;
+144:         return $items;
+145:     }
+146: 
+147:     private static function rows_for_current_user() {
+148:         global $wpdb; $user = wp_get_current_user(); if ( ! $user || ! $user->ID ) return array();
+149:         return $wpdb->get_results( $wpdb->prepare( "SELECT * FROM " . self::docs_table() . " WHERE woo_customer_id=%d OR customer_email=%s ORDER BY document_date DESC,updated_at DESC", $user->ID, self::email( $user->user_email ) ) );
+150:     }
+151: 
+152:     public static function account_content() {
+153:         if ( ! is_user_logged_in() ) return;
+154:         $labels = array( 'quote' => 'Angebot', 'order' => 'Auftrag', 'invoice' => 'Rechnung', 'delivery_note' => 'Lieferschein' );
+155:         $rows = self::rows_for_current_user();
+156:         echo '<h2>' . esc_html__( 'Meine Dokumente', 'wk-wak' ) . '</h2>';
+157:         if ( ! $rows ) { echo '<p>' . esc_html__( 'Aktuell sind keine Dokumente hinterlegt.', 'wk-wak' ) . '</p>'; return; }
+158:         echo '<table class="woocommerce-orders-table woocommerce-MyAccount-orders shop_table shop_table_responsive"><thead><tr><th>Dokument</th><th>Nummer</th><th>Datum</th><th>Status</th><th></th></tr></thead><tbody>';
+159:         foreach ( $rows as $row ) {
+160:             $url = wp_nonce_url( admin_url( 'admin-post.php?action=wsk_hca_document&id=' . absint( $row->id ) ), 'wsk_hca_document_' . absint( $row->id ) );
+161:             echo '<tr><td>' . esc_html( $labels[ $row->document_type ] ?? ucfirst( $row->document_type ) ) . '</td><td>' . esc_html( $row->document_number ) . '</td><td>' . esc_html( $row->document_date ) . '</td><td>' . esc_html( $row->document_status ) . '</td><td><a class="button" href="' . esc_url( $url ) . '">PDF öffnen</a></td></tr>';
+162:         }
+163:         echo '</tbody></table>';
+164:     }
+165: 
+166:     public static function download_document() {
+167:         if ( ! is_user_logged_in() ) auth_redirect();
+168:         global $wpdb; $id = absint( $_GET['id'] ?? 0 ); check_admin_referer( 'wsk_hca_document_' . $id );
+169:         $row = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM " . self::docs_table() . " WHERE id=%d", $id ) );
+170:         $user = wp_get_current_user();
+171:         if ( ! $row || ( (int) $row->woo_customer_id !== (int) $user->ID && self::email( $row->customer_email ) !== self::email( $user->user_email ) ) ) wp_die( 'Dieses Dokument gehört nicht zu Ihrem Kundenkonto.', 'Zugriff verweigert', array( 'response' => 403 ) );
+172:         if ( ! is_readable( $row->file_path ) ) wp_die( 'Dokument wurde nicht gefunden.', 'Nicht gefunden', array( 'response' => 404 ) );
+173:         nocache_headers(); header( 'Content-Type: application/pdf' ); header( 'Content-Disposition: inline; filename="' . sanitize_file_name( $row->file_name ) . '"' ); header( 'Content-Length: ' . filesize( $row->file_path ) );
+174:         readfile( $row->file_path ); exit;
+175:     }
+176: 
+177:     public static function registration_notice( $errors, $username, $email ) {
+178:         global $wpdb; $mail = self::email( $email ); if ( ! $mail ) return $errors;
+179:         $link = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM " . self::links_table() . " WHERE email=%s", $mail ) );
+180:         if ( $link && ! get_user_by( 'email', $mail ) ) {
+181:             wc_add_notice( 'Sie sind bereits Kunde von Werbestudio Königswinter. Sie erhalten eine E-Mail, um ein Passwort zu generieren.', 'notice' );
+182:         }
+183:         return $errors;
+184:     }
+185: 
+186:     public static function link_created_customer( $customer_id ) {
+187:         global $wpdb; $user = get_user_by( 'id', $customer_id ); if ( ! $user ) return;
+188:         $email = self::email( $user->user_email );
+189:         $link = $wpdb->get_row( $wpdb->prepare( "SELECT * FROM " . self::links_table() . " WHERE email=%s", $email ) );
+190:         if ( ! $link ) return;
+191:         $wpdb->update( self::links_table(), array( 'woo_customer_id' => (int) $customer_id, 'updated_at' => current_time( 'mysql', true ) ), array( 'email' => $email ), array( '%d','%s' ), array( '%s' ) );
+192:         update_user_meta( $customer_id, '_hca_customer_id', $link->hca_customer_id );
+193:         update_user_meta( $customer_id, '_hca_customer_no', $link->customer_no );
+194:         if ( function_exists( 'retrieve_password' ) ) retrieve_password( $user->user_login );
+195:     }
+196: }
+197: 
+198: WSK_HCA_Customer_Portal::init();
