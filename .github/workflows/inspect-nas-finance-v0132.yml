@@ -1,0 +1,45 @@
+name: Inspect NAS finance v0.13.2
+on:
+  push:
+    branches:
+      - codex/v0.13.2-development
+    paths:
+      - .github/workflows/inspect-nas-finance-v0132.yml
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Inspect finance and Lexware implementation
+        run: |
+          set -euo pipefail
+          curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.2/HCA_NAS_Erweiterung_CRM_Mail_v0.13.2.zip" -o /tmp/nas.zip
+          echo "5094f0ac46e00b0876cc5ef1e7ba65e67454f860898324e391c06e3eac5faa9b  /tmp/nas.zip" | sha256sum -c -
+          mkdir /tmp/nas
+          unzip -q /tmp/nas.zip -d /tmp/nas
+          backend=$(find /tmp/nas -name hca_shared.py -print -quit)
+          {
+            grep -n -E "CREATE TABLE IF NOT EXISTS finance_invoices|CREATE TABLE IF NOT EXISTS finance_invoice_items|lexware|/finance/invoices|payment_status|credit.note|gutschrift|storn" "$backend" | head -n 500
+            python - <<'PY'
+          from pathlib import Path
+          p=next(Path("/tmp/nas").rglob("hca_shared.py"))
+          lines=p.read_text(encoding="utf-8").splitlines()
+          terms=["CREATE TABLE IF NOT EXISTS finance_invoices","def _finance_invoice_dict","def _finance_invoice_payload",'@router.post("/finance/invoices','def _lexware','/finance/lexware']
+          seen=set()
+          for term in terms:
+              for i,line in enumerate(lines):
+                  if term in line and i not in seen:
+                      seen.add(i)
+                      print(f"\n--- {term} line {i+1} ---")
+                      print("\n".join(f"{n+1}: {lines[n]}" for n in range(max(0,i-15),min(len(lines),i+180))))
+          PY
+          } > development/reports/nas-finance-v0132.txt
+          git config user.name "HCA Build Bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add development/reports/nas-finance-v0132.txt
+          git commit -m "Inspect NAS v0.13.2 finance internals"
+          git push
