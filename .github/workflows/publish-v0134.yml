@@ -84,16 +84,15 @@ jobs:
 
           once('@router.post("/finance/invoices/{invoice_id}/lexware", dependencies=auth)','@router.post("/finance/invoices/{invoice_id}/lexware-legacy", dependencies=auth)',"legacy lexware route")
 
-          mail_old='''                  msg.set_content(str(body.get("message") or ""))
-                      for filename,mime,raw in attachments:
-          '''
-          mail_new='''                  msg.set_content(str(body.get("message") or ""))
-                      html_body = str(body.get("html") or "").strip()
-                      if html_body:
-                          msg.add_alternative(html_body, subtype="html")
-                      for filename,mime,raw in attachments:
-          '''
-          once(mail_old,mail_new,"HTML mail")
+          mail_route=s.index('@router.post("/mail/accounts/{account_id}/send"')
+          mail_pos=s.index('msg.set_content(str(body.get("message") or ""))',mail_route)
+          mail_line_end=s.index("\n",mail_pos)+1
+          mail_line_start=s.rfind("\n",0,mail_pos)+1
+          mail_indent=s[mail_line_start:mail_pos]
+          mail_add=(mail_indent+'html_body = str(body.get("html") or "").strip()\n'
+                    +mail_indent+'if html_body:\n'
+                    +mail_indent+'    msg.add_alternative(html_body, subtype="html")\n')
+          s=s[:mail_line_end]+mail_add+s[mail_line_end:]
 
           appendix=r'''
 
@@ -145,7 +144,7 @@ jobs:
                   if not row: raise RuntimeError("Rechnung nicht gefunden.")
                   if row["status"]=="draft": raise RuntimeError("Bitte die Kundenrechnung zuerst festschreiben.")
                   if row["direction"]!="customer": raise RuntimeError("Nur Kundenrechnungen werden als Lexware-Verkaufsbeleg übertragen.")
-                  if row["lexware_voucher_id"] and str(row["lexware_voucher_type"] or "")=="invoice":
+                  if row["lexware_voucher_id"]:
                       return _finance_invoice_dict(conn,row,True)
                   payload=_hca134_invoice_payload(conn,row)
               created=_lexware_request("/v1/invoices?finalize=true","POST",payload,"application/json",45)
@@ -192,7 +191,8 @@ jobs:
               with _db() as conn:
                   row=conn.execute("SELECT * FROM finance_invoices WHERE id=?",(invoice_id,)).fetchone()
                   payload=_hca134_credit_payload(conn,row,reason)
-              path=f"/v1/credit-notes?precedingSalesVoucherId={urllib.parse.quote(lexware_id,safe='')}&finalize=true"
+              linked_invoice=str(invoice.get("lexware_voucher_type") or "")=="invoice"
+              path=(f"/v1/credit-notes?precedingSalesVoucherId={urllib.parse.quote(lexware_id,safe='')}&finalize=true" if linked_invoice else "/v1/credit-notes?finalize=true")
               try:
                   created=await asyncio.to_thread(_lexware_request,path,"POST",payload,"application/json",45)
               except Exception as exc:
@@ -205,7 +205,7 @@ jobs:
                   cid=str(uuid.uuid4()); number=_business_next_no(conn,"credit_note","GS")
                   settlement_status="pending" if settlement=="refund" else "booked"
                   deeplink=_finance_deeplink("creditnote",credit_lexware_id)
-                  conn.execute("INSERT INTO finance_credit_notes(id,credit_note_no,invoice_id,customer_id,customer_name,reason,settlement_method,settlement_status,total_net,total_tax,total_gross,lexware_voucher_id,lexware_status,lexware_deeplink,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",(cid,number,invoice_id,str(row["customer_id"] or ""),str(row["customer_name"] or ""),reason,settlement,settlement_status,float(row["total_net"] or 0),float(row["total_tax"] or 0),float(row["total_gross"] or 0),credit_lexware_id,"paidoff" if lexware_id else "open",deeplink,now,now))
+                  conn.execute("INSERT INTO finance_credit_notes(id,credit_note_no,invoice_id,customer_id,customer_name,reason,settlement_method,settlement_status,total_net,total_tax,total_gross,lexware_voucher_id,lexware_status,lexware_deeplink,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",(cid,number,invoice_id,str(row["customer_id"] or ""),str(row["customer_name"] or ""),reason,settlement,settlement_status,float(row["total_net"] or 0),float(row["total_tax"] or 0),float(row["total_gross"] or 0),credit_lexware_id,"paidoff" if linked_invoice else "open",deeplink,now,now))
                   if settlement=="customer_credit" and row["customer_id"]:
                       conn.execute("UPDATE crm_customers SET credit_balance=COALESCE(credit_balance,0)+?,updated_at=? WHERE id=?",(float(row["total_gross"] or 0),now,row["customer_id"]))
                   conn.execute("UPDATE finance_invoices SET status='voided',credit_note_id=?,credit_note_no=?,updated_at=? WHERE id=?",(cid,number,now,invoice_id))
