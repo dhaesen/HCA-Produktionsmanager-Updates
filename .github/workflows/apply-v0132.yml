@@ -1,0 +1,29 @@
+name: Apply HCA v0.13.2 patch
+on:
+  push:
+    branches:
+      - codex/v0.13.2-development
+    paths:
+      - .github/workflows/apply-v0132.yml
+permissions:
+  contents: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Patch source
+        run: python development/scripts/build_v0132.py
+      - name: Check JavaScript
+        run: |
+          node --check development/v0.13.1-package/payload/app.js
+          node --check development/v0.13.1-package/payload/hca-v0132.js
+      - name: Commit source
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add development/v0.13.1-package
+          git commit -m "Develop HCA client v0.13.2" || exit 0
+          git push
