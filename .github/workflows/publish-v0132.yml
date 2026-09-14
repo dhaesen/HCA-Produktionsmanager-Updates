@@ -46,17 +46,18 @@ jobs:
               s=s.replace(anchor,anchor+"import base64\n",1)
           once('HCA_BUSINESS_SCHEMA_VERSION = "0.13.0"','HCA_BUSINESS_SCHEMA_VERSION = "0.13.2"','schema version')
 
-          anchor='''    if "default_shipping_address_id" not in customer_cols:
-              conn.execute("ALTER TABLE crm_customers ADD COLUMN default_shipping_address_id TEXT NOT NULL DEFAULT ''")
-          '''
-          migration=anchor+'''    if "discount_pct" not in customer_cols:
+          marker='conn.execute("ALTER TABLE crm_customers ADD COLUMN default_shipping_address_id TEXT NOT NULL DEFAULT \'\'")'
+          pos=s.find(marker)
+          if pos<0: raise SystemExit("customer migration marker missing")
+          endline=s.find("\n",pos)+1
+          migration='''    if "discount_pct" not in customer_cols:
               conn.execute("ALTER TABLE crm_customers ADD COLUMN discount_pct REAL NOT NULL DEFAULT 0")
           if "credit_balance" not in customer_cols:
               conn.execute("ALTER TABLE crm_customers ADD COLUMN credit_balance REAL NOT NULL DEFAULT 0")
           if "vouchers" not in customer_cols:
               conn.execute("ALTER TABLE crm_customers ADD COLUMN vouchers TEXT NOT NULL DEFAULT ''")
           '''
-          once(anchor,migration,'customer commercial migration')
+          s=s[:endline]+migration+s[endline:]
 
           once('''    d["is_default"] = bool(d.get("is_default"))
               return d
