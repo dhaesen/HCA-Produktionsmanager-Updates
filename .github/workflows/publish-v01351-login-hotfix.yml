@@ -1,0 +1,93 @@
+name: Publish HCA v0.13.5.1 login hotfix
+on:
+  push:
+    branches:
+      - codex/v0.13.2-development
+    paths:
+      - .github/workflows/publish-v01351-login-hotfix.yml
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Restore verified NAS v0.13.5
+        run: |
+          set -euo pipefail
+          curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.5/HCA_NAS_Erweiterung_Benutzer_v0.13.5.zip" -o /tmp/nas.zip
+          echo "4afde429b726a1f8a2196388cc74049bb0d4b814b21bec9a52c04a6a2897f705  /tmp/nas.zip" | sha256sum -c -
+          mkdir -p work/nas
+          unzip -q /tmp/nas.zip -d work/nas
+      - name: Isolate desktop user tables
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=next(Path("work/nas").rglob("hca_shared.py"))
+          s=p.read_text(encoding="utf-8")
+          marker="# HCA v0.13.5 · persönliche Benutzerkonten und Sitzungen"
+          if s.count(marker)!=1: raise SystemExit("v0.13.5 user block not found exactly once")
+          head,tail=s.split(marker,1)
+          if "hca_users" not in tail or "hca_user_sessions" not in tail: raise SystemExit("expected v0.13.5 table names missing")
+          tail=tail.replace("hca_user_sessions","hca_desktop_user_sessions")
+          tail=tail.replace("hca_users","hca_desktop_users")
+          s=head+marker+tail
+          s=s.replace('HCA_BUSINESS_SCHEMA_VERSION = "0.13.5"','HCA_BUSINESS_SCHEMA_VERSION = "0.13.5.1"',1)
+          p.write_text(s,encoding="utf-8")
+          PY
+      - name: Validate hotfix
+        run: |
+          set -euo pipefail
+          backend=$(find work/nas -name hca_shared.py -print -quit)
+          python -m py_compile "$backend"
+          python - <<'PY'
+          from pathlib import Path
+          s=next(Path("work/nas").rglob("hca_shared.py")).read_text()
+          marker="# HCA v0.13.5 · persönliche Benutzerkonten und Sitzungen"
+          tail=s.split(marker,1)[1]
+          assert "hca_desktop_users" in tail
+          assert "hca_desktop_user_sessions" in tail
+          assert "SELECT 1 FROM hca_desktop_users WHERE active=1" in tail
+          assert "CREATE TABLE IF NOT EXISTS hca_users" not in tail
+          assert "CREATE TABLE IF NOT EXISTS hca_user_sessions" not in tail
+          PY
+      - name: Build package
+        run: |
+          set -euo pipefail
+          rm -f work/nas/INSTALLATION_v0.13.5.txt
+          cat > work/nas/INSTALLATION_v0.13.5.1.txt <<'EOF'
+          HCA NAS-Login-Hotfix v0.13.5.1
+
+          1. Vorhandene hca_shared.py sichern.
+          2. app/hca_shared.py in die bestehende NAS-App kopieren.
+          3. HCA-Dienst beziehungsweise Container neu starten.
+          4. HCA-Client schließen und erneut öffnen.
+          5. Im Bildschirm "Ersten Administrator anlegen" das eigene Administratorkonto erstellen.
+
+          Der v0.13.5-Client muss nicht erneut installiert werden.
+          Vorhandene ältere Benutzerdaten werden nicht verändert.
+          EOF
+          mkdir -p dist
+          (cd work/nas && zip -qr "$GITHUB_WORKSPACE/dist/HCA_NAS_Hotfix_Login_v0.13.5.1.zip" .)
+          (cd dist && sha256sum HCA_NAS_Hotfix_Login_v0.13.5.1.zip > HCA_NAS_Hotfix_Login_v0.13.5.1.sha256)
+          (cd dist && sha256sum -c HCA_NAS_Hotfix_Login_v0.13.5.1.sha256)
+          unzip -t dist/HCA_NAS_Hotfix_Login_v0.13.5.1.zip
+      - name: Publish and verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.md <<'EOF'
+          HCA NAS-Login-Hotfix v0.13.5.1
+
+          Behebt die Namenskollision der neuen Desktop-Benutzerverwaltung mit einer bereits vorhandenen Benutzertabelle. Nach Installation erscheint korrekt die Ersteinrichtung für den ersten HCA-Administrator.
+
+          Nur das NAS-Paket installieren und den NAS-Dienst neu starten. Der Client v0.13.5 bleibt unverändert.
+          EOF
+          gh release create v0.13.5.1 dist/* --repo dhaesen/HCA-Produktionsmanager-Updates --title "HCA Login-Hotfix 0.13.5.1" --notes-file /tmp/notes.md --prerelease
+          mkdir verify
+          curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.5.1/HCA_NAS_Hotfix_Login_v0.13.5.1.zip" -o verify/HCA_NAS_Hotfix_Login_v0.13.5.1.zip
+          curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.5.1/HCA_NAS_Hotfix_Login_v0.13.5.1.sha256" -o verify/HCA_NAS_Hotfix_Login_v0.13.5.1.sha256
+          (cd verify && sha256sum -c HCA_NAS_Hotfix_Login_v0.13.5.1.sha256)
