@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "incoming/*.hcaupdate"
+      - "incoming/*.hcaupdate.b64part.*"
   workflow_dispatch:
 
 permissions:
@@ -25,7 +26,15 @@ jobs:
           set -euo pipefail
 
           if [ "${{ github.event_name }}" = "push" ]; then
-            FILE="$(git diff --name-only --diff-filter=AM "${{ github.event.before }}" "${{ github.sha }}" -- 'incoming/*.hcaupdate' | tail -n 1)"
+            CHANGED="$(git diff --name-only --diff-filter=AM "${{ github.event.before }}" "${{ github.sha }}" -- 'incoming/*.hcaupdate' 'incoming/*.hcaupdate.b64part.*')"
+            PART="$(printf '%s\n' "$CHANGED" | grep -E '\.hcaupdate\.b64part\.[0-9]+$' | tail -n 1 || true)"
+            if [ -n "$PART" ]; then
+              BASE="${PART%%.b64part.*}"
+              FILE="/tmp/$(basename "$BASE")"
+              cat "${BASE}.b64part."* | base64 --decode > "$FILE"
+            else
+              FILE="$(printf '%s\n' "$CHANGED" | grep -E '\.hcaupdate$' | tail -n 1 || true)"
+            fi
           else
             FILE="$(find incoming -maxdepth 1 -type f -name '*.hcaupdate' -print | sort -V | tail -n 1)"
           fi
@@ -35,6 +44,7 @@ jobs:
             exit 1
           fi
 
+          unzip -t "$FILE" >/dev/null
           echo "Veröffentliche: $FILE"
           mkdir -p /tmp/hca_manifest
           unzip -p "$FILE" hca-update.json > /tmp/hca_manifest/hca-update.json
