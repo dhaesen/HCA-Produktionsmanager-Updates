@@ -1,0 +1,242 @@
+name: Build and publish HCA v0.13.2
+on:
+  push:
+    branches:
+      - codex/v0.13.2-development
+    paths:
+      - .github/workflows/publish-v0132.yml
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      NAS_URL: "https://oaisdmntprnortheu.blob.core.windows.net/files/00000000-c550-81f4-b9b2-51962b447149/raw?se=2026-09-14T16%3A58%3A36Z&sp=r&sv=2026-02-06&sr=b&scid=01a0a0a2-ebe1-702f-be96-e8832c2ddafc&skoid=3804227d-1b52-417d-afd9-9ffbb50fa53e&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-14T07%3A37%3A25Z&ske=2026-09-15T07%3A37%3A25Z&sks=b&skv=2026-02-06&sig=JLYlrM62GUViT47Log0QrdvIFb8y1fK9imhqur2p%2Bh4%3D"
+      PLUGIN_URL: "https://oaisdmntprnortheu.blob.core.windows.net/files/00000000-8208-81f4-976f-2c7eb6251aa1/raw?se=2026-09-14T16%3A58%3A37Z&sp=r&sv=2026-02-06&sr=b&scid=01a0a0a2-ebe1-702f-be96-e8832c2ddafc&skoid=3804227d-1b52-417d-afd9-9ffbb50fa53e&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-09-14T06%3A40%3A02Z&ske=2026-09-15T06%3A40%3A02Z&sks=b&skv=2026-02-06&sig=sIwrEekX7E4n%2ByVyC%2BlggBOjmNi6wOVBRqNHB%2B8YHMI%3D"
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Restore verified source archives
+        run: |
+          set -euo pipefail
+          mkdir -p work
+          curl -fL "$NAS_URL" -o work/nas.zip
+          curl -fL "$PLUGIN_URL" -o work/plugin.zip
+          echo "5ed09112f45fbbde2e3d913342749099295ceecd0187b97d87c689f7fc2d410a  work/nas.zip" | sha256sum -c -
+          echo "8cca190fb70f2912643ffa1e5e1537d6dbd5ae4a2c93070f7087ac4f2f6188e8  work/plugin.zip" | sha256sum -c -
+          unzip -q work/nas.zip -d work/nas
+      - name: Patch NAS backend
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=next(Path("work/nas").rglob("hca_shared.py"))
+          s=p.read_text(encoding="utf-8")
+          def once(old,new,label):
+              global s
+              n=s.count(old)
+              if n!=1: raise SystemExit(f"{label}: expected 1 match, got {n}")
+              s=s.replace(old,new,1)
+
+          if "import base64" not in s:
+              anchor="import asyncio\n"
+              if anchor not in s: raise SystemExit("asyncio import missing")
+              s=s.replace(anchor,anchor+"import base64\n",1)
+          once('HCA_BUSINESS_SCHEMA_VERSION = "0.13.0"','HCA_BUSINESS_SCHEMA_VERSION = "0.13.2"','schema version')
+
+          anchor='''    if "default_shipping_address_id" not in customer_cols:
+              conn.execute("ALTER TABLE crm_customers ADD COLUMN default_shipping_address_id TEXT NOT NULL DEFAULT ''")
+          '''
+          migration=anchor+'''    if "discount_pct" not in customer_cols:
+              conn.execute("ALTER TABLE crm_customers ADD COLUMN discount_pct REAL NOT NULL DEFAULT 0")
+          if "credit_balance" not in customer_cols:
+              conn.execute("ALTER TABLE crm_customers ADD COLUMN credit_balance REAL NOT NULL DEFAULT 0")
+          if "vouchers" not in customer_cols:
+              conn.execute("ALTER TABLE crm_customers ADD COLUMN vouchers TEXT NOT NULL DEFAULT ''")
+          '''
+          once(anchor,migration,'customer commercial migration')
+
+          once('''    d["is_default"] = bool(d.get("is_default"))
+              return d
+          ''','''    d["is_default"] = bool(d.get("is_default"))
+              d["discount_pct"] = float(d.get("discount_pct") or 0)
+              d["credit_balance"] = float(d.get("credit_balance") or 0)
+              d["vouchers"] = str(d.get("vouchers") or "")
+              return d
+          ''','customer response')
+
+          once('''    out["is_default"] = 1 if payload.get("is_default") else 0
+              if not (out["company_name"] or out["last_name"] or out["first_name"]):
+          ''','''    out["is_default"] = 1 if payload.get("is_default") else 0
+              out["discount_pct"] = max(0.0, min(100.0, float(payload.get("discount_pct") or 0)))
+              out["credit_balance"] = float(payload.get("credit_balance") or 0)
+              vouchers = payload.get("vouchers")
+              out["vouchers"] = "\n".join(str(x).strip() for x in vouchers if str(x).strip()) if isinstance(vouchers,list) else str(vouchers or "").strip()
+              if not (out["company_name"] or out["last_name"] or out["first_name"]):
+          ''','customer payload')
+
+          once('''        _business_sync_customer_default_addresses(conn,cid,values)
+                  row = conn.execute("SELECT * FROM crm_customers WHERE id=?", (cid,)).fetchone()
+          ''','''        _business_sync_customer_default_addresses(conn,cid,values)
+                  conn.execute("UPDATE crm_customers SET discount_pct=?,credit_balance=?,vouchers=? WHERE id=?", (values["discount_pct"],values["credit_balance"],values["vouchers"],cid))
+                  row = conn.execute("SELECT * FROM crm_customers WHERE id=?", (cid,)).fetchone()
+          ''','customer create commercial')
+
+          once('''        _business_sync_customer_default_addresses(conn,customer_id,values)
+                  return {"ok": True, "item": _business_customer_dict(conn.execute("SELECT * FROM crm_customers WHERE id=?", (customer_id,)).fetchone())}
+          ''','''        _business_sync_customer_default_addresses(conn,customer_id,values)
+                  conn.execute("UPDATE crm_customers SET discount_pct=?,credit_balance=?,vouchers=? WHERE id=?", (values["discount_pct"],values["credit_balance"],values["vouchers"],customer_id))
+                  return {"ok": True, "item": _business_customer_dict(conn.execute("SELECT * FROM crm_customers WHERE id=?", (customer_id,)).fetchone())}
+          ''','customer update commercial')
+
+          old_incoming=re.compile(r'^            incoming = \{.*\}\n            if not customer:',re.M)
+          new_incoming='''            company = str(billing.get("company") or shipping.get("company") or wc.get("company") or "").strip()
+                      first_name = str(wc.get("first_name") or billing.get("first_name") or shipping.get("first_name") or "").strip()
+                      last_name = str(wc.get("last_name") or billing.get("last_name") or shipping.get("last_name") or "").strip()
+                      username = str(wc.get("username") or "").strip()
+                      if not (first_name or last_name) and username and "@" not in username:
+                          parts = username.replace(".", " ").replace("_", " ").replace("-", " ").split()
+                          if len(parts) > 1:
+                              first_name, last_name = " ".join(parts[:-1]).title(), parts[-1].title()
+                          elif parts:
+                              last_name = parts[0].title()
+                      incoming = {"company_name": company, "first_name": first_name, "last_name": last_name, "email": email_key, "phone": billing.get("phone") or shipping.get("phone"), "billing_street": " ".join(x for x in [str(billing.get("address_1") or "").strip(), str(billing.get("address_2") or "").strip()] if x), "billing_zip": billing.get("postcode"), "billing_city": billing.get("city"), "billing_country": billing.get("country") or "DE", "shipping_street": " ".join(x for x in [str(shipping.get("address_1") or "").strip(), str(shipping.get("address_2") or "").strip()] if x), "shipping_zip": shipping.get("postcode"), "shipping_city": shipping.get("city"), "shipping_country": shipping.get("country") or billing.get("country") or "DE"}
+                      if not customer:'''
+          s,n=old_incoming.subn(new_incoming,s,count=1)
+          if n!=1: raise SystemExit(f"Woo customer mapping: expected 1 match, got {n}")
+
+          old='''"reply_to":str(raw.get("reply_to") or "").strip(),"is_default":bool(raw.get("is_default"))}'''
+          new='''"reply_to":str(raw.get("reply_to") or "").strip(),"signature":str(raw.get("signature") or "").strip(),"is_default":bool(raw.get("is_default"))}'''
+          once(old,new,'mail account signature')
+
+          start=s.index('@router.post("/mail/accounts/{account_id}/send", dependencies=auth)')
+          end=s.index('\n\n# ---------------------------------------------------------------------------\n# HCA v0.13.0',start)
+          replacement='''@router.post("/mail/accounts/{account_id}/send", dependencies=auth)
+          async def mail_account_send(account_id: str, request: Request) -> dict[str, Any]:
+              body=await request.json(); body=body if isinstance(body,dict) else {}; account=_mail_account(account_id)
+              to=str(body.get("to") or "").strip(); cc=str(body.get("cc") or "").strip(); bcc=str(body.get("bcc") or "").strip()
+              if not to or "@" not in to: raise HTTPException(status_code=400,detail="Empfängeradresse fehlt.")
+              raw_attachments=body.get("attachments") if isinstance(body.get("attachments"),list) else []
+              attachments=[]; total_size=0
+              for item in raw_attachments:
+                  if not isinstance(item,dict): continue
+                  encoded=str(item.get("data") or "")
+                  if "," in encoded and encoded.lower().startswith("data:"): encoded=encoded.split(",",1)[1]
+                  try: raw=base64.b64decode(encoded,validate=True)
+                  except Exception: raise HTTPException(status_code=400,detail=f"Anhang {str(item.get('name') or '')} ist ungültig.")
+                  total_size += len(raw)
+                  if total_size > 20*1024*1024: raise HTTPException(status_code=413,detail="Anhänge sind zusammen größer als 20 MB.")
+                  attachments.append((str(item.get("name") or "Anhang"),str(item.get("mime") or "application/octet-stream"),raw))
+              def send():
+                  sender_address = str(account.get("email") or account.get("username") or "")
+                  msg=EmailMessage(); msg["Subject"]=str(body.get("subject") or ""); msg["From"]=f'{account.get("from_name") or "HCA"} <{sender_address}>'; msg["To"]=to
+                  if cc: msg["Cc"]=cc
+                  if bcc: msg["Bcc"]=bcc
+                  if account.get("reply_to"):msg["Reply-To"]=str(account["reply_to"])
+                  msg.set_content(str(body.get("message") or ""))
+                  for filename,mime,raw in attachments:
+                      parts=str(mime or "application/octet-stream").split("/",1); main=parts[0] or "application"; sub=parts[1] if len(parts)>1 else "octet-stream"
+                      msg.add_attachment(raw,maintype=main,subtype=sub,filename=filename)
+                  host=str(account.get("smtp_host") or ""); port=int(account.get("smtp_port") or 587); security=str(account.get("smtp_security") or "starttls")
+                  if not host: raise RuntimeError("SMTP-Server fehlt.")
+                  smtp=smtplib.SMTP_SSL(host,port,timeout=30) if security=="ssl" else smtplib.SMTP(host,port,timeout=30)
+                  try:
+                      if security=="starttls":smtp.starttls()
+                      smtp.login(str(account.get("username") or account.get("email") or ""),str(account.get("smtp_password") or account.get("imap_password") or "")); smtp.send_message(msg)
+                  finally:smtp.quit()
+              try:await asyncio.to_thread(send);return {"ok":True,"attachments":len(attachments)}
+              except Exception as exc:raise HTTPException(status_code=502,detail=f"E-Mail konnte nicht gesendet werden: {exc}") from exc
+          '''
+          s=s[:start]+replacement+s[end:]
+          p.write_text(s,encoding="utf-8")
+          PY
+      - name: Validate backend and data migration
+        run: |
+          set -euo pipefail
+          backend=$(find work/nas -name hca_shared.py -print -quit)
+          python -m py_compile "$backend"
+          python - <<'PY'
+          from pathlib import Path
+          s=next(Path("work/nas").rglob("hca_shared.py")).read_text(encoding="utf-8")
+          required=["discount_pct REAL","credit_balance REAL","vouchers TEXT","body.get(\"attachments\")","msg[\"Cc\"]","msg[\"Bcc\"]","\"signature\"","billing.get(\"first_name\")","shipping.get(\"first_name\")"]
+          missing=[x for x in required if x not in s]
+          if missing: raise SystemExit("Missing backend changes: "+", ".join(missing))
+          print("NAS migration, customer mapping and mail transport verified")
+          PY
+      - name: Validate client
+        run: |
+          set -euo pipefail
+          root=development/v0.13.1-package
+          node --check "$root/payload/app.js"
+          node --check "$root/payload/hca-v0132.js"
+          python - <<'PY'
+          from pathlib import Path
+          import json,re
+          root=Path("development/v0.13.1-package")
+          manifest=json.loads((root/"hca-update.json").read_text(encoding="utf-8"))
+          version=json.loads((root/"payload/version.json").read_text(encoding="utf-8"))
+          assert manifest["product"]=="HCA Produktionsmanager"
+          assert manifest["version"]==version["version"]=="0.13.2"
+          html=(root/"payload/index.html").read_text(encoding="utf-8")
+          ids=re.findall(r'id="([^"]+)"',html); dup=sorted({x for x in ids if ids.count(x)>1})
+          if dup: raise SystemExit("Duplicate HTML ids: "+", ".join(dup))
+          for needle in ['data-category="mail"','id="bcDiscount"','id="mailComposeAttachments"','/hca-v0132.js?v=0.13.2']:
+              assert needle in html, needle
+          print("Client syntax, manifest and HTML verified")
+          PY
+      - name: Build release packages
+        run: |
+          set -euo pipefail
+          mkdir -p dist
+          rm -f work/nas/INSTALLATION_v0.13.0.txt
+          cat > work/nas/INSTALLATION_v0.13.2.txt <<'EOF'
+          HCA NAS-Erweiterung v0.13.2
+
+          Installation:
+          1. Vorhandene hca_shared.py auf der Synology sichern.
+          2. app/hca_shared.py und den assets-Ordner in die bestehende HCA-NAS-App kopieren.
+          3. Den HCA-Container/Dienst neu starten.
+          4. Danach im HCA-Client den Shopkunden-Abgleich ausführen.
+
+          Die Datenbank wird beim ersten Start automatisch um Kundenrabatt, Guthaben und Gutscheine erweitert.
+          Vorhandene Daten bleiben erhalten.
+          EOF
+          (cd development/v0.13.1-package && zip -qr "$GITHUB_WORKSPACE/dist/HCA_Update_v0.13.2.hcaupdate" hca-update.json payload)
+          (cd work/nas && zip -qr "$GITHUB_WORKSPACE/dist/HCA_NAS_Erweiterung_CRM_Mail_v0.13.2.zip" .)
+          sha256sum dist/HCA_Update_v0.13.2.hcaupdate > dist/HCA_Update_v0.13.2.sha256
+          sha256sum dist/HCA_NAS_Erweiterung_CRM_Mail_v0.13.2.zip > dist/HCA_NAS_Erweiterung_CRM_Mail_v0.13.2.sha256
+          unzip -t dist/HCA_Update_v0.13.2.hcaupdate
+          unzip -t dist/HCA_NAS_Erweiterung_CRM_Mail_v0.13.2.zip
+          if unzip -Z1 dist/HCA_Update_v0.13.2.hcaupdate | grep -q '^PRUEFBERICHT'; then exit 1; fi
+          if find work/plugin -type f -newer work/plugin.zip | grep -q .; then echo "Plugin source unexpectedly changed"; exit 1; fi
+      - name: Publish GitHub release
+        run: |
+          set -euo pipefail
+          notes=$(mktemp)
+          cat > "$notes" <<'EOF'
+          HCA Produktionsmanager v0.13.2
+
+          - korrigierter WooCommerce-Kundenimport für Privatkunden ohne Firmenname
+          - funktionsfähige Register in der Kundenkartei
+          - Kundenrabatt, Guthaben und Gutscheincodes
+          - bereinigte Kopfzeile
+          - E-Mail als eigener Hauptmenüpunkt
+          - Postfachsignaturen, CC, BCC und mehrere Anhänge
+          - manueller Neustart nach dem Clientupdate bleibt erhalten
+
+          Installationsreihenfolge:
+          1. NAS-Paket installieren und HCA-Dienst neu starten.
+          2. Clientupdate in HCA einspielen.
+          3. HCA manuell schließen und neu starten.
+          4. Shopkunden & Portal abgleichen.
+
+          Das WooCommerce-Plugin 2.10.43 wurde nicht verändert.
+          EOF
+          if gh release view v0.13.2 >/dev/null 2>&1; then
+            gh release upload v0.13.2 dist/* --clobber
+            gh release edit v0.13.2 --title "HCA Produktionsmanager 0.13.2" --notes-file "$notes"
+          else
+            gh release create v0.13.2 dist/* --title "HCA Produktionsmanager 0.13.2" --notes-file "$notes"
+          fi
