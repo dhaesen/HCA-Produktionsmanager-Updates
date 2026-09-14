@@ -1,0 +1,24 @@
+name: Inspect HCA backend launcher flags
+on:
+  push:
+    branches:
+      - codex/v0.13.2-development
+    paths:
+      - .github/workflows/inspect-backend-flags.yml
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - run: |
+          set -euo pipefail
+          strings -a development/v0.13.1-package/payload/HCA_Backend.exe | grep -Ei -C 2 'browser|edge|chrome|headless|no_browser|no-browser|8765|HCA_' | head -n 1000 > development/reports/backend-launch-flags.txt || true
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add development/reports/backend-launch-flags.txt
+          git commit -m "Inspect HCA backend launch flags"
+          git push
