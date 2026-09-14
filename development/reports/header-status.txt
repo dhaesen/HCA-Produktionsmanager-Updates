@@ -1,1 +1,201 @@
-HEADER / SERVER STATUS MATCHES
+
+--- app.js:487 ---
+487: 
+488: function updateGlobalStatus(){
+489:   const connected=machines.filter(m=>m.connected).length;const active=appState.productions.filter(p=>p.status==='running'||p.status==='paused').length;const openOrders=Array.isArray(centralOrdersCache)?centralOrdersCache.filter(o=>o.status!=='shipped'&&!isOrderArchived(o)).length:0;
+490:   const topConnected=$('#topConnected');if(topConnected)topConnected.textContent=`${connected} / 4 verbunden`;const statConnected=$('#statConnected');if(statConnected)statConnected.textContent=`${connected} / 4`;const statOrders=$('#statProductions');if(statOrders)statOrders.textContent=openOrders;const legacyBadge=$('#productionBadge');if(legacyBadge)legacyBadge.textContent=active;
+491:   if(workplaceMode()==='embroidery'){$('#sidebarStatus').textContent=`${connected} von 4 Maschinen verbunden`;$('#sidebarStatusDot').classList.toggle('on',connected>0);}else{$('#sidebarStatus').textContent=centralServerOnline?'Produktionsserver verbunden':'Produktionsserver offline';$('#sidebarStatusDot').classList.toggle('on',centralServerOnline);}renderConnectionSummary();
+492:   $('#topSelectedFile').textContent=selectedFile?.name||'Keine Datei gewählt';$('#statFile').textContent=selectedFile?.name||'–';
+493: }
+494: 
+495: 
+496: // ===== Zentraler Produktionshub / Synology =====
+497: let centralOrdersCache=[];
+
+--- app.js:2360 ---
+2360: $('#githubUpdateInstallTop')?.addEventListener('click',installGithubUpdate);
+2361: $('#githubUpdateLater')?.addEventListener('click',()=>$('#githubUpdateBanner')?.classList.add('hidden'));
+2362: $('#githubUpdateChannel')?.addEventListener('change',async e=>{appState.settings.updateChannel=e.target.value==='beta'?'beta':'stable';await saveState();latestGithubUpdate=null;await checkGithubUpdate(false);});
+2363: $('#githubAutoUpdateCheck')?.addEventListener('change',async e=>{appState.settings.autoUpdateCheck=!!e.target.checked;await saveState();});
+2364: 
+2365: let selectedUpdateFile=null;
+2366: $('#updateFileInput')?.addEventListener('change',e=>{
+2367:   selectedUpdateFile=e.target.files?.[0]||null;
+2368:   const st=$('#updateStatus'),btn=$('#applyUpdate');
+2369:   if(selectedUpdateFile){st.textContent=`Ausgewählt: ${selectedUpdateFile.name} · ${fmtBytes(selectedUpdateFile.size)}`;btn.disabled=false;}
+2370:   else{st.textContent='Keine Update-Datei ausgewählt.';btn.disabled=true;}
+2371: });
+2372: $('#applyUpdate')?.addEventListener('click',async()=>{
+2373:   if(!selectedUpdateFile)return;
+2374:   if(!await hcaConfirm(`${selectedUpdateFile.name}\n\nUpdate jetzt einspielen?\n\nDanach schließt und öffnest du den HCA Produktionsmanager selbst.`))return;
+2375:   const btn=$('#applyUpdate'),st=$('#updateStatus');btn.disabled=true;st.textContent='Update wird geprüft und vorbereitet …';
+2376:   try{
+2377:     const res=await fetch('/api/update/apply',{method:'POST',headers:{'Content-Type':'application/octet-stream'},body:selectedUpdateFile});
+2378:     const data=await res.json();if(!res.ok)throw new Error(data.error||`HTTP ${res.status}`);
+2379:     showManualUpdateRestart(data.version||'',st);
+2380:   }catch(err){
+2381:     // Der lokale Update-Dienst beendet sich nach erfolgreicher Paketprüfung selbst,
+2382:     // damit seine Dateien ersetzt werden können. WebView2 kann dadurch die bereits
+
+--- index.html:90 ---
+90:           <button type="button" data-business-new="supplierinvoice">Lieferantenrechnung</button>
+91:           <button type="button" data-business-new="receipt">Wareneingang</button>
+92:         </div>
+93:       </div>
+94:       <div class="top-status">
+95:         <div class="server-connection-summary" id="serverConnectionSummary"><span class="mini-dot" id="serverConnectionDot"></span><span id="serverConnectionText">Server wird geprüft …</span></div>
+96:         <span id="topSelectedFile">Keine Datei gewählt</span>
+97:         <div class="connection-summary" id="connectionSummary">
+98:           <span class="connection-indicator" data-connection-machine="0"><span class="dot"></span><span>HCA 1</span></span>
+99:           <span class="connection-indicator" data-connection-machine="1"><span class="dot"></span><span>HCA 2</span></span>
+100:           <span class="connection-indicator" data-connection-machine="2"><span class="dot"></span><span>HCA 3</span></span>
+101:           <span class="connection-indicator" data-connection-machine="3"><span class="dot"></span><span>HCA 4</span></span>
+
+--- index.html:109 ---
+109:     </div>
+110: 
+111:     <section class="view active" id="view-dashboard">
+112:       <div class="production-hero central-hero business-hero">
+113:         <div><div class="eyebrow">HCA BUSINESS</div><h2>Unternehmensübersicht</h2><p>Kunden, Angebote, Aufträge, Material und Produktion in einem durchgängigen Ablauf.</p></div>
+114:         <div class="hero-actions"><div class="dashboard-server-state" id="dashboardServerState"><span class="mini-dot" id="dashboardServerDot"></span><b id="dashboardServerText">Server wird geprüft …</b></div><button class="btn primary" id="dashboardNewQuote" type="button">+ Neues Angebot</button><button class="btn secondary" id="dashboardNewCustomer" type="button">+ Neuer Kunde</button><button class="btn secondary" id="reloadBusinessDashboard" type="button">Aktualisieren</button></div>
+115:       </div>
+116:       <div class="business-kpi-grid">
+117:         <button class="business-kpi" data-dashboard-open="customers"><span>Kunden</span><strong id="dashboardCustomers">0</strong><small>aktive Kunden</small></button>
+118:         <button class="business-kpi" data-dashboard-open="quotes"><span>Angebote</span><strong id="dashboardQuotes">0</strong><small>offen / gesendet</small></button>
+119:         <button class="business-kpi" data-dashboard-open="salesorders"><span>Aufträge</span><strong id="dashboardSalesOrders">0</strong><small>kaufmännisch offen</small></button>
+
+--- index.html:231 ---
+231:           <div class="actions-row">
+232:             <label class="btn secondary" for="localFile">Datei vom PC wählen</label>
+233:             <label class="btn secondary" for="hp1File">HP1 vom PC wählen</label>
+234:             <button class="btn secondary" id="openMotifPreview" type="button" disabled>Vorschau &amp; Garnfarben</button>
+235:           </div>
+236:           <input id="localFile" type="file" accept=".tap,.dst">
+237:           <input id="hp1File" type="file" accept=".hp1">
+238:         </div>
+239:         <div class="file-layout">
+240:           <div class="file-browser-wrap">
+241:             <div class="browser-toolbar">
+242:               <button class="icon-btn" id="nasUp" title="Eine Ebene zurück">←</button>
+
+--- index.html:355 ---
+355:         <div class="hero-actions">
+356:           <button class="btn primary" id="openCentralOrder">Produktionsauftrag manuell</button>
+357:           <button class="btn secondary" id="openInternalOrder" type="button">Interner Produktionsauftrag</button>
+358:           <button class="btn secondary" id="openMerchImport" type="button">Merchauftrag / Einzelversand importieren</button>
+359:           <label class="btn secondary" for="centralImportFile">CSV / Excel importieren</label>
+360:           <input id="centralImportFile" type="file" accept=".csv,.xlsx,.xls">
+361:           <a class="btn secondary" href="/HCA_Auftragsimport_Vorlage.xlsx" download>Normale Importvorlage</a>
+362:           <a class="btn secondary" href="/HCA_Merch_Einzelversand_Vorlage.xlsx" download>Merch-Einzelversand-Vorlage</a>
+363:           <button class="btn secondary" id="syncWooCommerce" type="button">Shop jetzt abrufen</button>
+364:         </div>
+365:       </div>
+366:       <div class="central-status-row">
+367:         <span class="status-pill" id="centralServerStatus">Produktionsserver nicht geprüft</span>
+368:         <span class="status-pill" id="wooStatus">WooCommerce nicht geprüft</span>
+369:       </div>
+370:       <div class="orders-toolbar panel">
+371:         <div class="actions-row">
+372:           <button class="btn secondary active-filter" data-order-filter="open">Offen</button>
+
+--- index.html:796 ---
+796:         <div class="panel">
+797:           <h2>Garnkataloge (.tch)</h2>
+798:           <p>TCH-Farbkarten werden beim Import eingelesen und zentral auf der Synology gespeichert. Dadurch stehen die gleichen Garnfarben an allen HCA-Arbeitsplätzen zur Verfügung.</p>
+799:           <div class="actions-row">
+800:             <label class="btn primary" for="threadCatalogFileInput">TCH-Farbkatalog importieren</label>
+801:             <input id="threadCatalogFileInput" type="file" accept=".tch,text/plain" multiple hidden>
+802:             <button class="btn secondary" id="reloadThreadCatalogs" type="button">Kataloge aktualisieren</button>
+803:           </div>
+804:           <div id="threadCatalogSettingsList" class="thread-catalog-settings-list"><p class="settings-note">Noch keine zentralen Garnkataloge geladen.</p></div>
+805:           <p class="settings-note">Die Belegung der 12 Nadeln bleibt je Maschine und Arbeitsplatz lokal. Nur die Farbkataloge werden zentral geteilt.</p>
+806:         </div>
+
+--- index.html:811 ---
+811:             <img id="logoPreviewImage" src="/assets/logo-app.png" alt="Werbestudio Königswinter">
+812:             <span id="logoPreviewEmpty" class="hidden"></span>
+813:           </div>
+814:           <div class="actions-row logo-actions hidden" aria-hidden="true">
+815:             <label class="btn primary" for="logoFileInput">Logo auswählen</label>
+816:             <input id="logoFileInput" type="file" disabled>
+817:             <button class="btn secondary" id="removeLogo" type="button" disabled>Logo entfernen</button>
+818:           </div>
+819:           <p class="settings-note">Dieses Logo wird auch für die Artikeletiketten verwendet.</p>
+820:         </div>
+821:         <div class="panel">
+822:           <h2>Artikeletiketten</h2>
+823:           <p>Das Artikeletikett wird automatisch erst dann gedruckt, wenn bei einem Textil <strong>alle Produktionspositionen</strong> fertig sind.</p>
+824:           <label class="check-line"><input type="checkbox" id="settingProductLabelAuto"> Artikeletikett nach vollständigem Textil automatisch drucken</label>
+825:           <label class="check-line"><input type="checkbox" id="settingProductLabelMotif"> Kleine Motivvorschau auf dem Artikeletikett drucken</label>
+826:           <input id="labelMotifImageInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+827:           <label>Artikeletikett-Drucker</label>
+828:           <input id="settingProductLabelPrinter" class="text-input" list="windowsPrinterList" placeholder="Windows-Drucker auswählen">
+829:           <div class="settings-inline-grid">
+830:             <div><label>Breite (mm)</label><input id="settingProductLabelWidth" class="text-input" type="number" min="20" step="1" value="62"></div>
+831:             <div><label>Höhe (mm)</label><input id="settingProductLabelHeight" class="text-input" type="number" min="20" step="1" value="40"></div>
+
+--- index.html:861 ---
+861:           <select id="settingCareProfile" class="text-input"><option value="standard">Standard / Fallback</option><option value="stick">Stick</option><option value="dtf">DTF</option><option value="flex">Flex</option><option value="flock">Flock</option></select>
+862:           <label id="careUseStandardWrap" class="check-line hidden"><input type="checkbox" id="settingCareUseStandard"> Standardprofil für diese Veredelungsart verwenden</label>
+863:           <label>Hinweistext unter den Symbolen · maximal 2 Zeilen / 55 Zeichen je Zeile</label>
+864:           <textarea id="settingCareText" class="text-input care-textarea" rows="2" placeholder="z. B. 30 °C · auf links waschen&#10;nicht bleichen · kein Trockner · niedrig bügeln"></textarea>
+865:           <div id="careSvgGrid" class="care-svg-grid"></div>
+866:           <input id="careSvgFileInput" type="file" accept=".svg,image/svg+xml" hidden>
+867:           <h3>Hersteller-/Firmenangaben auf dem Etikett</h3>
+868:           <label>Firma / verantwortliche Person</label><input id="settingLabelCompany" class="text-input">
+869:           <label>Straße / Hausnummer</label><input id="settingLabelAddress" class="text-input">
+870:           <label>PLZ / Ort</label><input id="settingLabelCity" class="text-input">
+871:           <label>Land</label><input id="settingLabelCountry" class="text-input" value="Deutschland">
+
+--- index.html:891 ---
+891:             <img id="appIconPreviewImage" src="/assets/app-icon.png" alt="HCA Anwendungssymbol">
+892:             <span id="appIconPreviewEmpty" class="hidden"></span>
+893:           </div>
+894:           <div class="actions-row logo-actions hidden" aria-hidden="true">
+895:             <label class="btn primary" for="appIconFileInput">Symbol auswählen</label>
+896:             <input id="appIconFileInput" type="file" disabled>
+897:             <button class="btn secondary" id="removeAppIcon" type="button" disabled>Symbol entfernen</button>
+898:           </div>
+899:           <p class="settings-note">Das Symbol kann nicht über die Einstellungen verändert werden.</p>
+900:         </div>
+901:         <div class="panel">
+
+--- index.html:958 ---
+958:           <div class="github-release-notes hidden" id="githubReleaseNotes"></div>
+959:           <div class="manual-update-fallback">
+960:             <h3>Manuelles Update · Fallback</h3>
+961:             <p>Falls GitHub einmal nicht erreichbar ist, kann eine <code>.hcaupdate</code>-Datei weiterhin direkt eingespielt werden.</p>
+962:             <div class="actions-row">
+963:               <label class="btn secondary" for="updateFileInput">Update-Datei wählen</label>
+964:               <input id="updateFileInput" type="file" accept=".hcaupdate,.zip">
+965:               <button class="btn primary" id="applyUpdate" type="button" disabled>Update einspielen</button>
+966:             </div>
+967:             <p class="settings-note" id="updateStatus">Keine Update-Datei ausgewählt.</p>
+968:           </div>
+969:         </div>
+
+--- index.html:1088 ---
+1088:         <div><label>Breite (cm)</label><input id="merchWidth" class="text-input" type="number" min="0" step="0.1"></div>
+1089:         <div><label>Höhe (cm)</label><input id="merchHeight" class="text-input" type="number" min="0" step="0.1"></div>
+1090:       </div>
+1091:       <div style="margin-top:10px"><label>Versandstrategie</label><select id="merchShippingStrategy" class="text-input"><option value="auto_cheapest">Günstigste verfügbare Versandart automatisch verwenden</option><option value="manual_cheapest">Günstigsten Preis anzeigen und manuell bestätigen</option></select></div>
+1092:     </div>
+1093:     <div class="merch-file-box"><label>Kundentabelle (.xlsx oder .csv)</label><input id="merchImportFile" class="text-input" type="file" accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"><p class="modal-help"><a href="/HCA_Merch_Einzelversand_Vorlage.xlsx" download>Merch-Einzelversand-Vorlage herunterladen</a></p></div>
+1094:     <p class="modal-help" id="merchImportStatus">Eine Tabellenzeile entspricht genau einem Artikel und einer Einzelsendung.</p>
+1095:     <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="saveMerchImport">Merchauftrag importieren</button></div>
+1096:   </form>
+1097: </dialog>
+1098: 
+
+--- index.html:1201 ---
+1201: </div>
+1202: 
+1203: <div id="financeSupplierInvoiceDialog" class="business-main-form panel">
+1204:   <form autocomplete="off" onsubmit="return false">
+1205:     <div class="modal-head"><div><div class="eyebrow">EINKAUF &amp; FINANZEN</div><h2>Lieferantenrechnung erfassen</h2></div></div>
+1206:     <div class="business-form-grid"><div class="span-2"><label>Lieferant</label><input id="financeSupplierName" class="text-input" placeholder="Lieferantenname"></div><div><label>Rechnungsnummer des Lieferanten</label><input id="financeSupplierInvoiceNo" class="text-input"></div><div><label>Bestellung / Referenz</label><input id="financeSupplierPurchaseRef" class="text-input"></div><div class="span-2"><label>Betreff</label><input id="financeSupplierSubject" class="text-input" value="Lieferantenrechnung"></div><div><label>Rechnungsdatum</label><input id="financeSupplierDate" type="date" class="text-input"></div><div><label>Fällig am</label><input id="financeSupplierDue" type="date" class="text-input"></div><div><label>Netto</label><input id="financeSupplierNet" type="number" min="0" step="0.01" class="text-input"></div><div><label>MwSt.</label><input id="financeSupplierTax" type="number" min="0" step="0.01" class="text-input"></div><div><label>Brutto</label><input id="financeSupplierGross" type="number" min="0" step="0.01" class="text-input"></div><div><label>Steuersatz %</label><input id="financeSupplierTaxRate" type="number" min="0" step="0.01" value="19" class="text-input"></div><div class="span-2"><label>Originalbeleg (optional)</label><input id="financeSupplierFile" type="file" class="text-input" accept=".pdf,.jpg,.jpeg,.png,.xml,application/pdf,image/jpeg,image/png,text/xml,application/xml"></div></div>
+1207:     <label>Notiz</label><textarea id="financeSupplierNotes" class="text-input business-textarea"></textarea>
+1208:     <div class="modal-actions"><button type="button" id="cancelFinanceSupplierInvoice" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="saveFinanceSupplierInvoice">Lieferantenrechnung speichern</button></div>
+1209:   </form>
+1210: </div>
+1211: 

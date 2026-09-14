@@ -1,1 +1,611 @@
-INDEX CUSTOMER / MAIL STRUCTURE
+
+--- index.html:19 ---
+19:           <strong>WERBESTUDIO</strong>
+20:           <span>KÖNIGSWINTER</span>
+21:         </div>
+22:       </div>
+23:     </div>
+24:     <div class="app-name">HCA Manager <span id="appVersion">v0.13.1</span></div>
+25: 
+26:     <nav class="nav" id="nav">
+27:       <div class="nav-section-label">START</div>
+28:       <button class="nav-item active" data-view="dashboard" data-category="start"><span class="nav-icon">⌂</span><span>Dashboard</span></button>
+29:       <div class="nav-section-label">CRM</div>
+30:       <button class="nav-item" data-view="customers" data-category="crm"><span class="nav-icon">◎</span><span>Kunden</span><span class="nav-badge" id="customersBadge">0</span></button>
+31:       <button class="nav-item" data-view="suppliers" data-category="crm"><span class="nav-icon">◆</span><span>Lieferanten</span></button>
+32:       <button class="nav-item" data-view="mail" data-category="crm"><span class="nav-icon">✉</span><span>E-Mail</span></button>
+33:       <div class="nav-section-label">EINKAUF &amp; VERTRIEB</div>
+34:       <button class="nav-item" data-view="quotes" data-category="commerce"><span class="nav-icon">◇</span><span>Angebote</span><span class="nav-badge" id="quotesBadge">0</span></button>
+35:       <button class="nav-item" data-view="salesorders" data-category="commerce"><span class="nav-icon">▤</span><span>Aufträge</span><span class="nav-badge" id="salesOrdersBadge">0</span></button>
+36:       <button class="nav-item" data-view="inventory" data-category="commerce" data-inventory-target="receipts"><span class="nav-icon">⇣</span><span>Einkauf</span></button>
+37:       <div class="nav-section-label">FINANZEN</div>
+38:       <button class="nav-item" data-view="invoices" data-category="finance"><span class="nav-icon">€</span><span>Rechnungen</span><span class="nav-badge" id="invoicesBadge">0</span></button>
+39:       <div class="nav-section-label">LAGER &amp; LOGISTIK</div>
+40:       <button class="nav-item" data-view="deliverynotes" data-category="logistics"><span class="nav-icon">⇥</span><span>Lieferscheine</span><span class="nav-badge" id="deliveryNotesBadge">0</span></button>
+41:       <button class="nav-item" data-view="inventory" data-category="logistics" data-inventory-target="articles"><span class="nav-icon">▥</span><span>Lager</span><span class="nav-badge" id="inventoryBadge">0</span></button>
+42:       <button class="nav-item" data-view="shipping" data-category="logistics"><span class="nav-icon">⇢</span><span>Versand</span><span class="nav-badge" id="shippingBadge">0</span></button>
+43:       <div class="nav-section-label">PRODUKTION</div>
+44:       <button class="nav-item hidden legacy-production-nav" data-view="production" data-category="production" aria-hidden="true" tabindex="-1"><span class="nav-icon">✓</span><span>Produktionsmonitor</span><span class="nav-badge" id="productionBadge">0</span></button>
+45:       <button class="nav-item" data-view="orders" data-category="production"><span class="nav-icon">▣</span><span>Produktionsaufträge</span><span class="nav-badge" id="ordersBadge">0</span></button>
+46:       <button class="nav-item" data-view="workbench" data-category="production"><span class="nav-icon">●</span><span>Arbeitsplatz</span><span class="nav-badge" id="workbenchBadge">0</span></button>
+47:       <button class="nav-item" data-view="transfer" data-category="production"><span class="nav-icon">↑</span><span>Übertragen</span></button>
+48:       <button class="nav-item" data-view="machines" data-category="production"><span class="nav-icon">▦</span><span>Maschinen</span></button>
+49:       <div class="nav-section-label">SYSTEM</div>
+50:       <button class="nav-item" data-view="logview" data-category="system"><span class="nav-icon">≡</span><span>Protokoll</span></button>
+51:       <button class="nav-item" data-view="settings" data-category="system"><span class="nav-icon">⚙</span><span>Einstellungen</span></button>
+52:       <button class="nav-item" data-view="help" data-category="system"><span class="nav-icon">?</span><span>Hilfe</span></button>
+53:     </nav>
+54: 
+55:     <div class="sidebar-bottom">
+56:       <div class="serial-mini" id="machineSidebarStatus">
+57:         <span class="mini-dot" id="sidebarStatusDot"></span>
+58:         <span id="sidebarStatus">0 von 4 Maschinen verbunden</span>
+59:       </div>
+60:       <button class="ghost-light" id="shutdownApp">Programm beenden</button>
+61:     </div>
+62:   </aside>
+63: 
+64:   <main class="workspace">
+65:     <nav class="main-category-nav" id="mainCategoryNav" aria-label="Hauptnavigation">
+66:       <button type="button" class="main-category active" data-category="start">Start</button>
+67:       <button type="button" class="main-category" data-category="crm">CRM</button>
+68:       <button type="button" class="main-category" data-category="commerce">Einkauf &amp; Vertrieb</button>
+69:       <button type="button" class="main-category" data-category="finance">Finanzen</button>
+70:       <button type="button" class="main-category" data-category="logistics">Lager &amp; Logistik</button>
+71:       <button type="button" class="main-category" data-category="production">Produktion</button>
+72:       <button type="button" class="main-category" data-category="system">System</button>
+73:     </nav>
+74:     <header class="topbar">
+75:       <div>
+76:         <div class="eyebrow">WERBESTUDIO KÖNIGSWINTER · HCA</div>
+77:         <h1 id="viewTitle">Dashboard</h1>
+78:       </div>
+79:       <div class="hca-global-tools">
+80:         <div class="hca-global-search-wrap">
+81:           <input id="businessGlobalSearch" class="hca-global-search" autocomplete="off" placeholder="Kunde, AN-, AU-, RE-, ER- oder Artikelnummer suchen …">
+82:           <div id="businessGlobalSearchResults" class="hca-global-search-results hidden"></div>
+83:         </div>
+84:         <button class="btn primary compact" id="businessQuickNew" type="button">+ Neu</button>
+85:         <div id="businessQuickNewMenu" class="hca-quick-new-menu hidden">
+86:           <button type="button" data-business-new="customer">Kunde</button>
+87:           <button type="button" data-business-new="quote">Angebot</button>
+88:           <button type="button" data-business-new="salesorder">Auftrag</button>
+89:           <button type="button" data-business-new="customerinvoice">Kundenrechnung</button>
+90:           <button type="button" data-business-new="supplierinvoice">Lieferantenrechnung</button>
+91:           <button type="button" data-business-new="receipt">Wareneingang</button>
+92:         </div>
+93:       </div>
+94:       <div class="top-status">
+95:         <div class="server-connection-summary" id="serverConnectionSummary"><span class="mini-dot" id="serverConnectionDot"></span><span id="serverConnectionText">Server wird geprüft …</span></div>
+96:         <span id="topSelectedFile">Keine Datei gewählt</span>
+
+--- index.html:106 ---
+106:     <div class="github-update-banner hidden" id="githubUpdateBanner">
+107:       <div><strong id="githubUpdateBannerTitle">Update verfügbar</strong><span id="githubUpdateBannerText"></span></div>
+108:       <div class="actions-row"><button class="btn secondary" id="githubUpdateLater" type="button">Später</button><button class="btn primary" id="githubUpdateInstallTop" type="button">Update installieren</button></div>
+109:     </div>
+110: 
+111:     <section class="view active" id="view-dashboard">
+112:       <div class="production-hero central-hero business-hero">
+113:         <div><div class="eyebrow">HCA BUSINESS</div><h2>Unternehmensübersicht</h2><p>Kunden, Angebote, Aufträge, Material und Produktion in einem durchgängigen Ablauf.</p></div>
+114:         <div class="hero-actions"><div class="dashboard-server-state" id="dashboardServerState"><span class="mini-dot" id="dashboardServerDot"></span><b id="dashboardServerText">Server wird geprüft …</b></div><button class="btn primary" id="dashboardNewQuote" type="button">+ Neues Angebot</button><button class="btn secondary" id="dashboardNewCustomer" type="button">+ Neuer Kunde</button><button class="btn secondary" id="reloadBusinessDashboard" type="button">Aktualisieren</button></div>
+115:       </div>
+116:       <div class="business-kpi-grid">
+117:         <button class="business-kpi" data-dashboard-open="customers"><span>Kunden</span><strong id="dashboardCustomers">0</strong><small>aktive Kunden</small></button>
+118:         <button class="business-kpi" data-dashboard-open="quotes"><span>Angebote</span><strong id="dashboardQuotes">0</strong><small>offen / gesendet</small></button>
+119:         <button class="business-kpi" data-dashboard-open="salesorders"><span>Aufträge</span><strong id="dashboardSalesOrders">0</strong><small>kaufmännisch offen</small></button>
+120:         <button class="business-kpi" data-dashboard-open="invoices"><span>Rechnungen</span><strong id="dashboardInvoices">0</strong><small>offen</small></button>
+121:         <button class="business-kpi" data-dashboard-open="orders"><span>Produktionsaufträge</span><strong id="dashboardProductionOrders">0</strong><small>in Fertigung</small></button>
+122:       </div>
+123:       <div class="business-dashboard-grid">
+124:         <div class="panel"><div class="panel-head"><div><div class="eyebrow">VERTRIEB</div><h3>Letzte Angebote</h3></div><button class="btn secondary" id="dashboardOpenQuotes" type="button">Alle Angebote</button></div><div id="dashboardRecentQuotes" class="business-compact-list"></div></div>
+125:         <div class="panel"><div class="panel-head"><div><div class="eyebrow">AUFTRÄGE</div><h3>Letzte Aufträge</h3></div><button class="btn secondary" id="dashboardOpenSalesOrders" type="button">Alle Aufträge</button></div><div id="dashboardRecentOrders" class="business-compact-list"></div></div>
+126:       </div>
+127:       <div class="panel business-flow-panel"><div class="eyebrow">FESTER HCA-ABLAUF</div><div class="business-flow"><span>Kunde</span><b>→</b><span>Angebot</span><b>→</b><span>Auftrag</span><b>→</b><span>Material</span><b>→</b><span>Produktionsauftrag</span><b>→</b><span>Produktion</span><b>→</b><span>Versand</span><b>→</b><span>Rechnung</span></div><p>Aufträge und Produktionsaufträge sind bewusst getrennte Objekte. Ein Produktionsauftrag entsteht aus einem bestätigten Auftrag und enthält nur die für die Fertigung relevanten Daten.</p></div>
+128:     </section>
+129: 
+130:     <section class="view" id="view-customers">
+131:       <div id="crmCustomerListPage">
+132:         <div class="production-hero central-hero business-hero"><div><div class="eyebrow">CRM</div><h2>Kunden &amp; Interessenten</h2><p>Zentrale Kundenakte mit Kontakten, Angeboten, Aufträgen und E-Mail-Kommunikation.</p></div><div class="hero-actions"><button class="btn primary" id="openBusinessCustomer" type="button">+ Kunde anlegen</button><button class="btn secondary" id="syncWooCustomersPortal" type="button">Shopkunden &amp; Portal abgleichen</button><button class="btn secondary" id="reloadBusinessCustomers" type="button">Aktualisieren</button></div></div>
+133:         <div class="orders-toolbar panel"><div class="actions-row"><button class="btn secondary active-filter" data-customer-filter="active">Aktiv</button><button class="btn secondary" data-customer-filter="all">Alle</button></div><input class="search" id="businessCustomerSearch" placeholder="Kundennummer, Firma, Name, E-Mail oder Ort suchen …"></div>
+134:         <div id="businessCustomerList" class="business-table-list"></div>
+135:       </div>
+136:       <div id="crmCustomerDetailPage" class="hidden"><div class="business-page-toolbar"><button class="btn secondary" id="businessCustomerBack" type="button">← Zurück zur Kundenliste</button><div class="actions-row"><button class="btn primary" id="businessCustomerNewQuote" type="button">+ Angebot</button><button class="btn secondary" id="businessCustomerEdit" type="button">Bearbeiten</button></div></div><div id="businessCustomerDetail"></div></div>
+137:     </section>
+138: 
+139:     <section class="view" id="view-suppliers">
+140:       <div class="production-hero central-hero business-hero"><div><div class="eyebrow">CRM · EINKAUF</div><h2>Lieferanten</h2><p>Lieferanten getrennt von Herstellern verwalten. API-Zugänge werden später je Großhändler ergänzt.</p></div><div class="hero-actions"><button class="btn primary" id="openHcaSupplier" type="button">+ Lieferant anlegen</button><button class="btn secondary" id="reloadHcaSuppliers" type="button">Aktualisieren</button></div></div>
+141:       <div class="orders-toolbar panel"><input class="search" id="hcaSupplierSearch" placeholder="Lieferant, Ansprechpartner, E-Mail, Ort oder Kundennummer suchen …"></div>
+142:       <div id="hcaSupplierList" class="business-table-list"></div>
+143:     </section>
+144: 
+145:     <section class="view" id="view-quotes">
+146:       <div id="businessQuoteListPage">
+147:         <div class="production-hero central-hero business-hero"><div><div class="eyebrow">VERTRIEB</div><h2>Angebote</h2><p>Schnelle Angebotserfassung für veredelte Textilien und personalisierte Werbeartikel.</p></div><div class="hero-actions"><button class="btn primary" id="openBusinessQuote" type="button">+ Neues Angebot</button><button class="btn secondary" id="reloadBusinessQuotes" type="button">Aktualisieren</button></div></div>
+148:         <div class="orders-toolbar panel"><div class="actions-row"><button class="btn secondary active-filter" data-quote-filter="all">Alle</button><button class="btn secondary" data-quote-filter="open">Offen</button><button class="btn secondary" data-quote-filter="sent">Gesendet</button><button class="btn secondary" data-quote-filter="accepted">Angenommen</button></div><input class="search" id="businessQuoteSearch" placeholder="Angebotsnummer, Kunde oder Betreff suchen …"></div>
+149:         <div id="businessQuoteList" class="business-table-list"></div>
+150:       </div>
+151:       <div id="businessQuoteEditorPage" class="hidden"><div class="business-page-toolbar"><button class="btn secondary" id="businessQuoteBack" type="button">← Zurück zu Angeboten</button><div class="actions-row" id="businessQuoteTopActions"></div></div><div id="businessQuoteEditor"></div></div>
+152:     </section>
+153: 
+154:     <section class="view" id="view-salesorders">
+155:       <div id="businessSalesOrderListPage">
+156:         <div class="production-hero central-hero business-hero"><div><div class="eyebrow">VERTRIEB</div><h2>Aufträge</h2><p>Verbindliche kaufmännische Kundenaufträge. Produktionsaufträge werden daraus separat erzeugt.</p></div><div class="hero-actions"><button class="btn primary" id="newBusinessSalesOrder" type="button">+ Neuer Auftrag</button><button class="btn secondary" id="reloadBusinessSalesOrders" type="button">Aktualisieren</button></div></div>
+157:         <div class="orders-toolbar panel"><div class="actions-row"><button class="btn secondary active-filter" data-sales-order-filter="all">Alle</button><button class="btn secondary" data-sales-order-filter="open">Offen</button><button class="btn secondary" data-sales-order-filter="completed">Abgeschlossen</button></div><input class="search" id="businessSalesOrderSearch" placeholder="Auftragsnummer, Kunde, Referenz oder Betreff suchen …"></div>
+158:         <div id="businessSalesOrderList" class="business-table-list"></div>
+159:       </div>
+160:       <div id="businessSalesOrderDetailPage" class="hidden"><div class="business-page-toolbar"><button class="btn secondary" id="businessSalesOrderBack" type="button">← Zurück zu Aufträgen</button><div class="actions-row" id="businessSalesOrderTopActions"></div></div><div id="businessSalesOrderDetail"></div></div>
+161:       <div id="businessSalesOrderEditorPage" class="hidden business-entry-page">
+162:         <div class="business-page-toolbar"><button class="btn secondary" id="businessSalesOrderEditorBack" type="button">← Zurück zu Aufträgen</button><span class="business-page-context">Auftragserfassung im Hauptfenster</span></div>
+163:         <div id="businessSalesOrderEditorHost"></div>
+164:       </div>
+165:     </section>
+166: 
+167:     <section class="view" id="view-mail">
+168:       <div class="production-hero central-hero business-hero"><div><div class="eyebrow">KOMMUNIKATION</div><h2>E-Mail</h2><p>Mehrere zentrale IMAP-/SMTP-Postfächer direkt im HCA Manager.</p></div><div class="hero-actions"><select id="mailAccountSelect" class="text-input"></select><button class="btn primary" id="mailCompose" type="button">+ Neue E-Mail</button><button class="btn secondary" id="mailReload" type="button">Aktualisieren</button></div></div>
+169:       <div class="hca-mail-layout"><div class="panel"><div class="panel-head"><h3>Posteingang</h3></div><div id="mailMessageList" class="hca-mail-list"><div class="business-empty">Bitte ein Postfach auswählen.</div></div></div><div class="panel" id="mailMessageDetail"><div class="business-empty">E-Mail auswählen.</div></div></div>
+170:     </section>
+171: 
+172: 
+173:     <section class="view" id="view-invoices">
+174:       <div id="financeInvoiceListPage">
+175:         <div class="production-hero central-hero business-hero">
+176:           <div><div class="eyebrow">FINANZEN</div><h2>Rechnungen</h2><p>Kundenrechnungen, Lieferantenrechnungen und in Lexware Office vorhandene Belege in einer gemeinsamen Übersicht.</p></div>
+177:           <div class="hero-actions"><button class="btn primary" id="newCustomerInvoice" type="button">+ Kundenrechnung</button><button class="btn secondary" id="newSupplierInvoice" type="button">+ Lieferantenrechnung</button><button class="btn secondary" id="syncLexwareInvoices" type="button">Lexware synchronisieren</button><button class="btn secondary" id="reloadFinanceInvoices" type="button">Aktualisieren</button></div>
+178:         </div>
+179:         <div class="orders-toolbar panel finance-toolbar">
+180:           <div class="finance-filter-stack"><div class="actions-row"><button class="btn secondary active-filter" data-finance-direction="all">Alle</button><button class="btn secondary" data-finance-direction="customer">Kunden</button><button class="btn secondary" data-finance-direction="supplier">Lieferanten</button></div><div class="actions-row"><button class="btn secondary active-filter" data-finance-status="all">Alle Status</button><button class="btn secondary" data-finance-status="open">Offen</button><button class="btn secondary" data-finance-status="paid">Bezahlt</button></div></div>
+181:           <input class="search" id="financeInvoiceSearch" placeholder="Rechnungsnummer, Kunde, Lieferant oder Referenz suchen …">
+182:         </div>
+183:         <div id="financeInvoiceList" class="finance-invoice-list"></div>
+184:       </div>
+185:       <div id="financeInvoiceDetailPage" class="hidden">
+186:         <div class="business-page-toolbar"><button class="btn secondary" id="financeInvoiceBack" type="button">← Zurück zu Rechnungen</button><div class="actions-row" id="financeInvoiceTopActions"></div></div>
+187:         <div id="financeInvoiceDetail"></div>
+188:       </div>
+189:       <div id="financeCustomerInvoiceEditorPage" class="hidden business-entry-page">
+190:         <div class="business-page-toolbar"><button class="btn secondary" id="financeCustomerInvoiceEditorBack" type="button">← Zurück zu Rechnungen</button><span class="business-page-context">Kundenrechnung im Hauptfenster</span></div>
+191:         <div id="financeCustomerInvoiceEditorHost"></div>
+192:       </div>
+193:       <div id="financeSupplierInvoiceEditorPage" class="hidden business-entry-page">
+194:         <div class="business-page-toolbar"><button class="btn secondary" id="financeSupplierInvoiceEditorBack" type="button">← Zurück zu Rechnungen</button><span class="business-page-context">Lieferantenrechnung im Hauptfenster</span></div>
+195:         <div id="financeSupplierInvoiceEditorHost"></div>
+196:       </div>
+197:     </section>
+198: 
+199:     <section class="view" id="view-deliverynotes">
+200:       <div id="deliveryNoteListPage">
+201:         <div class="production-hero central-hero business-hero">
+202:           <div><div class="eyebrow">LOGISTIK &amp; FINANZEN</div><h2>Lieferscheine</h2><p>Teil- und Komplettlieferungen aus Aufträgen, Rechnungen oder Produktionssendungen.</p></div>
+203:           <div class="hero-actions"><button class="btn secondary" id="reloadDeliveryNotes" type="button">Aktualisieren</button></div>
+204:         </div>
+205:         <div class="orders-toolbar panel"><div class="actions-row"><button class="btn secondary active-filter" data-delivery-filter="all">Alle</button><button class="btn secondary" data-delivery-filter="ready">Ohne Tracking</button><button class="btn secondary" data-delivery-filter="shipped">Versendet</button></div><input class="search" id="deliveryNoteSearch" placeholder="Lieferschein, Auftrag, Rechnung, Kunde oder Sendungsnummer suchen …"></div>
+206:         <div id="deliveryNoteList" class="finance-invoice-list"></div>
+207:       </div>
+208:       <div id="deliveryNoteDetailPage" class="hidden">
+209:         <div class="business-page-toolbar"><button class="btn secondary" id="deliveryNoteBack" type="button">← Zurück zu Lieferscheinen</button><div class="actions-row" id="deliveryNoteTopActions"></div></div>
+210:         <div id="deliveryNoteDetail"></div>
+211:       </div>
+212:     </section>
+
+--- index.html:346 ---
+346:     </section>
+347: 
+348:     <section class="view" id="view-orders">
+349:       <div class="production-hero central-hero">
+350:         <div>
+351:           <div class="eyebrow">PRODUKTIONSAUFTRÄGE</div>
+352:           <h2>Produktionsaufträge</h2>
+353:           <p>Interne Fertigungsaufträge. Kaufmännische Kundenaufträge werden unter Vertrieb → Aufträge geführt und können daraus gezielt in Produktionsaufträge überführt werden.</p>
+354:         </div>
+355:         <div class="hero-actions">
+356:           <button class="btn primary" id="openCentralOrder">Produktionsauftrag manuell</button>
+357:           <button class="btn secondary" id="openInternalOrder" type="button">Interner Produktionsauftrag</button>
+358:           <button class="btn secondary" id="openMerchImport" type="button">Merchauftrag / Einzelversand importieren</button>
+359:           <label class="btn secondary" for="centralImportFile">CSV / Excel importieren</label>
+360:           <input id="centralImportFile" type="file" accept=".csv,.xlsx,.xls">
+
+--- index.html:370 ---
+370:       <div class="orders-toolbar panel">
+371:         <div class="actions-row">
+372:           <button class="btn secondary active-filter" data-order-filter="open">Offen</button>
+373:           <button class="btn secondary" data-order-filter="all">Alle</button>
+374:           <button class="btn secondary" data-order-filter="archived">Archiviert</button>
+375:           <button class="btn secondary" id="reloadCentralOrders">Aktualisieren</button>
+376:         </div>
+377:         <input class="search" id="centralOrderSearch" placeholder="Produktionsauftrag, Kunde, Artikel oder Personalisierung suchen …">
+378:       </div>
+379:       <div id="centralOrders" class="central-orders"></div>
+380:     </section>
+381: 
+382:     <section class="view" id="view-inventory">
+383:       <div class="inventory-module-nav panel" id="inventoryModuleNav">
+384:         <button type="button" class="btn secondary active-filter" data-inventory-module="articles">Artikel</button>
+385:         <button type="button" class="btn secondary" data-inventory-module="receipts">Wareneingang</button>
+386:         <button type="button" class="btn secondary" data-inventory-module="warehouses">Lagerplätze</button>
+387:       </div>
+388:       <div id="inventoryListPage" class="inventory-page inventory-list-page">
+389:       <div class="production-hero central-hero">
+390:         <div>
+
+--- index.html:544 ---
+544: 
+545:       <div class="help-grid">
+546:         <article class="panel help-card">
+547:           <span class="help-number">1</span>
+548:           <h3>Produktionsauftrag manuell anlegen</h3>
+549:           <ol>
+550:             <li><strong>Produktionsaufträge</strong> öffnen und <strong>Produktionsauftrag manuell</strong> wählen.</li>
+551:             <li>Auftragsnummer, Kunde, Titel und optional Liefertermin eintragen.</li>
+552:             <li>Für jede Größe, Personalisierung oder Ortsgruppe eine Position anlegen.</li>
+553:             <li>Artikel, Art.-Nr./SKU, Größe, Menge, Verfahren, Position und Motiv eintragen.</li>
+554:             <li>Auftrag speichern. Die Produktionsschritte erscheinen automatisch unter <strong>Arbeitsplatz</strong>.</li>
+555:           </ol>
+556:         </article>
+557: 
+558:         <article class="panel help-card">
+559:           <span class="help-number">2</span>
+560:           <h3>Interner Auftrag / Muster / Nacharbeit</h3>
+561:           <ol>
+562:             <li>Unter <strong>Produktionsaufträge</strong> auf <strong>Interner Produktionsauftrag</strong> klicken.</li>
+563:             <li>Kein Kunde und keine WooCommerce-Bestellung sind erforderlich.</li>
+564:             <li>Artikel und benötigte Produktionsschritte wie bei einem normalen Auftrag erfassen.</li>
+565:             <li>Geeignet für Musterstick, Test, Eigenbedarf, Reklamation, Nachproduktion oder Nacharbeit.</li>
+566:           </ol>
+567:         </article>
+568: 
+569:         <article class="panel help-card">
+570:           <span class="help-number">3</span>
+571:           <h3>Auftrag aus WooCommerce</h3>
+572:           <ol>
+573:             <li>Der Synology-Produktionsserver ruft WooCommerce automatisch regelmäßig ab, sobald der Shop eingerichtet ist.</li>
+574:             <li>Alternativ unter <strong>Aufträge → Shop jetzt abrufen</strong> die Synchronisierung sofort starten.</li>
+575:             <li>Neue Bestellungen erscheinen als Auftrag mit Bestellnummer, Kunde und Positionen.</li>
+576:             <li>SKU/Artikelnummer, Varianten, Größe, Farbe, Gewicht und weitere zugeordnete Felder können aus WooCommerce übernommen werden.</li>
+577:             <li>Auch hier wird keine zusätzliche Produktion angelegt.</li>
+578:           </ol>
+579:         </article>
+580: 
+581:         <article class="panel help-card">
+582:           <span class="help-number">4</span>
+
+--- index.html:616 ---
+616:           </ul>
+617:         </article>
+618: 
+619:         <article class="panel help-card">
+620:           <span class="help-number">7</span>
+621:           <h3>Sendungen &amp; Einzelversand</h3>
+622:           <ol>
+623:             <li>Bei Standardaufträgen entsteht nach vollständiger Produktion eine Gesamtsendung. Bei Merchaufträgen ist jeder Artikel fest einer eigenen Empfängeradresse zugeordnet.</li>
+624:             <li>Sobald die zu einer Sendung gehörenden Produktionsschritte fertig sind, wird die Sendung <strong>Versandbereit</strong>.</li>
+625:             <li>Entweder <strong>Jetzt versenden</strong> oder <strong>Bis Produktionsende zurückstellen</strong>.</li>
+626:             <li>Beim Zurückstellen muss bei weiterer Verschiebung ein Grund dokumentiert werden.</li>
+627:             <li>Bei Produktionsende bleiben offene Versandentscheidungen sichtbar.</li>
+628:           </ol>
+629:         </article>
+630: 
+
+--- index.html:655 ---
+655:           <p>Mit dem ersten gebuchten Produktionsfortschritt kann der Auftrag automatisch „In Produktion“ werden. Nach Abschluss der Produktionsschritte und Sendungen werden die Folgestatus zentral auf der Synology aktualisiert.</p>
+656:         </article>
+657: 
+658:         <article class="panel help-card">
+659:           <span class="help-number">10</span>
+660:           <h3>Produktionsserver &amp; externer Zugriff</h3>
+661:           <p>Alle zentralen Aufträge und Fortschritte liegen auf dem Synology-Produktionsserver. Rechner außerhalb des Firmennetzes können über Tailscale darauf zugreifen.</p>
+662:           <p>Im Produktionsmanager unter <strong>Einstellungen → Arbeitsplatz &amp; Produktionsserver</strong> die Tailscale-Adresse der Synology eintragen, z. B. <code>http://100.x.x.x:8787</code>. COM-Verbindungen und der Pico bleiben immer lokal am jeweiligen Produktions-PC.</p>
+663:         </article>
+664:       </div>
+665: 
+666:       <div class="panel help-note">
+667:         <h3>Produktion startet aus dem Auftrag</h3>
+668:         <p>Der Produktionsmonitor wird direkt über <strong>Aufträge → Produktion starten</strong> geöffnet. Die +1-Buchungen werden auf dem zentralen Produktionsserver gespeichert; es gibt keine zweite, getrennte Stückzahlführung.</p>
+669:       </div>
+
+--- index.html:690 ---
+690:             <span class="pico-status" id="productionServerSettingsStatus">Noch nicht geprüft</span>
+691:           </div>
+692:           <p class="settings-note">Für den Zugriff aus einem anderen Netzwerk wird VPN/Tailscale oder ein HTTPS-Zugang zur NAS empfohlen. COM-Ports und Pico bleiben lokal.</p>
+693:         </div>
+694:         <div class="panel">
+695:           <h2>Mobile-Device verbinden</h2>
+696:           <p>Verbindet Smartphone oder Tablet mit der HCA-Lager-App, ohne den langen API-Schlüssel abzutippen. Der QR-Code enthält nur einen einmaligen, kurz gültigen Pairing-Code – nicht den API-Schlüssel.</p>
+697:           <label>HTTPS-Adresse der mobilen Lager-App</label>
+698:           <input id="settingMobileWarehouseUrl" class="text-input" placeholder="z. B. https://deine-nas.tailnet.ts.net/api/hca-shared/mobile">
+699:           <div class="actions-row">
+700:             <button class="btn secondary" id="saveMobileWarehouseUrl" type="button">Adresse speichern</button>
+701:             <button class="btn primary" id="pairMobileDevice" type="button">Mobile-Device verbinden</button>
+702:           </div>
+703:           <p class="settings-note">Auf dem Mobile-Device den QR-Code mit der normalen Kamera scannen und den Link öffnen. Danach wird ein eigenes Geräte-Token gespeichert; der lange HCA-API-Schlüssel wird nicht dauerhaft auf dem Gerät abgelegt. Anschließend kann die Seite über „Zum Home-Bildschirm“ als Web-App gespeichert werden.</p>
+704:         </div>
+705:         <div class="panel">
+706:           <h2>Sendcloud</h2>
+707:           <p>Die Sendcloud-Zugangsdaten werden zentral auf dem Synology-Produktionsserver hinterlegt. Hier wird nur der Status angezeigt.</p>
+
+--- index.html:713 ---
+713: 
+714:         <div class="panel">
+715:           <h2>Lexware Office</h2>
+716:           <p>Rechnungen und Lieferantenbelege zentral mit Lexware Office synchronisieren. Der API-Schlüssel wird ausschließlich auf der Synology gespeichert.</p>
+717:           <label>Public-API-Schlüssel</label>
+718:           <input id="lexwareApiToken" class="text-input" type="password" autocomplete="new-password" placeholder="Noch nicht hinterlegt">
+719:           <div class="business-inline-grid">
+720:             <div><label>Kategorie Kundenrechnungen</label><select id="lexwareSalesCategory" class="text-input"><option value="">Bitte Verbindung testen …</option></select></div>
+721:             <div><label>Kategorie Lieferantenrechnungen</label><select id="lexwarePurchaseCategory" class="text-input"><option value="">Bitte Verbindung testen …</option></select></div>
+722:           </div>
+723:           <div class="actions-row"><button class="btn primary" id="saveLexwareSettings" type="button">Lexware speichern</button><button class="btn secondary" id="testLexwareSettings" type="button">Verbindung testen</button><button class="btn secondary" id="syncLexwareSettings" type="button">Jetzt synchronisieren</button><span class="pico-status" id="lexwareSettingsStatus">Noch nicht geprüft</span></div>
+724:           <p class="settings-note">Ein leeres Schlüsselfeld ändert einen bereits gespeicherten Schlüssel nicht. Die Kategorien werden nach erfolgreichem Verbindungstest aus deinem Lexware-Office-Konto geladen.</p>
+725:         </div>
+726: 
+727:         <div class="panel">
+728:           <h2>E-Mail · Angebote</h2>
+729:           <p>Angebote direkt aus HCA versenden. Die Zugangsdaten liegen ausschließlich zentral auf der Synology.</p>
+730:           <div class="business-form-grid">
+731:             <div class="span-2"><label>SMTP-Server</label><input id="settingMailHost" class="text-input" placeholder="z. B. smtp.office365.com"></div>
+732:             <div><label>Port</label><input id="settingMailPort" class="text-input" type="number" min="1" value="587"></div>
+733:             <div><label>Verschlüsselung</label><select id="settingMailEncryption" class="text-input"><option value="starttls">STARTTLS</option><option value="ssl">SSL/TLS</option><option value="none">Keine</option></select></div>
+734:             <div><label>Benutzername</label><input id="settingMailUsername" class="text-input" autocomplete="off"></div>
+735:             <div><label>Passwort</label><input id="settingMailPassword" class="text-input" type="password" autocomplete="new-password" placeholder="leer = unverändert"></div>
+736:             <div><label>Absender-E-Mail</label><input id="settingMailFromEmail" class="text-input" type="email"></div>
+737:             <div><label>Absendername</label><input id="settingMailFromName" class="text-input" placeholder="Werbestudio Königswinter"></div>
+738:             <div class="span-2"><label>Antwortadresse (optional)</label><input id="settingMailReplyTo" class="text-input" type="email"></div>
+739:           </div>
+740:           <div class="actions-row"><button class="btn primary" id="saveMailSettings" type="button">E-Mail speichern</button><button class="btn secondary" id="testMailSettings" type="button">Verbindung testen</button><span class="pico-status" id="mailSettingsStatus">Noch nicht geprüft</span></div>
+741:           <p class="settings-note">Ein leeres Passwortfeld behält das bereits gespeicherte Passwort bei.</p>
+742:         </div>
+743:         <div class="panel">
+744:           <h2>E-Mail-Postfächer</h2>
+745:           <p>IMAP und SMTP werden zentral auf der Synology gespeichert. Passwörter werden nie an die Oberfläche zurückgegeben.</p>
+746:           <div id="mailAccountSettingsList" class="business-card-list"></div>
+747:           <div class="actions-row"><button class="btn primary" id="addMailAccount" type="button">+ Postfach</button><button class="btn secondary" id="saveMailAccounts" type="button">Postfächer speichern</button></div>
+748:         </div>
+749:         <div class="panel">
+750:           <h2>Zahlungsbedingungen</h2>
+751:           <p>Die Standardbedingung gilt, wenn beim Kunden keine abweichende Auswahl hinterlegt ist.</p>
+752:           <div id="paymentTermsSettingsList" class="business-card-list"></div>
+753:           <div class="actions-row"><button class="btn primary" id="addPaymentTerm" type="button">+ Zahlungsbedingung</button><button class="btn secondary" id="savePaymentTerms" type="button">Zahlungsbedingungen speichern</button></div>
+754:         </div>
+755:         <div class="panel">
+756:           <h2>Dokumentendrucker dieses Arbeitsplatzes</h2>
+757:           <p>Diese Auswahl gilt nur auf diesem Windows-Client.</p>
+758:           <div class="business-form-grid"><div class="span-2"><label>Dokumentendrucker</label><select id="settingDocumentPrinter" class="text-input"><option value="">Bitte Drucker laden …</option></select></div></div>
+
+--- index.html:763 ---
+763:           <p>Zentrale Angaben für Angebote, Rechnungen und Lieferscheine.</p>
+764:           <div class="business-form-grid">
+765:             <div class="span-2"><label>Firmenname</label><input id="settingDocumentCompany" class="text-input" value="Werbestudio Königswinter"></div>
+766:             <div class="span-2"><label>Straße / Hausnummer</label><input id="settingDocumentStreet" class="text-input"></div>
+767:             <div><label>PLZ</label><input id="settingDocumentPostalCode" class="text-input"></div>
+768:             <div><label>Ort</label><input id="settingDocumentCity" class="text-input"></div>
+769:             <div><label>Telefon</label><input id="settingDocumentPhone" class="text-input"></div>
+770:             <div><label>E-Mail</label><input id="settingDocumentEmail" class="text-input" type="email"></div>
+771:             <div><label>Website</label><input id="settingDocumentWebsite" class="text-input"></div>
+772:             <div><label>USt-IdNr.</label><input id="settingDocumentVatId" class="text-input"></div>
+773:             <div class="span-2"><label>Kontoinhaber</label><input id="settingDocumentAccountHolder" class="text-input"></div>
+774:             <div><label>Bank</label><input id="settingDocumentBankName" class="text-input"></div>
+775:             <div><label>IBAN</label><input id="settingDocumentIban" class="text-input" autocomplete="off"></div>
+776:             <div><label>BIC</label><input id="settingDocumentBic" class="text-input" autocomplete="off"></div>
+777:             <div><label>Land</label><input id="settingDocumentCountry" class="text-input" value="Deutschland"></div>
+
+--- index.html:865 ---
+865:           <div id="careSvgGrid" class="care-svg-grid"></div>
+866:           <input id="careSvgFileInput" type="file" accept=".svg,image/svg+xml" hidden>
+867:           <h3>Hersteller-/Firmenangaben auf dem Etikett</h3>
+868:           <label>Firma / verantwortliche Person</label><input id="settingLabelCompany" class="text-input">
+869:           <label>Straße / Hausnummer</label><input id="settingLabelAddress" class="text-input">
+870:           <label>PLZ / Ort</label><input id="settingLabelCity" class="text-input">
+871:           <label>Land</label><input id="settingLabelCountry" class="text-input" value="Deutschland">
+872:           <label>Kontakt / Web / E-Mail</label><input id="settingLabelContact" class="text-input">
+873:           <h3>Versandlabel-Drucker</h3>
+874:           <input id="settingShippingLabelPrinter" class="text-input" list="windowsPrinterList" placeholder="Windows-Drucker auswählen">
+875:           <div class="settings-inline-grid">
+876:             <div><label>Breite (mm)</label><input id="settingShippingLabelWidth" class="text-input" type="number" min="50" step="1" value="105"></div>
+877:             <div><label>Höhe (mm)</label><input id="settingShippingLabelHeight" class="text-input" type="number" min="50" step="1" value="148"></div>
+878:           </div>
+879:           <div class="actions-row">
+
+--- index.html:897 ---
+897:             <button class="btn secondary" id="removeAppIcon" type="button" disabled>Symbol entfernen</button>
+898:           </div>
+899:           <p class="settings-note">Das Symbol kann nicht über die Einstellungen verändert werden.</p>
+900:         </div>
+901:         <div class="panel">
+902:           <h2>HCA 4 · Floppy / Pico 2 W</h2>
+903:           <p>Der Pico 2 W stellt sich gegenüber dem SFR1M44-FU-DL als USB-Stick dar. Der Produktionsmanager überträgt die ausgewählte TAP/DST-Datei per WLAN an den Pico.</p>
+904:           <label>Pico-Adresse</label>
+905:           <input id="settingPicoUrl" class="text-input" value="http://hca-pico.local" placeholder="http://hca-pico.local oder http://192.168.1.50">
+906:           <div class="actions-row">
+907:             <button class="btn secondary" id="testPico" type="button">Pico-Verbindung testen</button>
+908:             <span class="pico-status" id="picoSettingsStatus">Noch nicht geprüft</span>
+909:           </div>
+910:           <div class="pico-usb-setup">
+911:             <h3>Pico-Firmware installieren / aktualisieren</h3>
+
+--- index.html:969 ---
+969:         </div>
+970:         <div class="panel">
+971:           <h2>Serielle Verbindung</h2>
+972:           <dl class="specs"><dt>Baudrate</dt><dd>38400</dd><dt>Datenbits</dt><dd>8</dd><dt>Parität</dt><dd>Keine</dd><dt>Stoppbits</dt><dd>1</dd><dt>Flow-Control</dt><dd>Aus</dd></dl>
+973:         </div>
+974:         <div class="panel">
+975:           <h2>Programmfenster</h2>
+976:           <p>Der HCA Produktionsmanager läuft in einem eigenen Windows-Programmfenster. Browser-Navigation, Edge-Dialoge und Edge-Symbole werden nicht als Programmoberfläche verwendet.</p>
+977:           <div class="app-mode-badge">HCA WINDOWS-MODUS AKTIV</div>
+978:         </div>
+979:       </div>
+980:     </section>
+981:   </main>
+982: </div>
+983: 
+
+--- index.html:986 ---
+986: <datalist id="windowsPrinterList"></datalist>
+987: 
+988: <dialog id="centralOrderDialog" class="modal wide-modal">
+989:   <form method="dialog" autocomplete="off" data-form-type="other">
+990:     <div class="modal-head"><div><div class="eyebrow" id="centralOrderDialogEyebrow">PRODUKTIONSAUFTRAG</div><h2 id="centralOrderDialogTitle">Produktionsauftrag anlegen</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+991:     <div class="central-order-head-grid">
+992:       <div><label>Auftragsnummer</label><input id="centralOrderNo" class="text-input" autocomplete="off"></div>
+993:       <div><label>Kunde</label><input id="centralOrderCustomer" class="text-input" autocomplete="off"></div>
+994:       <div><label>Titel</label><input id="centralOrderTitle" class="text-input" autocomplete="off"></div>
+995:       <div><label>Liefertermin</label><input id="centralOrderDue" class="text-input" type="date" autocomplete="off"></div>
+996:       <div><label>Auftragstyp / Versand</label><select id="centralOrderType" class="text-input"><option value="standard">Standardauftrag · Gesamtversand</option><option value="none">Kein Versand / interner Auftrag</option><option value="merch">Merchauftrag · Einzelversand</option></select></div>
+997:     </div>
+998:     <p class="modal-help" id="centralOrderShippingNote"></p>
+999:     <div id="centralStandardShippingPanel" class="order-shipping-panel">
+1000:       <h3>Lieferadresse für den Gesamtauftrag</h3>
+1001:       <div class="central-order-head-grid shipping-address-grid">
+1002:         <div><label>Empfänger / Ansprechpartner</label><input id="centralShipRecipient" class="text-input" autocomplete="off" data-form-type="other"></div>
+1003:         <div><label>Firma</label><input id="centralShipCompany" class="text-input" autocomplete="off" data-form-type="other"></div>
+1004:         <div><label>Straße</label><input id="centralShipStreet" class="text-input" autocomplete="off" data-form-type="other"></div>
+1005:         <div><label>Hausnummer</label><input id="centralShipHouse" class="text-input" autocomplete="off" data-form-type="other"></div>
+1006:         <div><label>Adresszusatz</label><input id="centralShipAddress2" class="text-input" autocomplete="off" data-form-type="other"></div>
+1007:         <div><label>PLZ</label><input id="centralShipPostal" class="text-input" autocomplete="off" data-form-type="other"></div>
+1008:         <div><label>Ort</label><input id="centralShipCity" class="text-input" autocomplete="off" data-form-type="other"></div>
+1009:         <div><label>Land (ISO)</label><input id="centralShipCountry" class="text-input" value="DE" maxlength="2" autocomplete="off" data-form-type="other"></div>
+1010:         <div><label>E-Mail</label><input id="centralShipEmail" class="text-input" type="email" autocomplete="off" data-form-type="other"></div>
+1011:         <div><label>Telefon</label><input id="centralShipPhone" class="text-input" autocomplete="off" data-form-type="other"></div>
+1012:       </div>
+1013:     </div>
+1014:     <div class="panel-head compact-head"><div><h3>Artikel, Größen &amp; Produktionspositionen</h3><p class="settings-note">Artikel einmal erfassen, darunter die benötigten Mengen je Größe eintragen. Vorderseite, Rückseite und weitere Positionen werden als eigene Produktionsschritte angelegt.</p></div><button class="btn secondary" id="addCentralArticle" type="button">+ Artikel hinzufügen</button></div>
+1015:     <div id="centralOrderArticles" class="manual-order-articles"></div>
+1016:     <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="saveCentralOrder">Auftrag speichern</button></div>
+1017:   </form>
+
+--- index.html:1068 ---
+1068:     <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="applyMissingThreads">Übernehmen</button></div>
+1069:   </form>
+1070: </dialog>
+1071: 
+1072: 
+1073: <dialog id="merchImportDialog" class="modal wide-modal">
+1074:   <form method="dialog">
+1075:     <div class="modal-head"><div><div class="eyebrow">MERCHAUFTRAG · EINZELVERSAND</div><h2>Kundentabelle importieren</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+1076:     <p class="modal-help">Eine Tabellenzeile = ein physischer Artikel = eine Empfängeradresse = eine spätere Sendung. Gewicht und Maße werden einmal für den fertig verpackten Musterartikel erfasst.</p>
+1077:     <div class="central-order-head-grid">
+1078:       <div><label>Auftragsnummer</label><input id="merchOrderNo" class="text-input"></div>
+1079:       <div><label>Kunde</label><input id="merchCustomer" class="text-input"></div>
+1080:       <div><label>Titel</label><input id="merchTitle" class="text-input" value="Merchauftrag / Einzelversand"></div>
+1081:       <div><label>Liefertermin</label><input id="merchDue" class="text-input" type="date"></div>
+1082:     </div>
+1083:     <div class="order-shipping-panel">
+1084:       <h3>Standard-Paketdaten je Einzelartikel</h3>
+1085:       <div class="central-order-head-grid">
+1086:         <div><label>Gewicht (kg)</label><input id="merchWeight" class="text-input" type="number" min="0.01" step="0.01"></div>
+1087:         <div><label>Länge (cm)</label><input id="merchLength" class="text-input" type="number" min="0" step="0.1"></div>
+1088:         <div><label>Breite (cm)</label><input id="merchWidth" class="text-input" type="number" min="0" step="0.1"></div>
+1089:         <div><label>Höhe (cm)</label><input id="merchHeight" class="text-input" type="number" min="0" step="0.1"></div>
+1090:       </div>
+1091:       <div style="margin-top:10px"><label>Versandstrategie</label><select id="merchShippingStrategy" class="text-input"><option value="auto_cheapest">Günstigste verfügbare Versandart automatisch verwenden</option><option value="manual_cheapest">Günstigsten Preis anzeigen und manuell bestätigen</option></select></div>
+1092:     </div>
+1093:     <div class="merch-file-box"><label>Kundentabelle (.xlsx oder .csv)</label><input id="merchImportFile" class="text-input" type="file" accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"><p class="modal-help"><a href="/HCA_Merch_Einzelversand_Vorlage.xlsx" download>Merch-Einzelversand-Vorlage herunterladen</a></p></div>
+1094:     <p class="modal-help" id="merchImportStatus">Eine Tabellenzeile entspricht genau einem Artikel und einer Einzelsendung.</p>
+1095:     <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="saveMerchImport">Merchauftrag importieren</button></div>
+1096:   </form>
+1097: </dialog>
+1098: 
+1099: <dialog id="shippingDialog" class="modal">
+1100:   <form method="dialog">
+
+--- index.html:1155 ---
+1155:     <div class="modal-actions"><button class="btn secondary" id="copyMobilePairingLink" type="button">Pairing-Link kopieren</button><button class="btn primary" id="closeMobilePairingBottom" type="button">Fertig</button></div>
+1156:   </form>
+1157: </dialog>
+1158: 
+1159: 
+1160: <dialog id="businessCustomerDialog" class="modal wide-modal">
+1161:   <form method="dialog" autocomplete="off">
+1162:     <div class="modal-head"><div><div class="eyebrow">CRM</div><h2 id="businessCustomerDialogTitle">Kunde anlegen</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+1163:     <div class="business-form-grid">
+1164:       <div class="span-2"><label>Firma / Organisation</label><input class="text-input" id="bcCompany"></div>
+1165:       <div><label>Anrede</label><select class="text-input" id="bcSalutation"><option value="">–</option><option>Herr</option><option>Frau</option><option>Divers</option></select></div>
+1166:       <div><label>Vorname</label><input class="text-input" id="bcFirst"></div><div><label>Nachname</label><input class="text-input" id="bcLast"></div>
+1167:       <div><label>E-Mail</label><input class="text-input" id="bcEmail" type="email"></div><div><label>Telefon</label><input class="text-input" id="bcPhone"></div><div><label>Mobil</label><input class="text-input" id="bcMobile"></div>
+1168:       <div><label>USt-IdNr.</label><input class="text-input" id="bcVat"></div><div><label>Steuernummer</label><input class="text-input" id="bcTax"></div>
+1169:       <div class="span-2"><label>Standard-Zahlungsbedingung</label><select class="text-input" id="bcPaymentTerm"><option value="">Globale Standardzahlungsbedingung</option></select></div>
+1170:       <div class="span-2"><label class="check-line"><input type="checkbox" id="bcDefaultCustomer"> Standardkunde für neue Angebote und Aufträge (z. B. Barverkauf)</label></div>
+1171:     </div>
+1172:     <p class="modal-help">Hier legst du die Standardadressen fest. Weitere Rechnungs- und Lieferadressen können anschließend direkt in der Kundenakte ergänzt werden.</p>
+1173:     <div class="business-address-columns">
+1174:       <div><h3>Rechnungsadresse</h3><label>Straße</label><input class="text-input" id="bcBillStreet"><div class="business-inline-grid"><div><label>PLZ</label><input class="text-input" id="bcBillZip"></div><div><label>Ort</label><input class="text-input" id="bcBillCity"></div></div><label>Land</label><input class="text-input" id="bcBillCountry" value="DE"></div>
+1175:       <div><h3>Lieferadresse</h3><label>Straße</label><input class="text-input" id="bcShipStreet"><div class="business-inline-grid"><div><label>PLZ</label><input class="text-input" id="bcShipZip"></div><div><label>Ort</label><input class="text-input" id="bcShipCity"></div></div><label>Land</label><input class="text-input" id="bcShipCountry" value="DE"></div>
+1176:     </div>
+1177:     <label>Interne Notiz</label><textarea class="text-input business-textarea" id="bcNotes"></textarea>
+1178:     <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="saveBusinessCustomer">Kunde speichern</button></div>
+1179:   </form>
+1180: </dialog>
+1181: 
+1182: <dialog id="businessContactDialog" class="modal wide-modal">
+1183:   <form method="dialog" autocomplete="off"><div class="modal-head"><div><div class="eyebrow">ANSPRECHPARTNER</div><h2 id="businessContactDialogTitle">Ansprechpartner anlegen</h2></div><button value="cancel" class="modal-close">×</button></div><div class="business-form-grid"><div><label>Anrede</label><select class="text-input" id="bctSalutation"><option value="">–</option><option>Herr</option><option>Frau</option><option>Divers</option></select></div><div><label>Rolle / Funktion</label><input class="text-input" id="bctRole"></div><div><label>Vorname</label><input class="text-input" id="bctFirst"></div><div><label>Nachname</label><input class="text-input" id="bctLast"></div><div><label>E-Mail</label><input class="text-input" id="bctEmail" type="email"></div><div><label>Telefon</label><input class="text-input" id="bctPhone"></div><div><label>Mobil</label><input class="text-input" id="bctMobile"></div><div><label>Standard-Rechnungsadresse</label><select class="text-input" id="bctBillingAddress"></select></div><div><label>Standard-Lieferadresse</label><select class="text-input" id="bctShippingAddress"></select></div><div class="span-2"><label class="check-line"><input type="checkbox" id="bctPrimary"> Hauptansprechpartner</label></div></div><p class="modal-help">Ohne individuelle Auswahl verwendet der Ansprechpartner automatisch die Standardadresse des Kunden.</p><div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="saveBusinessContact">Ansprechpartner speichern</button></div></form>
+1184: </dialog>
+1185: 
+1186: <dialog id="businessAddressDialog" class="modal wide-modal">
+1187:   <form method="dialog" autocomplete="off"><div class="modal-head"><div><div class="eyebrow">KUNDENADRESSE</div><h2 id="businessAddressDialogTitle">Adresse anlegen</h2></div><button value="cancel" class="modal-close">×</button></div>
+1188:     <div class="business-form-grid"><div><label>Bezeichnung</label><input class="text-input" id="bcaLabel" placeholder="z. B. Filiale Bonn"></div><div class="span-2"><label>Firma / Empfänger</label><input class="text-input" id="bcaCompany"></div><div><label>z. Hd. / Zusatz</label><input class="text-input" id="bcaAttention"></div><div class="span-2"><label>Straße / Hausnummer</label><input class="text-input" id="bcaStreet"></div><div><label>PLZ</label><input class="text-input" id="bcaZip"></div><div><label>Ort</label><input class="text-input" id="bcaCity"></div><div><label>Land</label><input class="text-input" id="bcaCountry" value="DE"></div><div class="span-2"><label class="check-line"><input type="checkbox" id="bcaDefaultBilling"> Als Standard-Rechnungsadresse verwenden</label><label class="check-line"><input type="checkbox" id="bcaDefaultShipping"> Als Standard-Lieferadresse verwenden</label></div></div>
+1189:     <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="saveBusinessAddress">Adresse speichern</button></div></form>
+1190: </dialog>
+1191: 
+1192: 
+1193: <div id="financeCustomerInvoiceDialog" class="business-main-form panel">
+1194:   <form autocomplete="off" onsubmit="return false">
+1195:     <div class="modal-head"><div><div class="eyebrow">FINANZEN</div><h2 id="financeCustomerInvoiceDialogTitle">Kundenrechnung anlegen</h2></div></div>
+1196:     <div class="business-form-grid"><div class="span-2"><label>Kunde</label><select id="financeInvoiceCustomer" class="text-input"></select></div><div><label>Ansprechpartner</label><select id="financeInvoiceContact" class="text-input"><option value="">Hauptkunde</option></select></div><div><label>Rechnungsadresse</label><select id="financeInvoiceBillingAddress" class="text-input"><option value="">Kundenstandard</option></select></div><div><label>Lieferadresse</label><select id="financeInvoiceShippingAddress" class="text-input"><option value="">Kundenstandard</option></select></div><div class="span-2"><label>Betreff</label><input id="financeInvoiceSubject" class="text-input" value="Rechnung"></div><div><label>Rechnungsdatum</label><input id="financeInvoiceDate" type="date" class="text-input"></div><div><label>Zahlungsbedingung</label><select id="financeInvoicePaymentTerm" class="text-input"></select></div><div><label>Fällig am</label><input id="financeInvoiceDue" type="date" class="text-input"></div><div class="span-2"><label>Kundenreferenz</label><input id="financeInvoiceReference" class="text-input"></div></div>
+1197:     <div class="panel finance-dialog-panel"><div class="panel-head"><div><h3>Positionen</h3></div><button class="btn secondary" id="financeAddInvoiceLine" type="button">+ Position</button></div><div id="financeInvoiceLines" class="finance-dialog-lines"></div></div>
+1198:     <label>Interne / zusätzliche Notiz</label><textarea id="financeInvoiceNotes" class="text-input business-textarea"></textarea>
+1199:     <div class="modal-actions"><button type="button" id="cancelFinanceCustomerInvoice" class="btn secondary">Abbrechen</button><button type="button" class="btn secondary" id="saveFinanceCustomerInvoiceDraft">Als Entwurf speichern</button><button type="button" class="btn primary" id="saveFinanceCustomerInvoice">Rechnung anlegen</button></div>
+1200:   </form>
+1201: </div>
+1202: 
+1203: <div id="financeSupplierInvoiceDialog" class="business-main-form panel">
+
+--- index.html:1208 ---
+1208:     <div class="modal-actions"><button type="button" id="cancelFinanceSupplierInvoice" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="saveFinanceSupplierInvoice">Lieferantenrechnung speichern</button></div>
+1209:   </form>
+1210: </div>
+1211: 
+1212: <div id="businessSalesOrderDialog" class="business-main-form panel">
+1213:   <form autocomplete="off" onsubmit="return false">
+1214:     <div class="modal-head"><div><div class="eyebrow">VERTRIEB</div><h2 id="businessSalesOrderDialogTitle">Auftrag anlegen</h2></div></div>
+1215:     <div class="business-form-grid"><div class="span-2"><label>Kunde</label><select id="businessOrderCustomer" class="text-input"></select></div><div><label>Ansprechpartner</label><select id="businessOrderContact" class="text-input"><option value="">Hauptkunde</option></select></div><div><label>Rechnungsadresse</label><select id="businessOrderBillingAddress" class="text-input"><option value="">Kundenstandard</option></select></div><div><label>Lieferadresse</label><select id="businessOrderShippingAddress" class="text-input"><option value="">Kundenstandard</option></select></div><div class="span-2"><label>Betreff</label><input id="businessOrderSubject" class="text-input" placeholder="z. B. Textilien mit Stick"></div><div><label>Liefer-/Fertigstellungstermin</label><input id="businessOrderDue" type="date" class="text-input"></div><div><label>Zahlungsbedingung</label><select id="businessOrderPaymentTerm" class="text-input"></select></div><div class="span-2"><label>Kundenreferenz</label><input id="businessOrderReference" class="text-input"></div></div>
+1216:     <div class="panel finance-dialog-panel"><div class="panel-head"><div><h3>Positionen</h3><p class="settings-note">Einfache Position oder Position mit Veredelung – identisch zur Angebotserfassung.</p></div><div class="actions-row"><button class="btn secondary" id="businessOrderReprice" type="button">Shoppreise aktualisieren</button><button class="btn primary" id="businessOrderAddLine" type="button">+ Position</button></div></div><div id="businessOrderLines" class="business-quote-lines"></div></div>
+1217:     <label>Interne Notiz</label><textarea id="businessOrderInternalNote" class="text-input business-textarea"></textarea>
+1218:     <div class="modal-actions"><button type="button" id="cancelBusinessSalesOrder" class="btn secondary">Abbrechen</button><button type="button" class="btn secondary" id="saveBusinessSalesOrderDraft">Als Entwurf speichern</button><button type="button" class="btn primary" id="saveBusinessSalesOrder">Auftrag speichern</button></div>
+1219:   </form>
+1220: </div>
+1221: 
+1222: <dialog id="businessQuoteEmailDialog" class="modal wide-modal">
+1223:   <form method="dialog" autocomplete="off">
+1224:     <div class="modal-head"><div><div class="eyebrow">ANGEBOT SENDEN</div><h2>Angebot per E-Mail senden</h2></div><button value="cancel" class="modal-close">×</button></div>
+1225:     <label>Empfänger</label><input id="businessQuoteEmailTo" class="text-input" type="email">
+1226:     <label>Betreff</label><input id="businessQuoteEmailSubject" class="text-input">
+1227:     <label>Nachricht</label><textarea id="businessQuoteEmailBody" class="text-input business-textarea" rows="9"></textarea>
+1228:     <p class="modal-help">Der Angebotsinhalt wird in einem einheitlichen HCA-Dokumentlayout in die E-Mail eingebettet. Die endgültige PDF-/Dokumentenvorlage passen wir anschließend an deine Vorgaben an.</p>
+1229:     <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="sendBusinessQuoteEmail">E-Mail senden</button></div>
+1230:   </form>
+1231: </dialog>
+1232: 
+1233: <dialog id="businessDocumentPreviewDialog" class="modal hca-document-preview-dialog">
+1234:   <form method="dialog">
+1235:     <div class="modal-head"><div><div class="eyebrow">DOKUMENTENVORSCHAU</div><h2 id="businessDocumentPreviewTitle">Angebot prüfen</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+1236:     <iframe id="businessDocumentPreviewFrame" title="Dokumentenvorschau"></iframe>
+
+--- index.html:1267 ---
+1267:     <div class="modal-head"><div><div class="eyebrow">LIEFERSCHEIN → SENDCLOUD</div><h2 id="deliverySendcloudTitle">Versand erstellen</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+1268:     <div class="business-form-grid"><div><label>Gewicht (kg)</label><input id="deliveryShipWeight" class="text-input" type="number" min="0.01" step="0.01"></div><div><label>Länge (cm)</label><input id="deliveryShipLength" class="text-input" type="number" min="0" step="0.1"></div><div><label>Breite (cm)</label><input id="deliveryShipWidth" class="text-input" type="number" min="0" step="0.1"></div><div><label>Höhe (cm)</label><input id="deliveryShipHeight" class="text-input" type="number" min="0" step="0.1"></div><div class="span-2"><label>Versandart</label><select id="deliveryShippingOption" class="text-input"><option value="">Zuerst Versandpreise ermitteln</option></select></div></div>
+1269:     <p class="modal-help" id="deliveryShippingStatus">Paketdaten eingeben und Versandpreise ermitteln.</p>
+1270:     <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn secondary" id="loadDeliveryShippingOptions">Versandpreise ermitteln</button><button type="button" class="btn primary" id="shipDeliveryNote" disabled>Versandlabel erstellen</button></div>
+1271:   </form>
+1272: </dialog>
+1273: 
+1274: <dialog id="mailAccountDialog" class="modal wide-modal"><form method="dialog" autocomplete="off"><div class="modal-head"><div><div class="eyebrow">POSTFACH</div><h2 id="mailAccountDialogTitle">Postfach einrichten</h2></div><button value="cancel" class="modal-close">×</button></div><div class="business-form-grid"><div><label>Bezeichnung</label><input id="mailAccountName" class="text-input"></div><div><label>E-Mail-Adresse</label><input id="mailAccountEmail" class="text-input" type="email"></div><div class="span-2"><label>Benutzername</label><input id="mailAccountUsername" class="text-input"></div><div><label>IMAP-Server</label><input id="mailAccountImapHost" class="text-input"></div><div><label>IMAP-Port</label><input id="mailAccountImapPort" class="text-input" type="number" value="993"></div><div><label>IMAP-Verschlüsselung</label><select id="mailAccountImapSecurity" class="text-input"><option value="ssl">SSL/TLS</option><option value="starttls">STARTTLS</option><option value="none">Keine</option></select></div><div><label>IMAP-Passwort</label><input id="mailAccountImapPassword" class="text-input" type="password" placeholder="leer = unverändert"></div><div><label>SMTP-Server</label><input id="mailAccountSmtpHost" class="text-input"></div><div><label>SMTP-Port</label><input id="mailAccountSmtpPort" class="text-input" type="number" value="587"></div><div><label>SMTP-Verschlüsselung</label><select id="mailAccountSmtpSecurity" class="text-input"><option value="starttls">STARTTLS</option><option value="ssl">SSL/TLS</option><option value="none">Keine</option></select></div><div><label>SMTP-Passwort</label><input id="mailAccountSmtpPassword" class="text-input" type="password" placeholder="leer = IMAP-Passwort / unverändert"></div><div><label>Absendername</label><input id="mailAccountFromName" class="text-input"></div><div><label>Antwortadresse</label><input id="mailAccountReplyTo" class="text-input" type="email"></div><div class="span-2"><label class="check-line"><input id="mailAccountDefault" type="checkbox"> Standardpostfach</label></div></div><div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" id="applyMailAccount" class="btn primary">Übernehmen</button></div></form></dialog>
+1275: <dialog id="mailComposeDialog" class="modal wide-modal"><form method="dialog"><div class="modal-head"><div><div class="eyebrow">E-MAIL</div><h2>Neue Nachricht</h2></div><button value="cancel" class="modal-close">×</button></div><label>Empfänger</label><input id="mailComposeTo" class="text-input" type="email"><label>Betreff</label><input id="mailComposeSubject" class="text-input"><label>Nachricht</label><textarea id="mailComposeBody" class="text-input business-textarea" rows="12"></textarea><div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" id="mailSend" class="btn primary">Senden</button></div></form></dialog>
+1276: 
+1277:   <dialog id="hcaSupplierDialog" class="hca-dialog"><form method="dialog"><div class="dialog-head"><h3 id="hcaSupplierDialogTitle">Lieferant anlegen</h3><button value="cancel" class="icon-btn" type="submit">×</button></div><div class="dialog-body"><div class="business-form-grid"><div class="span-2"><label>Firmenname</label><input class="text-input" id="hcaSupplierName"></div><div><label>Kürzel</label><input class="text-input" id="hcaSupplierCode"></div><div><label>Eigene Kundennummer</label><input class="text-input" id="hcaSupplierCustomerNo"></div><div><label>Ansprechpartner</label><input class="text-input" id="hcaSupplierContact"></div><div><label>E-Mail</label><input class="text-input" id="hcaSupplierEmail" type="email"></div><div><label>Telefon</label><input class="text-input" id="hcaSupplierPhone"></div><div><label>Webseite</label><input class="text-input" id="hcaSupplierWebsite"></div><div class="span-2"><label>Straße</label><input class="text-input" id="hcaSupplierStreet"></div><div><label>PLZ</label><input class="text-input" id="hcaSupplierZip"></div><div><label>Ort</label><input class="text-input" id="hcaSupplierCity"></div><div><label>Land</label><input class="text-input" id="hcaSupplierCountry" value="DE"></div><div class="span-2"><label>Notizen</label><textarea class="text-input business-textarea compact" id="hcaSupplierNotes"></textarea></div></div></div><div class="dialog-actions"><button class="btn secondary" value="cancel" type="submit">Abbrechen</button><button class="btn primary" id="saveHcaSupplier" value="" type="button">Speichern</button></div></form></dialog>
+1278: 
+1279:   <dialog id="hcaOwnArticleDialog" class="hca-dialog"><form method="dialog"><div class="dialog-head"><h3>Eigenen Artikel anlegen</h3><button value="cancel" class="icon-btn" type="submit">×</button></div><div class="dialog-body"><div class="business-form-grid"><div class="span-2"><label>Artikelname</label><input class="text-input" id="hcaOwnArticleName"></div><div><label>SKU / Artikelnummer</label><input class="text-input" id="hcaOwnArticleSku"></div><div><label>Hersteller</label><input class="text-input" id="hcaOwnArticleManufacturer"></div><div><label>Lieferant</label><select class="text-input" id="hcaOwnArticleSupplier"></select></div><div><label>Verkaufspreis netto</label><input class="text-input" id="hcaOwnArticlePrice" type="number" min="0" step="0.01" value="0"></div><div><label>MwSt.</label><input class="text-input" id="hcaOwnArticleTax" type="number" min="0" step="0.01" value="19"></div><div class="span-2"><label>Beschreibung</label><textarea class="text-input business-textarea" id="hcaOwnArticleDescription"></textarea></div><div class="span-2"><label class="check-line"><input id="hcaOwnArticleShop" type="checkbox"> Im Onlineshop anlegen</label></div><div id="hcaOwnArticleShopStatusWrap" class="span-2 hidden"><label>Shopstatus</label><select class="text-input" id="hcaOwnArticleShopStatus"><option value="draft">Entwurf – noch nicht sichtbar</option><option value="publish">Veröffentlicht – sofort sichtbar</option></select></div></div></div><div class="dialog-actions"><button class="btn secondary" value="cancel" type="submit">Abbrechen</button><button class="btn primary" id="saveHcaOwnArticle" value="" type="button">Artikel anlegen</button></div></form></dialog>
+1280: 
+1281: <script src="/hca-ui.js?v=0.13.1"></script>
+1282: <script src="/app.js?v=0.13.1"></script>
+1283: 
+1284:   <dialog id="inventoryLabelPreviewDialog" class="modal">
