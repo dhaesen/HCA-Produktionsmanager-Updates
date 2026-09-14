@@ -1,5 +1,5 @@
 #define MyAppName "HCA Produktionsmanager"
-#define MyAppVersion "0.13.5.3"
+#define MyAppVersion "0.13.5.4"
 #define MyAppPublisher "Werbestudio Königswinter"
 #define MyAppExeName "HCA_Produktionsmanager.exe"
 
@@ -24,7 +24,7 @@ PrivilegesRequiredOverridesAllowed=dialog
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
 OutputDir={#OutputDir}
-OutputBaseFilename=HCA_Produktionsmanager_Setup_v0.13.5.3
+OutputBaseFilename=HCA_Produktionsmanager_Setup_v0.13.5.4
 SetupIconFile={#SourceDir}\assets\HCA.ico
 UninstallDisplayIcon={app}\{#MyAppExeName}
 Compression=lzma2/ultra64
@@ -33,7 +33,7 @@ WizardStyle=modern
 SetupLogging=yes
 CloseApplications=yes
 RestartApplications=no
-VersionInfoVersion=0.13.5.3
+VersionInfoVersion=0.13.5.4
 VersionInfoCompany={#MyAppPublisher}
 VersionInfoDescription=HCA Produktionsmanager Vollinstallation
 VersionInfoProductName={#MyAppName}
