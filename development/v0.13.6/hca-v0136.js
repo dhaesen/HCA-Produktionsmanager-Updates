@@ -99,10 +99,16 @@ window.convertBusinessQuoteToOrder=async function(){
     for(const item of activeBusinessQuote.items||[]){item.config=item.config||{};item.config.production_mode=productionMode}
     await saveBusinessQuote();if(!activeBusinessQuote?.id)return;
   }
-  if(!await hcaConfirm('Angebot '+(activeBusinessQuote.quote_no||'')+' annehmen und daraus einen kaufmännischen Auftrag erstellen?'))return;
+  const tiers=quoteTiers();let selectedTier=0;
+  if(tiers.length){
+    const entered=await hcaPrompt('Welche Angebotsmenge soll beauftragt werden?\\n\\nVerfügbare Staffeln: '+tiers.join(', '),String(tiers[0]));
+    if(entered===null)return;selectedTier=Math.round(Number(entered)||0);
+    if(!tiers.includes(selectedTier)){alert('Bitte eine der angebotenen Mengen wählen: '+tiers.join(', '));return}
+  }
+  if(!await hcaConfirm('Angebot '+(activeBusinessQuote.quote_no||'')+' annehmen und daraus einen kaufmännischen Auftrag erstellen?'+(selectedTier?'\\n\\nGewählte Menge: '+selectedTier:'')))return;
   const due=await window.hcaPickDate('');if(due===null)return;
   try{
-    const d=await businessApi('/sales/quotes/'+encodeURIComponent(activeBusinessQuote.id)+'/convert-to-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({due_date:due||'',production_mode:productionMode})});
+    const d=await businessApi('/sales/quotes/'+encodeURIComponent(activeBusinessQuote.id)+'/convert-to-order',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({due_date:due||'',production_mode:productionMode,selected_quantity_tier:selectedTier||null})});
     await Promise.all([loadBusinessQuotes(),loadBusinessSalesOrders(),loadBusinessDashboard()]);await openBusinessSalesOrder(d.item.id);
   }catch(err){alert('Auftrag konnte nicht erstellt werden:\n'+(err.message||err))}
 };
