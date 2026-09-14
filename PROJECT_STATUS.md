@@ -1,7 +1,7 @@
 # HCA Produktionsmanager – Projektstatus
 
 Stand: 14. September 2026  
-Aktuelle Testversion: **0.13.5.2**  
+Aktuelle Testversion: **0.13.5.3**  
 Quellbranch: `codex/v0.13.2-development`
 
 ## Aktueller Lieferumfang
@@ -15,6 +15,20 @@ Quellbranch: `codex/v0.13.2-development`
 - Mehrpostfach-E-Mail-Client mit HTML-/WYSIWYG-Nachrichten
 - Lexware-Office-Übergabe von Rechnungen und Rechnungskorrekturen
 - Sendcloud-, Produktions-, Lager- und Logistikfunktionen
+
+## Version 0.13.5.3 – Vollinstallation und nativer Startbildschirm
+
+- Neue vollständige Clientinstallation auf Basis der korrigierten Vollinstallation 0.13.0 und sämtlicher Clientupdates bis 0.13.5.2.
+- Der bisherige weiße WPF-Startbildschirm wurde durch einen nativen dunklen HCA-Startbildschirm mit Original-Logo ersetzt.
+- Der Ladebalken folgt den tatsächlichen Startphasen: Konfiguration, lokaler Dienst, WebView2 und Oberfläche.
+- Die Weboberfläche wird erst eingeblendet, nachdem die Navigation erfolgreich abgeschlossen wurde.
+- Original-Firmenlogo und Original-App-Symbol sind fest im Paket enthalten.
+- Vorhandene `config.json` und der lokale `data`-Ordner werden bei der Installation übernommen.
+- Native Windows-EXE ohne Compilerfehler gebaut; JavaScript, Paketstruktur, ZIP-Integrität und veröffentlichte SHA-256-Prüfsumme automatisiert geprüft.
+- Download: `HCA_Client_Vollinstallation_v0.13.5.3.zip`
+- SHA-256: `1927fc2d53e484ee49120343a05a0fef6e7084f6c6846e64692a4119991dbd66`
+- Voraussetzung für die Benutzeranmeldung bleibt der NAS-Login-Hotfix 0.13.5.1.
+- Das WooCommerce-Plugin wurde nicht verändert.
 
 ## Version 0.13.5.2 – Login-Sperrfehler behoben
 
@@ -74,7 +88,6 @@ Quellbranch: `codex/v0.13.2-development`
 
 ## Nächste Ausbaustufen
 
-- Native Startanzeige ab dem ersten WPF-Frame
 - Windows Hello als zusätzliche Entsperrung eines vorhandenen HCA-Benutzerkontos
 - NFC-Anmeldung über einen Arduino-/USB-NFC-Reader
 - Feinere Rollen- und Modulberechtigungen
