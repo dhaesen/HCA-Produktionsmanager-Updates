@@ -1,0 +1,33 @@
+/* HCA v0.13.5 · Anmeldung, Benutzerprofile und persönliche Signaturen */
+.hca-login-overlay{position:fixed;inset:0;z-index:100000;background:radial-gradient(circle at 50% 20%,#2c3338 0,#171b1e 48%,#0f1113 100%);display:grid;place-items:center;padding:24px;color:#f7f7f5}
+.hca-login-overlay.hidden{display:none}
+.hca-login-card{width:min(440px,100%);background:#202529;border:1px solid rgba(255,255,255,.12);border-radius:22px;padding:34px;box-shadow:0 30px 90px rgba(0,0,0,.48)}
+.hca-login-card>img{display:block;width:min(260px,78%);max-height:92px;object-fit:contain;margin:0 auto 25px}
+.hca-login-card .eyebrow{text-align:center;color:#ef7d00;letter-spacing:.16em;font-size:11px;font-weight:800}
+.hca-login-card h1{text-align:center;margin:8px 0 6px;font-size:28px}
+.hca-login-card>p{text-align:center;color:#bfc5c8;margin:0 0 24px;line-height:1.5}
+.hca-login-card form{display:grid;gap:14px}
+.hca-login-card label{display:grid;gap:7px;font-weight:700;color:#e7e9e9}
+.hca-login-card .text-input{background:#15191c;border-color:#4b5358;color:#fff}
+.hca-login-card .text-input:focus{border-color:#ef7d00;box-shadow:0 0 0 3px rgba(239,125,0,.18)}
+.hca-login-card .check-line{display:flex;align-items:center;font-weight:500;color:#cbd0d2}
+.hca-login-card .btn{width:100%;min-height:46px;font-weight:800}
+.hca-login-error{min-height:20px;color:#ff9e96;font-weight:700;line-height:1.35}
+.hca-user-chip{display:flex;align-items:center;gap:12px;margin-left:auto;padding-left:14px;border-left:1px solid var(--line,#d8d8d3)}
+.hca-user-chip>div{display:grid;text-align:right;line-height:1.15}
+.hca-user-chip b{font-size:13px}
+.hca-user-chip span{font-size:11px;color:var(--muted,#687078)}
+.hca-user-chip button{border:1px solid #bfc3c4;background:#fff;border-radius:8px;padding:7px 10px;font-weight:700;cursor:pointer}
+.hca-user-chip button:hover{border-color:#ef7d00;color:#a85100}
+#hcaProfileSettings{order:-20}
+#hcaUserAdministration{order:-19}
+.hca-signature-editor{min-height:150px;max-height:310px;overflow:auto;margin-top:0;border-radius:0 0 9px 9px}
+#hcaSignatureToolbarHost .hca-rich-toolbar{border-radius:9px 9px 0 0}
+.hca-mail-signature{margin-top:18px;padding-top:14px;border-top:1px solid #d9dbd8;color:#353a3d}
+.hca-user-create-grid{display:grid;grid-template-columns:1.3fr 1fr 1fr .8fr auto;gap:10px;align-items:end;margin:18px 0}
+.hca-user-row{display:grid;grid-template-columns:minmax(220px,1fr) 150px 90px auto auto;gap:10px;align-items:center;padding:12px;border:1px solid var(--line,#deded9);border-radius:10px;background:#fff}
+.hca-user-row>div:first-child{display:grid;gap:3px}
+.hca-user-row span{font-size:12px;color:var(--muted,#687078)}
+.hca-user-row .check-line{white-space:nowrap}
+@media(max-width:1100px){.hca-user-create-grid,.hca-user-row{grid-template-columns:1fr 1fr}.hca-user-row>div:first-child{grid-column:1/-1}}
+@media(max-width:760px){.hca-user-chip>div{display:none}.hca-user-create-grid,.hca-user-row{grid-template-columns:1fr}.hca-user-row>div:first-child{grid-column:auto}.hca-login-card{padding:26px 22px}}

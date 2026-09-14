@@ -1,0 +1,10 @@
+HCA NAS-Login-Hotfix v0.13.5.1
+
+1. Vorhandene hca_shared.py sichern.
+2. app/hca_shared.py in die bestehende NAS-App kopieren.
+3. HCA-Dienst beziehungsweise Container neu starten.
+4. HCA-Client schließen und erneut öffnen.
+5. Im Bildschirm "Ersten Administrator anlegen" das eigene Administratorkonto erstellen.
+
+Der v0.13.5-Client muss nicht erneut installiert werden.
+Vorhandene ältere Benutzerdaten werden nicht verändert.

@@ -1,0 +1,1316 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HCA Produktionsmanager · Werbestudio Königswinter</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/hca-ui.css">
+  <link rel="stylesheet" href="/hca-v0132.css?v=0.13.5.2">
+  <link rel="icon" id="appFavicon" type="image/png" href="/assets/app-icon.png">
+  <link rel="stylesheet" href="/hca-v0134.css?v=0.13.5.2">\n  <link rel="stylesheet" href="/hca-v0135.css?v=0.13.5.2">
+</head>
+<body>
+  <div id="hcaStartupSplash" class="hca-startup-splash" aria-live="polite">
+    <div class="hca-startup-card">
+      <img src="/assets/logo-app.png" alt="Werbestudio Königswinter">
+      <h1>HCA wird gestartet</h1>
+      <p>Produktionsmanager und Warenwirtschaft</p>
+      <div class="hca-startup-progress"><span></span></div>
+      <small class="hca-startup-status" data-startup-status>Komponenten werden geladen …</small>
+    </div>
+  </div>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand" id="brandArea">
+      <img id="brandLogo" class="brand-logo-img" src="/assets/logo-app.png" alt="Werbestudio Königswinter">
+      <div class="brand-fallback hidden" id="brandFallback">
+        <div class="brand-mark">WK</div>
+        <div class="brand-text">
+          <strong>WERBESTUDIO</strong>
+          <span>KÖNIGSWINTER</span>
+        </div>
+      </div>
+    </div>
+    <div class="app-name">HCA Manager <span id="appVersion">v0.13.2</span></div>
+
+    <nav class="nav" id="nav">
+      <div class="nav-section-label">START</div>
+      <button class="nav-item active" data-view="dashboard" data-category="start"><span class="nav-icon">⌂</span><span>Dashboard</span></button>
+      <div class="nav-section-label">CRM</div>
+      <button class="nav-item" data-view="customers" data-category="crm"><span class="nav-icon">◎</span><span>Kunden</span><span class="nav-badge" id="customersBadge">0</span></button>
+      <button class="nav-item" data-view="suppliers" data-category="crm"><span class="nav-icon">◆</span><span>Lieferanten</span></button>
+      <div class="nav-section-label">E-MAIL</div>
+      <button class="nav-item" data-view="mail" data-category="mail"><span class="nav-icon">✉</span><span>E-Mail</span></button>
+      <div class="nav-section-label">EINKAUF &amp; VERTRIEB</div>
+      <button class="nav-item" data-view="quotes" data-category="commerce"><span class="nav-icon">◇</span><span>Angebote</span><span class="nav-badge" id="quotesBadge">0</span></button>
+      <button class="nav-item" data-view="salesorders" data-category="commerce"><span class="nav-icon">▤</span><span>Aufträge</span><span class="nav-badge" id="salesOrdersBadge">0</span></button>
+      <button class="nav-item" data-view="inventory" data-category="commerce" data-inventory-target="receipts"><span class="nav-icon">⇣</span><span>Einkauf</span></button>
+      <div class="nav-section-label">FINANZEN</div>
+      <button class="nav-item" data-view="invoices" data-category="finance"><span class="nav-icon">€</span><span>Rechnungen</span><span class="nav-badge" id="invoicesBadge">0</span></button>
+      <div class="nav-section-label">LAGER &amp; LOGISTIK</div>
+      <button class="nav-item" data-view="deliverynotes" data-category="logistics"><span class="nav-icon">⇥</span><span>Lieferscheine</span><span class="nav-badge" id="deliveryNotesBadge">0</span></button>
+      <button class="nav-item" data-view="inventory" data-category="logistics" data-inventory-target="articles"><span class="nav-icon">▥</span><span>Lager</span><span class="nav-badge" id="inventoryBadge">0</span></button>
+      <button class="nav-item" data-view="shipping" data-category="logistics"><span class="nav-icon">⇢</span><span>Versand</span><span class="nav-badge" id="shippingBadge">0</span></button>
+      <div class="nav-section-label">PRODUKTION</div>
+      <button class="nav-item hidden legacy-production-nav" data-view="production" data-category="production" aria-hidden="true" tabindex="-1"><span class="nav-icon">✓</span><span>Produktionsmonitor</span><span class="nav-badge" id="productionBadge">0</span></button>
+      <button class="nav-item" data-view="orders" data-category="production"><span class="nav-icon">▣</span><span>Produktionsaufträge</span><span class="nav-badge" id="ordersBadge">0</span></button>
+      <button class="nav-item" data-view="workbench" data-category="production"><span class="nav-icon">●</span><span>Arbeitsplatz</span><span class="nav-badge" id="workbenchBadge">0</span></button>
+      <button class="nav-item" data-view="transfer" data-category="production"><span class="nav-icon">↑</span><span>Übertragen</span></button>
+      <button class="nav-item" data-view="machines" data-category="production"><span class="nav-icon">▦</span><span>Maschinen</span></button>
+      <div class="nav-section-label">SYSTEM</div>
+      <button class="nav-item" data-view="logview" data-category="system"><span class="nav-icon">≡</span><span>Protokoll</span></button>
+      <button class="nav-item" data-view="settings" data-category="system"><span class="nav-icon">⚙</span><span>Einstellungen</span></button>
+      <button class="nav-item" data-view="help" data-category="system"><span class="nav-icon">?</span><span>Hilfe</span></button>
+    </nav>
+
+    <div class="sidebar-bottom">
+      <div class="serial-mini" id="machineSidebarStatus">
+        <span class="mini-dot" id="sidebarStatusDot"></span>
+        <span id="sidebarStatus">0 von 4 Maschinen verbunden</span>
+      </div>
+      <button class="ghost-light" id="shutdownApp">Programm beenden</button>
+    </div>
+  </aside>
+
+  <main class="workspace">
+    <nav class="main-category-nav" id="mainCategoryNav" aria-label="Hauptnavigation">
+      <button type="button" class="main-category active" data-category="start">Start</button>
+      <button type="button" class="main-category" data-category="crm">CRM</button>
+      <button type="button" class="main-category" data-category="mail">E-Mail</button>
+      <button type="button" class="main-category" data-category="commerce">Einkauf &amp; Vertrieb</button>
+      <button type="button" class="main-category" data-category="finance">Finanzen</button>
+      <button type="button" class="main-category" data-category="logistics">Lager &amp; Logistik</button>
+      <button type="button" class="main-category" data-category="production">Produktion</button>
+      <button type="button" class="main-category" data-category="system">System</button>
+    </nav>
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">WERBESTUDIO KÖNIGSWINTER · HCA</div>
+        <h1 id="viewTitle">Dashboard</h1>
+      </div>
+      <div class="hca-global-tools">
+        <div class="hca-global-search-wrap">
+          <input id="businessGlobalSearch" class="hca-global-search" autocomplete="off" placeholder="Kunde, AN-, AU-, RE-, ER- oder Artikelnummer suchen …">
+          <div id="businessGlobalSearchResults" class="hca-global-search-results hidden"></div>
+        </div>
+        <button class="btn primary compact" id="businessQuickNew" type="button">+ Neu</button>
+        <div id="businessQuickNewMenu" class="hca-quick-new-menu hidden">
+          <button type="button" data-business-new="customer">Kunde</button>
+          <button type="button" data-business-new="quote">Angebot</button>
+          <button type="button" data-business-new="salesorder">Auftrag</button>
+          <button type="button" data-business-new="customerinvoice">Kundenrechnung</button>
+          <button type="button" data-business-new="supplierinvoice">Lieferantenrechnung</button>
+          <button type="button" data-business-new="receipt">Wareneingang</button>
+        </div>
+      </div>
+      <div class="top-status">
+        <div class="connection-summary" id="connectionSummary">
+          <span class="connection-indicator" data-connection-machine="0"><span class="dot"></span><span>HCA 1</span></span>
+          <span class="connection-indicator" data-connection-machine="1"><span class="dot"></span><span>HCA 2</span></span>
+          <span class="connection-indicator" data-connection-machine="2"><span class="dot"></span><span>HCA 3</span></span>
+          <span class="connection-indicator" data-connection-machine="3"><span class="dot"></span><span>HCA 4</span></span>
+        </div>
+      </div>
+      <div hidden aria-hidden="true"><span id="serverConnectionSummary"><span id="serverConnectionDot"></span><span id="serverConnectionText"></span></span><span id="topSelectedFile"></span></div>
+    </header>
+
+    <div class="github-update-banner hidden" id="githubUpdateBanner">
+      <div><strong id="githubUpdateBannerTitle">Update verfügbar</strong><span id="githubUpdateBannerText"></span></div>
+      <div class="actions-row"><button class="btn secondary" id="githubUpdateLater" type="button">Später</button><button class="btn primary" id="githubUpdateInstallTop" type="button">Update installieren</button></div>
+    </div>
+
+    <section class="view active" id="view-dashboard">
+      <div class="production-hero central-hero business-hero">
+        <div><div class="eyebrow">HCA BUSINESS</div><h2>Unternehmensübersicht</h2><p>Kunden, Angebote, Aufträge, Material und Produktion in einem durchgängigen Ablauf.</p></div>
+        <div class="hero-actions"><div class="dashboard-server-state" id="dashboardServerState"><span class="mini-dot" id="dashboardServerDot"></span><b id="dashboardServerText">Server wird geprüft …</b></div><button class="btn primary" id="dashboardNewQuote" type="button">+ Neues Angebot</button><button class="btn secondary" id="dashboardNewCustomer" type="button">+ Neuer Kunde</button><button class="btn secondary" id="reloadBusinessDashboard" type="button">Aktualisieren</button></div>
+      </div>
+      <div class="business-kpi-grid">
+        <button class="business-kpi" data-dashboard-open="customers"><span>Kunden</span><strong id="dashboardCustomers">0</strong><small>aktive Kunden</small></button>
+        <button class="business-kpi" data-dashboard-open="quotes"><span>Angebote</span><strong id="dashboardQuotes">0</strong><small>offen / gesendet</small></button>
+        <button class="business-kpi" data-dashboard-open="salesorders"><span>Aufträge</span><strong id="dashboardSalesOrders">0</strong><small>kaufmännisch offen</small></button>
+        <button class="business-kpi" data-dashboard-open="invoices"><span>Rechnungen</span><strong id="dashboardInvoices">0</strong><small>offen</small></button>
+        <button class="business-kpi" data-dashboard-open="orders"><span>Produktionsaufträge</span><strong id="dashboardProductionOrders">0</strong><small>in Fertigung</small></button>
+      </div>
+      <div class="business-dashboard-grid">
+        <div class="panel"><div class="panel-head"><div><div class="eyebrow">VERTRIEB</div><h3>Letzte Angebote</h3></div><button class="btn secondary" id="dashboardOpenQuotes" type="button">Alle Angebote</button></div><div id="dashboardRecentQuotes" class="business-compact-list"></div></div>
+        <div class="panel"><div class="panel-head"><div><div class="eyebrow">AUFTRÄGE</div><h3>Letzte Aufträge</h3></div><button class="btn secondary" id="dashboardOpenSalesOrders" type="button">Alle Aufträge</button></div><div id="dashboardRecentOrders" class="business-compact-list"></div></div>
+      </div>
+      <div class="panel business-flow-panel"><div class="eyebrow">FESTER HCA-ABLAUF</div><div class="business-flow"><span>Kunde</span><b>→</b><span>Angebot</span><b>→</b><span>Auftrag</span><b>→</b><span>Material</span><b>→</b><span>Produktionsauftrag</span><b>→</b><span>Produktion</span><b>→</b><span>Versand</span><b>→</b><span>Rechnung</span></div><p>Aufträge und Produktionsaufträge sind bewusst getrennte Objekte. Ein Produktionsauftrag entsteht aus einem bestätigten Auftrag und enthält nur die für die Fertigung relevanten Daten.</p></div>
+    </section>
+
+    <section class="view" id="view-customers">
+      <div id="crmCustomerListPage">
+        <div class="production-hero central-hero business-hero"><div><div class="eyebrow">CRM</div><h2>Kunden &amp; Interessenten</h2><p>Zentrale Kundenakte mit Kontakten, Angeboten, Aufträgen und E-Mail-Kommunikation.</p></div><div class="hero-actions"><button class="btn primary" id="openBusinessCustomer" type="button">+ Kunde anlegen</button><button class="btn secondary" id="syncWooCustomersPortal" type="button">Shopkunden &amp; Portal abgleichen</button><button class="btn secondary" id="reloadBusinessCustomers" type="button">Aktualisieren</button></div></div>
+        <div class="orders-toolbar panel"><div class="actions-row"><button class="btn secondary active-filter" data-customer-filter="active">Aktiv</button><button class="btn secondary" data-customer-filter="all">Alle</button></div><input class="search" id="businessCustomerSearch" placeholder="Kundennummer, Firma, Name, E-Mail oder Ort suchen …"></div>
+        <div id="businessCustomerList" class="business-table-list"></div>
+      </div>
+      <div id="crmCustomerDetailPage" class="hidden"><div class="business-page-toolbar"><button class="btn secondary" id="businessCustomerBack" type="button">← Zurück zur Kundenliste</button><div class="actions-row"><button class="btn primary" id="businessCustomerNewQuote" type="button">+ Angebot</button><button class="btn secondary" id="businessCustomerEdit" type="button">Bearbeiten</button></div></div><div id="businessCustomerDetail"></div></div>
+    </section>
+
+    <section class="view" id="view-suppliers">
+      <div class="production-hero central-hero business-hero"><div><div class="eyebrow">CRM · EINKAUF</div><h2>Lieferanten</h2><p>Lieferanten getrennt von Herstellern verwalten. API-Zugänge werden später je Großhändler ergänzt.</p></div><div class="hero-actions"><button class="btn primary" id="openHcaSupplier" type="button">+ Lieferant anlegen</button><button class="btn secondary" id="reloadHcaSuppliers" type="button">Aktualisieren</button></div></div>
+      <div class="orders-toolbar panel"><input class="search" id="hcaSupplierSearch" placeholder="Lieferant, Ansprechpartner, E-Mail, Ort oder Kundennummer suchen …"></div>
+      <div id="hcaSupplierList" class="business-table-list"></div>
+    </section>
+
+    <section class="view" id="view-quotes">
+      <div id="businessQuoteListPage">
+        <div class="production-hero central-hero business-hero"><div><div class="eyebrow">VERTRIEB</div><h2>Angebote</h2><p>Schnelle Angebotserfassung für veredelte Textilien und personalisierte Werbeartikel.</p></div><div class="hero-actions"><button class="btn primary" id="openBusinessQuote" type="button">+ Neues Angebot</button><button class="btn secondary" id="reloadBusinessQuotes" type="button">Aktualisieren</button></div></div>
+        <div class="orders-toolbar panel"><div class="actions-row"><button class="btn secondary active-filter" data-quote-filter="all">Alle</button><button class="btn secondary" data-quote-filter="open">Offen</button><button class="btn secondary" data-quote-filter="sent">Gesendet</button><button class="btn secondary" data-quote-filter="accepted">Angenommen</button></div><input class="search" id="businessQuoteSearch" placeholder="Angebotsnummer, Kunde oder Betreff suchen …"></div>
+        <div id="businessQuoteList" class="business-table-list"></div>
+      </div>
+      <div id="businessQuoteEditorPage" class="hidden"><div class="business-page-toolbar"><button class="btn secondary" id="businessQuoteBack" type="button">← Zurück zu Angeboten</button><div class="actions-row" id="businessQuoteTopActions"></div></div><div id="businessQuoteEditor"></div></div>
+    </section>
+
+    <section class="view" id="view-salesorders">
+      <div id="businessSalesOrderListPage">
+        <div class="production-hero central-hero business-hero"><div><div class="eyebrow">VERTRIEB</div><h2>Aufträge</h2><p>Verbindliche kaufmännische Kundenaufträge. Produktionsaufträge werden daraus separat erzeugt.</p></div><div class="hero-actions"><button class="btn primary" id="newBusinessSalesOrder" type="button">+ Neuer Auftrag</button><button class="btn secondary" id="reloadBusinessSalesOrders" type="button">Aktualisieren</button></div></div>
+        <div class="orders-toolbar panel"><div class="actions-row"><button class="btn secondary active-filter" data-sales-order-filter="all">Alle</button><button class="btn secondary" data-sales-order-filter="open">Offen</button><button class="btn secondary" data-sales-order-filter="completed">Abgeschlossen</button></div><input class="search" id="businessSalesOrderSearch" placeholder="Auftragsnummer, Kunde, Referenz oder Betreff suchen …"></div>
+        <div id="businessSalesOrderList" class="business-table-list"></div>
+      </div>
+      <div id="businessSalesOrderDetailPage" class="hidden"><div class="business-page-toolbar"><button class="btn secondary" id="businessSalesOrderBack" type="button">← Zurück zu Aufträgen</button><div class="actions-row" id="businessSalesOrderTopActions"></div></div><div id="businessSalesOrderDetail"></div></div>
+      <div id="businessSalesOrderEditorPage" class="hidden business-entry-page">
+        <div class="business-page-toolbar"><button class="btn secondary" id="businessSalesOrderEditorBack" type="button">← Zurück zu Aufträgen</button><span class="business-page-context">Auftragserfassung im Hauptfenster</span></div>
+        <div id="businessSalesOrderEditorHost"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-mail">
+      <div class="production-hero central-hero business-hero"><div><div class="eyebrow">KOMMUNIKATION</div><h2>E-Mail</h2><p>Mehrere zentrale IMAP-/SMTP-Postfächer direkt im HCA Manager.</p></div><div class="hero-actions"><select id="mailAccountSelect" class="text-input"></select><button class="btn primary" id="mailCompose" type="button">+ Neue E-Mail</button><button class="btn secondary" id="mailReload" type="button">Aktualisieren</button></div></div>
+      <div class="hca-mail-shell"><aside class="panel hca-mail-folders"><button class="hca-mail-folder active" type="button">▣ Posteingang</button><button class="hca-mail-folder" type="button" disabled title="Wird mit der serverseitigen Ordnerunterstützung freigeschaltet">↗ Gesendet</button><button class="hca-mail-folder" type="button" disabled title="Wird mit der serverseitigen Ordnerunterstützung freigeschaltet">◇ Entwürfe</button></aside><div class="panel hca-mail-list-panel"><div class="panel-head"><h3>Posteingang</h3></div><div id="mailMessageList" class="hca-mail-list"><div class="business-empty">Bitte ein Postfach auswählen.</div></div></div><div class="panel hca-mail-detail-panel" id="mailMessageDetail"><div class="business-empty">E-Mail auswählen.</div></div></div>
+    </section>
+
+
+    <section class="view" id="view-invoices">
+      <div id="financeInvoiceListPage">
+        <div class="production-hero central-hero business-hero">
+          <div><div class="eyebrow">FINANZEN</div><h2>Rechnungen</h2><p>Kundenrechnungen, Lieferantenrechnungen und in Lexware Office vorhandene Belege in einer gemeinsamen Übersicht.</p></div>
+          <div class="hero-actions"><button class="btn primary" id="newCustomerInvoice" type="button">+ Kundenrechnung</button><button class="btn secondary" id="newSupplierInvoice" type="button">+ Lieferantenrechnung</button><button class="btn secondary" id="syncLexwareInvoices" type="button">Lexware synchronisieren</button><button class="btn secondary" id="reloadFinanceInvoices" type="button">Aktualisieren</button></div>
+        </div>
+        <div class="orders-toolbar panel finance-toolbar">
+          <div class="finance-filter-stack"><div class="actions-row"><button class="btn secondary active-filter" data-finance-direction="all">Alle</button><button class="btn secondary" data-finance-direction="customer">Kunden</button><button class="btn secondary" data-finance-direction="supplier">Lieferanten</button></div><div class="actions-row"><button class="btn secondary active-filter" data-finance-status="all">Alle Status</button><button class="btn secondary" data-finance-status="open">Offen</button><button class="btn secondary" data-finance-status="paid">Bezahlt</button></div></div>
+          <input class="search" id="financeInvoiceSearch" placeholder="Rechnungsnummer, Kunde, Lieferant oder Referenz suchen …">
+        </div>
+        <div id="financeInvoiceList" class="finance-invoice-list"></div>
+      </div>
+      <div id="financeInvoiceDetailPage" class="hidden">
+        <div class="business-page-toolbar"><button class="btn secondary" id="financeInvoiceBack" type="button">← Zurück zu Rechnungen</button><div class="actions-row" id="financeInvoiceTopActions"></div></div>
+        <div id="financeInvoiceDetail"></div>
+      </div>
+      <div id="financeCustomerInvoiceEditorPage" class="hidden business-entry-page">
+        <div class="business-page-toolbar"><button class="btn secondary" id="financeCustomerInvoiceEditorBack" type="button">← Zurück zu Rechnungen</button><span class="business-page-context">Kundenrechnung im Hauptfenster</span></div>
+        <div id="financeCustomerInvoiceEditorHost"></div>
+      </div>
+      <div id="financeSupplierInvoiceEditorPage" class="hidden business-entry-page">
+        <div class="business-page-toolbar"><button class="btn secondary" id="financeSupplierInvoiceEditorBack" type="button">← Zurück zu Rechnungen</button><span class="business-page-context">Lieferantenrechnung im Hauptfenster</span></div>
+        <div id="financeSupplierInvoiceEditorHost"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-deliverynotes">
+      <div id="deliveryNoteListPage">
+        <div class="production-hero central-hero business-hero">
+          <div><div class="eyebrow">LOGISTIK &amp; FINANZEN</div><h2>Lieferscheine</h2><p>Teil- und Komplettlieferungen aus Aufträgen, Rechnungen oder Produktionssendungen.</p></div>
+          <div class="hero-actions"><button class="btn secondary" id="reloadDeliveryNotes" type="button">Aktualisieren</button></div>
+        </div>
+        <div class="orders-toolbar panel"><div class="actions-row"><button class="btn secondary active-filter" data-delivery-filter="all">Alle</button><button class="btn secondary" data-delivery-filter="ready">Ohne Tracking</button><button class="btn secondary" data-delivery-filter="shipped">Versendet</button></div><input class="search" id="deliveryNoteSearch" placeholder="Lieferschein, Auftrag, Rechnung, Kunde oder Sendungsnummer suchen …"></div>
+        <div id="deliveryNoteList" class="finance-invoice-list"></div>
+      </div>
+      <div id="deliveryNoteDetailPage" class="hidden">
+        <div class="business-page-toolbar"><button class="btn secondary" id="deliveryNoteBack" type="button">← Zurück zu Lieferscheinen</button><div class="actions-row" id="deliveryNoteTopActions"></div></div>
+        <div id="deliveryNoteDetail"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-transfer">
+      <div class="panel transfer-workflow-context hidden" id="transferWorkflowContext">
+        <div>
+          <div class="eyebrow">STICKEREI · AUFTRAGSWORKFLOW</div>
+          <strong id="transferWorkflowTitle">Stickdatei übertragen</strong>
+          <div class="work-task-meta" id="transferWorkflowMeta">Manuelle Übertragung</div>
+        </div>
+        <button class="btn secondary" id="backFromTransfer" type="button">Zurück zum Arbeitsplatz</button>
+      </div>
+      <div class="stats-grid">
+        <div class="stat-card"><span>Gewählte Datei</span><strong id="statFile">–</strong></div>
+        <div class="stat-card"><span>Offene Aufträge</span><strong id="statProductions">0</strong></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head">
+          <div><span class="step">1</span><h2>Stickmotiv auswählen</h2></div>
+          <div class="actions-row">
+            <label class="btn secondary" for="localFile">Datei vom PC wählen</label>
+            <label class="btn secondary" for="hp1File">HP1 vom PC wählen</label>
+            <button class="btn secondary" id="openMotifPreview" type="button" disabled>Vorschau &amp; Garnfarben</button>
+          </div>
+          <input id="localFile" type="file" accept=".tap,.dst">
+          <input id="hp1File" type="file" accept=".hp1">
+        </div>
+        <div class="file-layout">
+          <div class="file-browser-wrap">
+            <div class="browser-toolbar">
+              <button class="icon-btn" id="nasUp" title="Eine Ebene zurück">←</button>
+              <button class="icon-btn" id="nasReload" title="Neu laden">↻</button>
+              <div class="browser-path" id="nasPath">/</div>
+              <input class="search" id="fileSearch" placeholder="Datei suchen …">
+            </div>
+            <div class="nas-info" id="nasStatus">Synology Drive wird geprüft …</div>
+            <div class="browser-list" id="nasList"></div>
+          </div>
+          <div class="selected-card selected-card-preview" id="selectedFile">
+            <div class="selected-file-head">
+              <div class="selected-icon">🧵</div>
+              <div>
+                <span>Ausgewähltes Stickmotiv</span>
+                <strong>Noch keine Datei ausgewählt</strong>
+                <small>TAP oder DST</small>
+              </div>
+            </div>
+            <div class="inline-motif-preview">
+              <canvas id="selectedPreviewCanvas" width="520" height="350"></canvas>
+              <small id="selectedPreviewStats">Vorschau erscheint nach der Dateiauswahl.</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel transfer-panel">
+        <div class="panel-head"><div><span class="step">2</span><h2>Übertragen</h2></div></div>
+        <div class="transfer-target">
+          <label>Zielmaschinen auswählen</label>
+          <div id="transferMachineButtons" class="transfer-machine-buttons" aria-label="Zielmaschinen"></div>
+          <p class="hint compact-hint">Jede aktive Maschine kann einzeln an- oder abgewählt werden. Unter der Motivvorschau siehst du vor dem Senden die geplante Nadelfolge und die tatsächlich auf den Nadeln liegenden Garnfarben.</p>
+        </div>
+        <div class="transfer-actions">
+          <button class="btn primary big" id="sendFile" disabled>Zielmaschine auswählen</button>
+          <button class="btn danger big" id="stopSend" disabled>Übertragung stoppen</button>
+        </div>
+        <div class="progress-wrap">
+          <div class="progress"><div id="progressBar"></div></div>
+          <div id="progressText">Bereit</div>
+        </div>
+        <p class="hint">Die Übertragung erfolgt im getesteten HCA-Legacy-Modus mit 38400 Baud / 8N1. TAP wird vollständig übertragen, bei DST wird der 512-Byte-Header ausgelassen.</p>
+      </div>
+    </section>
+
+    <section class="view" id="view-production">
+      <div class="production-hero">
+        <div>
+          <div class="eyebrow">PRODUKTIONSFORTSCHRITT</div>
+          <h2>Produktionsmonitor</h2>
+          <p>Die Produktion wird direkt aus einem Auftrag gestartet. Im Monitor werden alle Auftragspositionen nach Größe angezeigt und mit +1 fertig gebucht.</p>
+        </div>
+        <div class="hero-actions">
+          <button class="btn primary hidden" id="openNewProduction">Neue Produktion</button>
+          <button class="btn secondary hidden" id="toggleRunning">Laufende Produktion laden</button>
+        </div>
+      </div>
+
+      <div id="runningProductionList" class="panel hidden">
+        <div class="panel-head"><div><h2>Laufende / unterbrochene Produktionen</h2></div></div>
+        <div id="productionList"></div>
+      </div>
+
+      <div id="activeProductionEmpty" class="empty-state">
+        <div class="empty-icon">✓</div>
+        <h3>Keine Produktion geladen</h3>
+        <p>Starte eine neue Produktion oder lade einen unterbrochenen Auftrag.</p>
+      </div>
+
+      <div id="activeProduction" class="hidden">
+        <div class="production-header panel">
+          <div class="production-title-area">
+            <div class="monitor-brand">
+              <img id="productionLogo" class="production-logo-img" src="/assets/logo-app.png" alt="Werbestudio Königswinter">
+              <div class="monitor-brand-fallback hidden" id="productionLogoFallback">WK</div>
+            </div>
+            <div>
+              <div class="eyebrow">AKTIVE PRODUKTION</div>
+              <h2 id="prodTitle">–</h2>
+              <div class="prod-meta" id="prodMeta">–</div>
+              <div class="prod-meta hidden" id="prodNeedles"></div>
+            </div>
+          </div>
+          <div class="production-total">
+            <span>Gesamtfortschritt</span>
+            <strong id="prodTotalText">0 / 0</strong>
+            <div class="progress compact"><div id="prodTotalBar"></div></div>
+          </div>
+          <button class="btn dark monitor-fullscreen-btn" id="toggleProductionFullscreen" type="button">Vollbild</button>
+        </div>
+        <div class="size-grid" id="sizeGrid"></div>
+        <div class="production-footer panel">
+          <div class="remaining"><span>Noch zu produzieren</span><strong id="prodRemaining">0</strong></div>
+          <div class="monitor-touch-hint">Touch-Monitor: Größe antippen, sobald ein Textil fertig ist.</div>
+          <div class="actions-row">
+            <button class="btn secondary" id="pauseProduction">Produktion unterbrechen</button>
+            <button class="btn success" id="finishProduction">Produktion abschließen</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel completed-panel hidden">
+        <div class="panel-head"><div><h2>Zuletzt abgeschlossene Produktionen</h2></div></div>
+        <div id="completedProductions"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-orders">
+      <div class="production-hero central-hero">
+        <div>
+          <div class="eyebrow">PRODUKTIONSAUFTRÄGE</div>
+          <h2>Produktionsaufträge</h2>
+          <p>Interne Fertigungsaufträge. Kaufmännische Kundenaufträge werden unter Vertrieb → Aufträge geführt und können daraus gezielt in Produktionsaufträge überführt werden.</p>
+        </div>
+        <div class="hero-actions">
+          <button class="btn primary" id="openCentralOrder">Produktionsauftrag manuell</button>
+          <button class="btn secondary" id="openInternalOrder" type="button">Interner Produktionsauftrag</button>
+          <button class="btn secondary" id="openMerchImport" type="button">Merchauftrag / Einzelversand importieren</button>
+          <label class="btn secondary" for="centralImportFile">CSV / Excel importieren</label>
+          <input id="centralImportFile" type="file" accept=".csv,.xlsx,.xls">
+          <a class="btn secondary" href="/HCA_Auftragsimport_Vorlage.xlsx" download>Normale Importvorlage</a>
+          <a class="btn secondary" href="/HCA_Merch_Einzelversand_Vorlage.xlsx" download>Merch-Einzelversand-Vorlage</a>
+          <button class="btn secondary" id="syncWooCommerce" type="button">Shop jetzt abrufen</button>
+        </div>
+      </div>
+      <div class="central-status-row">
+        <span class="status-pill" id="centralServerStatus">Produktionsserver nicht geprüft</span>
+        <span class="status-pill" id="wooStatus">WooCommerce nicht geprüft</span>
+      </div>
+      <div class="orders-toolbar panel">
+        <div class="actions-row">
+          <button class="btn secondary active-filter" data-order-filter="open">Offen</button>
+          <button class="btn secondary" data-order-filter="all">Alle</button>
+          <button class="btn secondary" data-order-filter="archived">Archiviert</button>
+          <button class="btn secondary" id="reloadCentralOrders">Aktualisieren</button>
+        </div>
+        <input class="search" id="centralOrderSearch" placeholder="Produktionsauftrag, Kunde, Artikel oder Personalisierung suchen …">
+      </div>
+      <div id="centralOrders" class="central-orders"></div>
+    </section>
+
+    <section class="view" id="view-inventory">
+      <div class="inventory-module-nav panel" id="inventoryModuleNav">
+        <button type="button" class="btn secondary active-filter" data-inventory-module="articles">Artikel</button>
+        <button type="button" class="btn secondary" data-inventory-module="receipts">Wareneingang</button>
+        <button type="button" class="btn secondary" data-inventory-module="warehouses">Lagerplätze</button>
+      </div>
+      <div id="inventoryListPage" class="inventory-page inventory-list-page">
+      <div class="production-hero central-hero">
+        <div>
+          <div class="eyebrow">WARENWIRTSCHAFT</div>
+          <h2>Warenwirtschaft · Artikel &amp; Lager</h2>
+          <p>Artikelstamm nach Hauptartikeln verwalten, Varianten und Bestände prüfen, Wareneingänge buchen und Bestellbedarf erkennen.</p>
+        </div>
+        <div class="hero-actions">
+          <button class="btn primary" id="openHcaOwnArticle" type="button">+ Eigener Artikel</button>
+          <button class="btn secondary" id="syncInventoryProducts" type="button">Shopartikel synchronisieren</button>
+          <button class="btn secondary" id="reconcileInventory" type="button">Auftragsbedarf aktualisieren</button>
+          <button class="btn secondary" id="reloadInventory" type="button">Aktualisieren</button>
+        </div>
+      </div>
+      <div class="inventory-summary-grid">
+        <div class="stat-card"><span>Physisch im Lager</span><strong id="inventoryPhysical">0</strong></div>
+        <div class="stat-card"><span>Reserviert</span><strong id="inventoryReserved">0</strong></div>
+        <div class="stat-card"><span>Verfügbar</span><strong id="inventoryAvailable">0</strong></div>
+        <div class="stat-card"><span>Bestellvorschlag</span><strong id="inventoryProposalQty">0</strong></div>
+      </div>
+      <div class="orders-toolbar panel inventory-toolbar">
+        <div class="actions-row">
+          <button class="btn secondary active-filter" data-inventory-filter="all">Alle Lagerartikel</button>
+          <button class="btn secondary" data-inventory-filter="shortage">Nur Fehlmengen</button>
+        </div>
+        <input class="search" id="inventorySearch" placeholder="Artikel, SKU, ERP-Code, Hersteller, Lieferant, Farbe, Größe oder Barcode suchen …">
+      </div>
+      <div id="inventoryStockList" class="inventory-stock-list"></div>
+      <div class="panel inventory-proposal-panel">
+        <div class="panel-head"><div><div class="eyebrow">EINKAUF</div><h3>Offene Bestellvorschläge</h3></div></div>
+        <div id="inventoryProposals" class="inventory-proposals"></div>
+      </div>
+      </div>
+      <div id="inventoryReceiptPage" class="inventory-page inventory-receipt-page hidden" aria-live="polite">
+        <div class="production-hero central-hero">
+          <div><div class="eyebrow">WARENEINGANG</div><h2>Bestellte Ware annehmen</h2><p>Offene Lieferantenbestellungen prüfen, Wareneingang buchen und die benötigten Artikel-Barcodes direkt am lokalen Etikettendrucker ausgeben.</p></div>
+          <div class="hero-actions"><button class="btn secondary" id="reloadPurchaseReceipts" type="button">Aktualisieren</button></div>
+        </div>
+        <div class="inventory-summary-grid">
+          <div class="stat-card"><span>Bestellt offen</span><strong id="purchaseOpenQty">0</strong></div>
+          <div class="stat-card"><span>Offene Positionen</span><strong id="purchaseOpenLines">0</strong></div>
+          <div class="stat-card"><span>Noch ohne Fach</span><strong id="purchaseUnassignedQty">0</strong></div>
+          <div class="stat-card"><span>Bestellvorschlag</span><strong id="purchaseProposalQty">0</strong></div>
+        </div>
+        <div class="panel inventory-receipt-help"><div><div class="eyebrow">ABLAUF</div><h3>Wareneingang → Etiketten → Lagerfach</h3><p>Wareneingang am PC buchen und Etiketten drucken. Anschließend in der mobilen HCA-Lager-App <strong>„Wareneingang einlagern“</strong> wählen, Artikelbarcode und Lagerfach scannen.</p></div></div>
+        <div class="panel">
+          <div class="panel-head"><div><div class="eyebrow">BESTELLTE WARE</div><h3>Offene Wareneingänge</h3></div></div>
+          <div id="inventoryOrderedReceipts" class="inventory-receipt-list"></div>
+        </div>
+        <div class="panel">
+          <div class="panel-head"><div><div class="eyebrow">EINKAUF</div><h3>Bestellvorschläge</h3></div></div>
+          <p class="settings-note">Wenn du einen Vorschlag beim Lieferanten bestellt hast, markierst du ihn hier als bestellt. Danach erscheint die Position oben im Wareneingang.</p>
+          <div id="inventoryPurchaseSuggestions" class="inventory-receipt-list"></div>
+        </div>
+        <div class="panel inventory-receipt-help"><div><div class="eyebrow">MANUELLE EINLAGERUNG</div><h3>Ware ohne vorherigen Wareneingang</h3><p>Artikel unter <strong>Artikel → Produkt öffnen → Varianten</strong> auswählen und über <strong>„Etikett drucken“</strong> das Barcodeetikett erstellen. In der mobilen App anschließend <strong>„Manuell einlagern“</strong> verwenden. Dabei wird der Bestand direkt erhöht und dem gescannten Fach zugeordnet.</p></div></div>
+      </div>
+      <div id="inventoryWarehousePage" class="inventory-page inventory-warehouse-page hidden" aria-live="polite">
+        <div class="production-hero central-hero">
+          <div><div class="eyebrow">LAGERSTRUKTUR</div><h2>Lager · Regale · Fächer</h2><p>Mehrere Lager verwalten, Regale und Fächer anlegen und Fachbarcodes für die mobile Einlagerung drucken.</p></div>
+          <div class="hero-actions"><button class="btn primary" id="createWarehouse" type="button">+ Lager</button><button class="btn secondary" id="reloadWarehouses" type="button">Aktualisieren</button><button class="btn secondary" id="openMobileWarehouse" type="button">Mobile Lager-App</button></div>
+        </div>
+        <div class="inventory-summary-grid">
+          <div class="stat-card"><span>Lager</span><strong id="warehouseCount">0</strong></div>
+          <div class="stat-card"><span>Regale</span><strong id="rackCount">0</strong></div>
+          <div class="stat-card"><span>Fächer</span><strong id="binCount">0</strong></div>
+          <div class="stat-card"><span>Stück in Fächern</span><strong id="binStockQty">0</strong></div>
+        </div>
+        <div class="panel warehouse-mobile-panel"><div><strong>Mobile Lager-App</strong><p>Artikelbarcode scannen → Fachbarcode scannen → Bestand wird dem Fach zugeordnet. Läuft auf Smartphone oder Tablet als PWA.</p></div><code id="mobileWarehouseUrl">–</code></div>
+        <div id="warehouseTree" class="warehouse-tree"></div>
+      </div>
+      <div id="inventoryArticlePage" class="inventory-page inventory-article-page hidden" aria-live="polite">
+        <div class="inventory-article-page-toolbar">
+          <button type="button" class="btn secondary" id="inventoryArticleBack">← Zurück zur Artikelliste</button>
+        </div>
+        <div id="inventoryArticlePageContent"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-workbench">
+      <div class="production-hero central-hero">
+        <div>
+          <div class="eyebrow">ARBEITSPLATZ</div>
+          <h2 id="workbenchTitle">Offene Produktionsschritte</h2>
+          <p id="workbenchIntro">Fertige Teile mit einem Klick buchen. Vollständig erledigte Positionen verschwinden aus der offenen Ansicht.</p>
+        </div>
+        <div class="workbench-kpis">
+          <div><span>Offen</span><strong id="workbenchOpenQty">0</strong></div>
+        </div>
+      </div>
+      <div class="workbench-toolbar panel">
+        <div class="actions-row" id="workbenchFilters">
+          <button class="btn secondary active-filter" data-tech-filter="all">Alle</button>
+          <button class="btn secondary" data-tech-filter="stick">Stick</button>
+          <button class="btn secondary" data-tech-filter="dtf">DTF</button>
+          <button class="btn secondary" data-tech-filter="flex">Flex</button>
+          <button class="btn secondary" data-tech-filter="flock">Flock</button>
+        </div>
+        <div class="actions-row">
+          <button class="btn secondary" id="manualTransferFromWorkbench" type="button">Stickdatei manuell übertragen</button>
+          <label class="check-line"><input type="checkbox" id="showCompletedTasks"> Erledigte anzeigen</label>
+          <button class="btn secondary" id="reloadWorkbench">Aktualisieren</button>
+        </div>
+      </div>
+      <div id="workbenchTasks" class="workbench-grid"></div>
+    </section>
+
+    <section class="view" id="view-shipping">
+      <div class="production-hero central-hero">
+        <div>
+          <div class="eyebrow">VERSAND</div>
+          <h2>Sendungen &amp; Einzelsendungen</h2>
+          <p>Standardauftrag: ein Paket nach Abschluss des gesamten Auftrags. Merchauftrag: eine eigene Sendung je Artikel und Empfänger.</p>
+        </div>
+        <div class="workbench-kpis">
+          <div><span>Versandbereit</span><strong id="shippingReadyQty">0</strong></div>
+        </div>
+      </div>
+      <div class="workbench-toolbar panel">
+        <div class="actions-row">
+          <button class="btn secondary active-filter" data-shipping-filter="ready">Versandbereit</button>
+          <button class="btn secondary" data-shipping-filter="deferred">Zurückgestellt</button>
+          <button class="btn secondary" data-shipping-filter="shipped">Versendet</button>
+          <button class="btn secondary" data-shipping-filter="all">Alle</button>
+        </div>
+        <button class="btn secondary" id="reloadShipping">Aktualisieren</button>
+      </div>
+      <div id="shippingGroups" class="workbench-grid"></div>
+    </section>
+
+    <section class="view" id="view-machines">
+      <div class="panel intro-panel">
+        <h2>Dateien auf den Maschinen</h2>
+        <p>Diese Bestandsliste führt der Produktionsmanager mit. Die HCA melden ihren Speicher im Legacy-RS232-Modus nicht zurück. Wenn du ein Motiv direkt an einer Maschine löschst, markiere es hier ebenfalls als gelöscht.</p>
+      </div>
+      <div class="inventory-grid" id="inventory"></div>
+    </section>
+
+    <section class="view" id="view-logview">
+      <div class="panel">
+        <div class="panel-head">
+          <div><h2>Technisches Protokoll</h2><p>Hilfreich für Fehlersuche bei RS232 und Dateiübertragung.</p></div>
+          <div class="actions-row"><button class="btn secondary" id="exportLog">Protokoll herunterladen</button><button class="btn secondary" id="clearLog">Leeren</button></div>
+        </div>
+        <div class="log" id="log"></div>
+      </div>
+    </section>
+
+    <section class="view" id="view-help">
+      <div class="help-hero panel">
+        <div>
+          <div class="eyebrow">HCA PRODUKTIONSMANAGER · HILFE</div>
+          <h2>Vom Auftrag bis zum Versand</h2>
+          <p>Der Produktionsmanager arbeitet auftragsbezogen. In der Auftragsübersicht wird die Produktion mit <strong>„Produktion starten“</strong> geöffnet. Danach erscheint der Produktionsmonitor mit den +1-Buttons je Größe.</p>
+        </div>
+        <div class="help-flow">Auftrag <span>→</span> Produktionsschritte <span>→</span> +1 fertig <span>→</span> Artikeletikett <span>→</span> Versand</div>
+      </div>
+
+      <div class="help-grid">
+        <article class="panel help-card">
+          <span class="help-number">1</span>
+          <h3>Produktionsauftrag manuell anlegen</h3>
+          <ol>
+            <li><strong>Produktionsaufträge</strong> öffnen und <strong>Produktionsauftrag manuell</strong> wählen.</li>
+            <li>Auftragsnummer, Kunde, Titel und optional Liefertermin eintragen.</li>
+            <li>Für jede Größe, Personalisierung oder Ortsgruppe eine Position anlegen.</li>
+            <li>Artikel, Art.-Nr./SKU, Größe, Menge, Verfahren, Position und Motiv eintragen.</li>
+            <li>Auftrag speichern. Die Produktionsschritte erscheinen automatisch unter <strong>Arbeitsplatz</strong>.</li>
+          </ol>
+        </article>
+
+        <article class="panel help-card">
+          <span class="help-number">2</span>
+          <h3>Interner Auftrag / Muster / Nacharbeit</h3>
+          <ol>
+            <li>Unter <strong>Produktionsaufträge</strong> auf <strong>Interner Produktionsauftrag</strong> klicken.</li>
+            <li>Kein Kunde und keine WooCommerce-Bestellung sind erforderlich.</li>
+            <li>Artikel und benötigte Produktionsschritte wie bei einem normalen Auftrag erfassen.</li>
+            <li>Geeignet für Musterstick, Test, Eigenbedarf, Reklamation, Nachproduktion oder Nacharbeit.</li>
+          </ol>
+        </article>
+
+        <article class="panel help-card">
+          <span class="help-number">3</span>
+          <h3>Auftrag aus WooCommerce</h3>
+          <ol>
+            <li>Der Synology-Produktionsserver ruft WooCommerce automatisch regelmäßig ab, sobald der Shop eingerichtet ist.</li>
+            <li>Alternativ unter <strong>Aufträge → Shop jetzt abrufen</strong> die Synchronisierung sofort starten.</li>
+            <li>Neue Bestellungen erscheinen als Auftrag mit Bestellnummer, Kunde und Positionen.</li>
+            <li>SKU/Artikelnummer, Varianten, Größe, Farbe, Gewicht und weitere zugeordnete Felder können aus WooCommerce übernommen werden.</li>
+            <li>Auch hier wird keine zusätzliche Produktion angelegt.</li>
+          </ol>
+        </article>
+
+        <article class="panel help-card">
+          <span class="help-number">4</span>
+          <h3>Produktionsdaten vorbereiten</h3>
+          <p>Der Auftragsstatus kann in der Auftragsübersicht geführt werden:</p>
+          <div class="help-status-chain">
+            <span>Bestellung eingegangen</span><b>→</b><span>Druckdaten in Vorbereitung</span><b>→</b><span>Druckdaten bereit</span><b>→</b><span>In Produktion</span>
+          </div>
+          <p>Am <strong>Arbeitsplatz Stickerei</strong> bei der passenden Position <strong>Stickdatei übertragen</strong> wählen. Dadurch öffnet sich die Übertragung direkt im Auftragskontext. Unabhängig davon bleibt links der Menüpunkt <strong>Übertragen</strong> verfügbar: Dort kann jederzeit eine TAP-/DST-Datei ohne Auftrag manuell an HCA 1–4 gesendet werden. DTF/Flex/Flock erscheinen am Arbeitsplatz der Transferpresse.</p>
+        </article>
+
+        <article class="panel help-card">
+          <span class="help-number">5</span>
+          <h3>Produktion abarbeiten</h3>
+          <ol>
+            <li><strong>Produktionsaufträge</strong> öffnen und am gewünschten Produktionsauftrag <strong>Produktion starten</strong> wählen.</li>
+            <li>Der Produktionsmonitor zeigt die Auftragspositionen und Größen mit Soll-/Ist-Zähler.</li>
+            <li>Nach jedem fertiggestellten Textil bei der passenden Größe <strong>+1 fertig</strong> drücken.</li>
+            <li>Der Fortschritt wird zentral auf der Synology gespeichert und steht allen Arbeitsplätzen sofort zur Verfügung.</li>
+            <li>Vollständig erledigte Positionen verschwinden aus der Ansicht „offen“.</li>
+            <li>Abgeschlossene Aufträge können anschließend unter <strong>Alle → Archivieren</strong> ausgeblendet und unter <strong>Archiviert</strong> wiederhergestellt werden.</li>
+          </ol>
+        </article>
+
+        <article class="panel help-card">
+          <span class="help-number">6</span>
+          <h3>Artikeletikett</h3>
+          <p>Bei jedem <strong>+1 fertig</strong> wird – wenn in den Einstellungen aktiviert – sofort ein Artikeletikett ohne Windows-Druckdialog gedruckt.</p>
+          <ul>
+            <li>Fest eingebautes Werbestudio-Königswinter-Logo</li>
+            <li>Artikel und Art.-Nr./SKU</li>
+            <li>Größe und Farbe</li>
+            <li>Auftragsnummer</li>
+            <li>Personalisierung / Team / Ortsgruppe / Nummer</li>
+            <li>Waschanleitung und Pflegesymbole oberhalb der Firmen-/Adresszeilen</li>
+            <li>Hinterlegte Firmen- und Herstellerangaben</li>
+          </ul>
+        </article>
+
+        <article class="panel help-card">
+          <span class="help-number">7</span>
+          <h3>Sendungen &amp; Einzelversand</h3>
+          <ol>
+            <li>Bei Standardaufträgen entsteht nach vollständiger Produktion eine Gesamtsendung. Bei Merchaufträgen ist jeder Artikel fest einer eigenen Empfängeradresse zugeordnet.</li>
+            <li>Sobald die zu einer Sendung gehörenden Produktionsschritte fertig sind, wird die Sendung <strong>Versandbereit</strong>.</li>
+            <li>Entweder <strong>Jetzt versenden</strong> oder <strong>Bis Produktionsende zurückstellen</strong>.</li>
+            <li>Beim Zurückstellen muss bei weiterer Verschiebung ein Grund dokumentiert werden.</li>
+            <li>Bei Produktionsende bleiben offene Versandentscheidungen sichtbar.</li>
+          </ol>
+        </article>
+
+        <article class="panel help-card">
+          <span class="help-number">8</span>
+          <h3>Sendcloud-Versand</h3>
+          <ol>
+            <li>Unter <strong>Versand</strong> die versandbereite Gruppe öffnen.</li>
+            <li>Gewicht sowie bei Bedarf Länge, Breite und Höhe eingeben.</li>
+            <li><strong>Versandarten laden</strong> und die gewünschte Sendcloud-Versandart auswählen.</li>
+            <li><strong>Versandlabel erstellen &amp; drucken</strong>.</li>
+            <li>Trackingnummer und Versandstatus werden am Auftrag gespeichert.</li>
+          </ol>
+        </article>
+
+        <article class="panel help-card">
+          <span class="help-number">9</span>
+          <h3>Auftragsstatus</h3>
+          <div class="help-status-list">
+            <span>Bestellung eingegangen</span>
+            <span>Druckdaten in Vorbereitung</span>
+            <span>Druckdaten bereit</span>
+            <span>In Produktion</span>
+            <span>Produktion abgeschlossen</span>
+            <span>Versandbereit</span>
+            <span>Versendet</span>
+          </div>
+          <p>Mit dem ersten gebuchten Produktionsfortschritt kann der Auftrag automatisch „In Produktion“ werden. Nach Abschluss der Produktionsschritte und Sendungen werden die Folgestatus zentral auf der Synology aktualisiert.</p>
+        </article>
+
+        <article class="panel help-card">
+          <span class="help-number">10</span>
+          <h3>Produktionsserver &amp; externer Zugriff</h3>
+          <p>Alle zentralen Aufträge und Fortschritte liegen auf dem Synology-Produktionsserver. Rechner außerhalb des Firmennetzes können über Tailscale darauf zugreifen.</p>
+          <p>Im Produktionsmanager unter <strong>Einstellungen → Arbeitsplatz &amp; Produktionsserver</strong> die Tailscale-Adresse der Synology eintragen, z. B. <code>http://100.x.x.x:8787</code>. COM-Verbindungen und der Pico bleiben immer lokal am jeweiligen Produktions-PC.</p>
+        </article>
+      </div>
+
+      <div class="panel help-note">
+        <h3>Produktion startet aus dem Auftrag</h3>
+        <p>Der Produktionsmonitor wird direkt über <strong>Aufträge → Produktion starten</strong> geöffnet. Die +1-Buchungen werden auf dem zentralen Produktionsserver gespeichert; es gibt keine zweite, getrennte Stückzahlführung.</p>
+      </div>
+    </section>
+
+    <section class="view" id="view-settings">
+      <div class="settings-grid">
+        <div class="panel">
+          <h2>Arbeitsplatz &amp; Produktionsserver</h2>
+          <p>Der Arbeitsplatz kann unabhängig in einem anderen Netzwerk laufen. Aufträge und Fortschritte liegen zentral auf dem Synology-Produktionsserver.</p>
+          <label>Arbeitsplatz</label>
+          <select id="settingWorkplaceMode" class="text-input">
+            <option value="embroidery">Stickerei</option>
+            <option value="transfer">Transferpresse · DTF / Flex / Flock</option>
+            <option value="overview">Übersicht / Büro</option>
+          </select>
+          <label>Produktionsserver</label>
+          <input id="settingProductionServerUrl" class="text-input" placeholder="z. B. http://100.64.0.10:8787">
+          <label>API-Schlüssel</label>
+          <input id="settingProductionServerKey" class="text-input" type="password" autocomplete="new-password">
+          <div class="actions-row">
+            <button class="btn primary" id="saveProductionServer" type="button">Speichern</button>
+            <button class="btn secondary" id="testProductionServer" type="button">Verbindung testen</button>
+            <span class="pico-status" id="productionServerSettingsStatus">Noch nicht geprüft</span>
+          </div>
+          <p class="settings-note">Für den Zugriff aus einem anderen Netzwerk wird VPN/Tailscale oder ein HTTPS-Zugang zur NAS empfohlen. COM-Ports und Pico bleiben lokal.</p>
+        </div>
+        <div class="panel">
+          <h2>Mobile-Device verbinden</h2>
+          <p>Verbindet Smartphone oder Tablet mit der HCA-Lager-App, ohne den langen API-Schlüssel abzutippen. Der QR-Code enthält nur einen einmaligen, kurz gültigen Pairing-Code – nicht den API-Schlüssel.</p>
+          <label>HTTPS-Adresse der mobilen Lager-App</label>
+          <input id="settingMobileWarehouseUrl" class="text-input" placeholder="z. B. https://deine-nas.tailnet.ts.net/api/hca-shared/mobile">
+          <div class="actions-row">
+            <button class="btn secondary" id="saveMobileWarehouseUrl" type="button">Adresse speichern</button>
+            <button class="btn primary" id="pairMobileDevice" type="button">Mobile-Device verbinden</button>
+          </div>
+          <p class="settings-note">Auf dem Mobile-Device den QR-Code mit der normalen Kamera scannen und den Link öffnen. Danach wird ein eigenes Geräte-Token gespeichert; der lange HCA-API-Schlüssel wird nicht dauerhaft auf dem Gerät abgelegt. Anschließend kann die Seite über „Zum Home-Bildschirm“ als Web-App gespeichert werden.</p>
+        </div>
+        <div class="panel">
+          <h2>Sendcloud</h2>
+          <p>Die Sendcloud-Zugangsdaten werden zentral auf dem Synology-Produktionsserver hinterlegt. Hier wird nur der Status angezeigt.</p>
+          <div class="actions-row">
+            <button class="btn secondary" id="testSendcloud" type="button">Sendcloud-Status prüfen</button>
+            <span class="pico-status" id="sendcloudSettingsStatus">Noch nicht geprüft</span>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2>Lexware Office</h2>
+          <p>Rechnungen und Lieferantenbelege zentral mit Lexware Office synchronisieren. Der API-Schlüssel wird ausschließlich auf der Synology gespeichert.</p>
+          <label>Public-API-Schlüssel</label>
+          <input id="lexwareApiToken" class="text-input" type="password" autocomplete="new-password" placeholder="Noch nicht hinterlegt">
+          <div class="business-inline-grid">
+            <div><label>Kategorie Kundenrechnungen</label><select id="lexwareSalesCategory" class="text-input"><option value="">Bitte Verbindung testen …</option></select></div>
+            <div><label>Kategorie Lieferantenrechnungen</label><select id="lexwarePurchaseCategory" class="text-input"><option value="">Bitte Verbindung testen …</option></select></div>
+          </div>
+          <div class="actions-row"><button class="btn primary" id="saveLexwareSettings" type="button">Lexware speichern</button><button class="btn secondary" id="testLexwareSettings" type="button">Verbindung testen</button><button class="btn secondary" id="syncLexwareSettings" type="button">Jetzt synchronisieren</button><span class="pico-status" id="lexwareSettingsStatus">Noch nicht geprüft</span></div>
+          <p class="settings-note">Ein leeres Schlüsselfeld ändert einen bereits gespeicherten Schlüssel nicht. Die Kategorien werden nach erfolgreichem Verbindungstest aus deinem Lexware-Office-Konto geladen.</p>
+        </div>
+
+        <div class="panel">
+          <h2>E-Mail · Angebote</h2>
+          <p>Angebote direkt aus HCA versenden. Die Zugangsdaten liegen ausschließlich zentral auf der Synology.</p>
+          <div class="business-form-grid">
+            <div class="span-2"><label>SMTP-Server</label><input id="settingMailHost" class="text-input" placeholder="z. B. smtp.office365.com"></div>
+            <div><label>Port</label><input id="settingMailPort" class="text-input" type="number" min="1" value="587"></div>
+            <div><label>Verschlüsselung</label><select id="settingMailEncryption" class="text-input"><option value="starttls">STARTTLS</option><option value="ssl">SSL/TLS</option><option value="none">Keine</option></select></div>
+            <div><label>Benutzername</label><input id="settingMailUsername" class="text-input" autocomplete="off"></div>
+            <div><label>Passwort</label><input id="settingMailPassword" class="text-input" type="password" autocomplete="new-password" placeholder="leer = unverändert"></div>
+            <div><label>Absender-E-Mail</label><input id="settingMailFromEmail" class="text-input" type="email"></div>
+            <div><label>Absendername</label><input id="settingMailFromName" class="text-input" placeholder="Werbestudio Königswinter"></div>
+            <div class="span-2"><label>Antwortadresse (optional)</label><input id="settingMailReplyTo" class="text-input" type="email"></div>
+          </div>
+          <div class="actions-row"><button class="btn primary" id="saveMailSettings" type="button">E-Mail speichern</button><button class="btn secondary" id="testMailSettings" type="button">Verbindung testen</button><span class="pico-status" id="mailSettingsStatus">Noch nicht geprüft</span></div>
+          <p class="settings-note">Ein leeres Passwortfeld behält das bereits gespeicherte Passwort bei.</p>
+        </div>
+        <div class="panel">
+          <h2>E-Mail-Postfächer</h2>
+          <p>IMAP und SMTP werden zentral auf der Synology gespeichert. Passwörter werden nie an die Oberfläche zurückgegeben.</p>
+          <div id="mailAccountSettingsList" class="business-card-list"></div>
+          <div class="actions-row"><button class="btn primary" id="addMailAccount" type="button">+ Postfach</button><button class="btn secondary" id="saveMailAccounts" type="button">Postfächer speichern</button></div>
+        </div>
+        <div class="panel">
+          <h2>Zahlungsbedingungen</h2>
+          <p>Die Standardbedingung gilt, wenn beim Kunden keine abweichende Auswahl hinterlegt ist.</p>
+          <div id="paymentTermsSettingsList" class="business-card-list"></div>
+          <div class="actions-row"><button class="btn primary" id="addPaymentTerm" type="button">+ Zahlungsbedingung</button><button class="btn secondary" id="savePaymentTerms" type="button">Zahlungsbedingungen speichern</button></div>
+        </div>
+        <div class="panel">
+          <h2>Dokumentendrucker dieses Arbeitsplatzes</h2>
+          <p>Diese Auswahl gilt nur auf diesem Windows-Client.</p>
+          <div class="business-form-grid"><div class="span-2"><label>Dokumentendrucker</label><select id="settingDocumentPrinter" class="text-input"><option value="">Bitte Drucker laden …</option></select></div></div>
+          <div class="actions-row"><button class="btn primary" id="saveDocumentPrinter" type="button">Drucker speichern</button><button class="btn secondary" id="reloadDocumentPrinters" type="button">Drucker neu laden</button></div>
+        </div>
+        <div class="panel">
+          <h2>Briefpapier &amp; Unternehmensdaten</h2>
+          <p>Zentrale Angaben für Angebote, Rechnungen und Lieferscheine.</p>
+          <div class="business-form-grid">
+            <div class="span-2"><label>Firmenname</label><input id="settingDocumentCompany" class="text-input" value="Werbestudio Königswinter"></div>
+            <div class="span-2"><label>Straße / Hausnummer</label><input id="settingDocumentStreet" class="text-input"></div>
+            <div><label>PLZ</label><input id="settingDocumentPostalCode" class="text-input"></div>
+            <div><label>Ort</label><input id="settingDocumentCity" class="text-input"></div>
+            <div><label>Telefon</label><input id="settingDocumentPhone" class="text-input"></div>
+            <div><label>E-Mail</label><input id="settingDocumentEmail" class="text-input" type="email"></div>
+            <div><label>Website</label><input id="settingDocumentWebsite" class="text-input"></div>
+            <div><label>USt-IdNr.</label><input id="settingDocumentVatId" class="text-input"></div>
+            <div class="span-2"><label>Kontoinhaber</label><input id="settingDocumentAccountHolder" class="text-input"></div>
+            <div><label>Bank</label><input id="settingDocumentBankName" class="text-input"></div>
+            <div><label>IBAN</label><input id="settingDocumentIban" class="text-input" autocomplete="off"></div>
+            <div><label>BIC</label><input id="settingDocumentBic" class="text-input" autocomplete="off"></div>
+            <div><label>Land</label><input id="settingDocumentCountry" class="text-input" value="Deutschland"></div>
+          </div>
+          <div class="actions-row"><button class="btn primary" id="saveDocumentSettings" type="button">Briefpapierdaten speichern</button><span class="pico-status" id="documentSettingsStatus">Noch nicht geladen</span></div>
+          <p class="settings-note">Die Daten werden zentral gespeichert und beim Erzeugen des Belegs auf die feste Vorlage gesetzt. Die Absenderzeile erscheint ausschließlich auf Seite 1.</p>
+        </div>
+        <div class="panel">
+          <h2>Stickdatei-Ordner</h2>
+          <p>Der Synology Drive Client synchronisiert diesen Ordner lokal. Der Produktionsmanager greift nur auf den lokalen Windows-Pfad zu.</p>
+          <label>Lokaler Ordner</label>
+          <input id="settingNasRoot" class="text-input" value="">
+          <button class="btn primary" id="saveSettings">Einstellungen speichern</button>
+        </div>
+        <div class="panel">
+          <h2>Maschinenbezeichnungen</h2>
+          <label>Maschine 1</label><input class="text-input machine-name-input" data-machine-name="0">
+          <label>Maschine 2</label><input class="text-input machine-name-input" data-machine-name="1">
+          <label>Maschine 3</label><input class="text-input machine-name-input" data-machine-name="2">
+          <label>Maschine 4 (Floppy / Pico)</label><input class="text-input machine-name-input" data-machine-name="3">
+        </div>
+        <div class="panel">
+          <h2>Garnkataloge (.tch)</h2>
+          <p>TCH-Farbkarten werden beim Import eingelesen und zentral auf der Synology gespeichert. Dadurch stehen die gleichen Garnfarben an allen HCA-Arbeitsplätzen zur Verfügung.</p>
+          <div class="actions-row">
+            <label class="btn primary" for="threadCatalogFileInput">TCH-Farbkatalog importieren</label>
+            <input id="threadCatalogFileInput" type="file" accept=".tch,text/plain" multiple hidden>
+            <button class="btn secondary" id="reloadThreadCatalogs" type="button">Kataloge aktualisieren</button>
+          </div>
+          <div id="threadCatalogSettingsList" class="thread-catalog-settings-list"><p class="settings-note">Noch keine zentralen Garnkataloge geladen.</p></div>
+          <p class="settings-note">Die Belegung der 12 Nadeln bleibt je Maschine und Arbeitsplatz lokal. Nur die Farbkataloge werden zentral geteilt.</p>
+        </div>
+        <div class="panel">
+          <h2>Firmenlogo</h2>
+          <p>Das Werbestudio-Königswinter-Logo ist fest Bestandteil des Produktionsmanagers und kann nicht geändert oder entfernt werden.</p>
+          <div class="logo-preview fixed-brand-preview" id="logoPreview">
+            <img id="logoPreviewImage" src="/assets/logo-app.png" alt="Werbestudio Königswinter">
+            <span id="logoPreviewEmpty" class="hidden"></span>
+          </div>
+          <div class="actions-row logo-actions hidden" aria-hidden="true">
+            <label class="btn primary" for="logoFileInput">Logo auswählen</label>
+            <input id="logoFileInput" type="file" disabled>
+            <button class="btn secondary" id="removeLogo" type="button" disabled>Logo entfernen</button>
+          </div>
+          <p class="settings-note">Dieses Logo wird auch für die Artikeletiketten verwendet.</p>
+        </div>
+        <div class="panel">
+          <h2>Artikeletiketten</h2>
+          <p>Das Artikeletikett wird automatisch erst dann gedruckt, wenn bei einem Textil <strong>alle Produktionspositionen</strong> fertig sind.</p>
+          <label class="check-line"><input type="checkbox" id="settingProductLabelAuto"> Artikeletikett nach vollständigem Textil automatisch drucken</label>
+          <label class="check-line"><input type="checkbox" id="settingProductLabelMotif"> Kleine Motivvorschau auf dem Artikeletikett drucken</label>
+          <input id="labelMotifImageInput" type="file" accept="image/png,image/jpeg,image/webp" hidden>
+          <label>Artikeletikett-Drucker</label>
+          <input id="settingProductLabelPrinter" class="text-input" list="windowsPrinterList" placeholder="Windows-Drucker auswählen">
+          <div class="settings-inline-grid">
+            <div><label>Breite (mm)</label><input id="settingProductLabelWidth" class="text-input" type="number" min="20" step="1" value="62"></div>
+            <div><label>Höhe (mm)</label><input id="settingProductLabelHeight" class="text-input" type="number" min="20" step="1" value="40"></div>
+          </div>
+          <h3>Artikelbarcodetikett</h3>
+          <p class="settings-note">Eigene Druckeinstellungen für Lager-/Barcodeetiketten. Bei 90° und 270° vertauscht HCA Breite und Höhe im Druckjob automatisch, damit das Etikett nicht verkleinert wird.</p>
+          <label>Artikelbarcodetikett-Drucker</label>
+          <input id="settingInventoryLabelPrinter" class="text-input" list="windowsPrinterList" placeholder="Windows-Drucker auswählen">
+          <div class="settings-inline-grid">
+            <div><label>Breite (mm)</label><input id="settingInventoryLabelWidth" class="text-input" type="number" min="20" step="1" value="75"></div>
+            <div><label>Höhe (mm)</label><input id="settingInventoryLabelHeight" class="text-input" type="number" min="20" step="1" value="50"></div>
+            <div><label>Rotation</label><select id="settingInventoryLabelRotation" class="text-input"><option value="0">0°</option><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></div>
+          </div>
+          <label class="check-line"><input type="checkbox" id="settingInventoryLabelPreview"> Vorschau vor dem Drucken anzeigen</label>
+          <p class="settings-note">Ausgeschaltet = Barcodeetiketten werden sofort gedruckt. Eingeschaltet = vor jedem Druck erscheint exakt das PNG, das an den Drucker gesendet wird.</p>
+          <div class="actions-row">
+            <button class="btn secondary" id="previewInventoryLabel" type="button">Vorschau anzeigen</button>
+            <button class="btn secondary" id="testInventoryLabel" type="button">Testdruck</button>
+          </div>
+          <h3>Lagerplatzetikett</h3>
+          <p class="settings-note">Etikett für ein Lagerfach mit Lager/Regal/Fachnummer und Fachbarcode. Ohne eigenen Drucker wird der Artikelbarcodetikett-Drucker verwendet.</p>
+          <label>Lagerplatzetikett-Drucker</label>
+          <input id="settingBinLabelPrinter" class="text-input" list="windowsPrinterList" placeholder="Windows-Drucker auswählen">
+          <div class="settings-inline-grid">
+            <div><label>Breite (mm)</label><input id="settingBinLabelWidth" class="text-input" type="number" min="20" step="1" value="75"></div>
+            <div><label>Höhe (mm)</label><input id="settingBinLabelHeight" class="text-input" type="number" min="20" step="1" value="50"></div>
+            <div><label>Rotation</label><select id="settingBinLabelRotation" class="text-input"><option value="0">0°</option><option value="90">90°</option><option value="180">180°</option><option value="270">270°</option></select></div>
+          </div>
+          <button class="btn secondary" id="testBinLabel" type="button">Lagerplatzetikett testen</button>
+          <h3>Waschanleitungen nach Veredelungsart</h3>
+          <p class="settings-note"><strong>SVG-Vorgabe:</strong> 1 Symbol je Datei · <code>width=&quot;100&quot;</code> · <code>height=&quot;100&quot;</code> · <code>viewBox=&quot;0 0 100 100&quot;</code> · Motiv innerhalb 5–95 · schwarz auf transparentem Hintergrund. Text vorher in Pfade umwandeln. Jedes Symbol wird auf dem Etikett ca. 5,5–6 mm groß gedruckt.</p>
+          <label>Pflegeprofil / Veredelungsart</label>
+          <select id="settingCareProfile" class="text-input"><option value="standard">Standard / Fallback</option><option value="stick">Stick</option><option value="dtf">DTF</option><option value="flex">Flex</option><option value="flock">Flock</option></select>
+          <label id="careUseStandardWrap" class="check-line hidden"><input type="checkbox" id="settingCareUseStandard"> Standardprofil für diese Veredelungsart verwenden</label>
+          <label>Hinweistext unter den Symbolen · maximal 2 Zeilen / 55 Zeichen je Zeile</label>
+          <textarea id="settingCareText" class="text-input care-textarea" rows="2" placeholder="z. B. 30 °C · auf links waschen&#10;nicht bleichen · kein Trockner · niedrig bügeln"></textarea>
+          <div id="careSvgGrid" class="care-svg-grid"></div>
+          <input id="careSvgFileInput" type="file" accept=".svg,image/svg+xml" hidden>
+          <h3>Hersteller-/Firmenangaben auf dem Etikett</h3>
+          <label>Firma / verantwortliche Person</label><input id="settingLabelCompany" class="text-input">
+          <label>Straße / Hausnummer</label><input id="settingLabelAddress" class="text-input">
+          <label>PLZ / Ort</label><input id="settingLabelCity" class="text-input">
+          <label>Land</label><input id="settingLabelCountry" class="text-input" value="Deutschland">
+          <label>Kontakt / Web / E-Mail</label><input id="settingLabelContact" class="text-input">
+          <h3>Versandlabel-Drucker</h3>
+          <input id="settingShippingLabelPrinter" class="text-input" list="windowsPrinterList" placeholder="Windows-Drucker auswählen">
+          <div class="settings-inline-grid">
+            <div><label>Breite (mm)</label><input id="settingShippingLabelWidth" class="text-input" type="number" min="50" step="1" value="105"></div>
+            <div><label>Höhe (mm)</label><input id="settingShippingLabelHeight" class="text-input" type="number" min="50" step="1" value="148"></div>
+          </div>
+          <div class="actions-row">
+            <button class="btn primary" id="saveLabelSettings" type="button">Etiketteneinstellungen speichern</button>
+            <button class="btn secondary" id="testProductLabel" type="button">Testetikett drucken</button>
+            <button class="btn secondary" id="reloadPrinters" type="button">Druckerliste aktualisieren</button>
+          </div>
+          <p class="settings-note" id="labelPrinterStatus">Windows-Drucker noch nicht geprüft.</p>
+          <p class="settings-note"><strong>Monarch 9416:</strong> Im Windows-Treiber das tatsächlich eingelegte Etikettenformat verwenden. Die Auflösung (203/300 dpi) wird vom installierten Windows-Druckertreiber übernommen. Bei TAP/DST erzeugt der Produktionsmanager die Motivvorschau automatisch; bei DTF/Flex/Flock kann am Arbeitsplatz über „Motivbild“ eine PNG/JPG-Datei zugeordnet werden.</p>
+        </div>
+        <div class="panel">
+          <h2>Anwendungssymbol</h2>
+          <p>Das Anwendungssymbol ist fest eingebaut. Es wird im Programmfenster, als Favicon und in der HCA-EXE verwendet.</p>
+          <div class="logo-preview app-icon-preview fixed-app-icon-preview">
+            <img id="appIconPreviewImage" src="/assets/app-icon.png" alt="HCA Anwendungssymbol">
+            <span id="appIconPreviewEmpty" class="hidden"></span>
+          </div>
+          <div class="actions-row logo-actions hidden" aria-hidden="true">
+            <label class="btn primary" for="appIconFileInput">Symbol auswählen</label>
+            <input id="appIconFileInput" type="file" disabled>
+            <button class="btn secondary" id="removeAppIcon" type="button" disabled>Symbol entfernen</button>
+          </div>
+          <p class="settings-note">Das Symbol kann nicht über die Einstellungen verändert werden.</p>
+        </div>
+        <div class="panel">
+          <h2>HCA 4 · Floppy / Pico 2 W</h2>
+          <p>Der Pico 2 W stellt sich gegenüber dem SFR1M44-FU-DL als USB-Stick dar. Der Produktionsmanager überträgt die ausgewählte TAP/DST-Datei per WLAN an den Pico.</p>
+          <label>Pico-Adresse</label>
+          <input id="settingPicoUrl" class="text-input" value="http://hca-pico.local" placeholder="http://hca-pico.local oder http://192.168.1.50">
+          <div class="actions-row">
+            <button class="btn secondary" id="testPico" type="button">Pico-Verbindung testen</button>
+            <span class="pico-status" id="picoSettingsStatus">Noch nicht geprüft</span>
+          </div>
+          <div class="pico-usb-setup">
+            <h3>Pico-Firmware installieren / aktualisieren</h3>
+            <p>Pico 2 W abziehen, BOOTSEL gedrückt halten und per USB anschließen. Danach installiert der HCA Manager die benötigte Basis-Firmware automatisch.</p>
+            <div class="actions-row">
+              <button class="btn secondary" id="flashPicoFirmware" type="button">Pico-Firmware installieren</button>
+              <span class="pico-status" id="picoInstallStatus">Noch nicht installiert</span>
+            </div>
+            <h3>Pico einmalig per USB ins WLAN bringen</h3>
+            <p>Nach dem Firmware-Flash den Pico normal per USB verbinden. Der HCA Manager installiert die HCA-Floppy-Bridge und speichert die WLAN-Daten direkt auf dem Pico; das Passwort bleibt nicht im Produktionsmanager gespeichert.</p>
+            <label>WLAN-Name (SSID)</label>
+            <input id="picoWifiSsid" class="text-input" autocomplete="off">
+            <label>WLAN-Passwort</label>
+            <input id="picoWifiPassword" class="text-input" type="password" autocomplete="new-password">
+            <button class="btn primary" id="configurePicoUsb" type="button">Pico per USB einrichten</button>
+            <div class="actions-row">
+              <button class="btn secondary" id="diagnosePicoUsb" type="button">Pico Diagnose</button>
+            </div>
+            <label>Pico-Diagnose</label>
+            <textarea id="picoDiagnosticOutput" class="text-input" rows="10" readonly placeholder="Hier erscheint die Boot-Ausgabe des Pico."></textarea>
+          </div>
+          <p class="settings-note">HCA 4 wird erst als verbunden gezählt, wenn der Pico im WLAN antwortet.</p>
+        </div>
+        <div class="panel">
+          <h2>COM-Port-Zuordnung</h2>
+          <p>Die Ports für HCA 1–3 werden einmal fest gespeichert und beim Start des Produktionsmanagers automatisch geöffnet.</p>
+          <label>HCA 1 · COM-Port</label><input id="serialPort0" class="text-input serial-port-input" placeholder="z. B. COM4" autocomplete="off">
+          <label>HCA 2 · COM-Port</label><input id="serialPort1" class="text-input serial-port-input" placeholder="z. B. COM5" autocomplete="off">
+          <label>HCA 3 · COM-Port</label><input id="serialPort2" class="text-input serial-port-input" placeholder="z. B. COM6" autocomplete="off">
+          <p class="settings-note" id="serialSettingsStatus">Noch keine COM-Port-Prüfung durchgeführt.</p>
+          <button class="btn primary" id="saveSerialSettings" type="button">Einstellungen speichern</button>
+        </div>
+        <div class="panel">
+          <h2>Programm-Updates</h2>
+          <p>Der HCA Produktionsmanager prüft öffentliche Releases aus <strong>dhaesen/HCA-Produktionsmanager-Updates</strong>. Ein neues Update wird erst nach deiner Bestätigung installiert.</p>
+          <div class="settings-grid two-col">
+            <div>
+              <label>Updatekanal</label>
+              <select id="githubUpdateChannel" class="text-input"><option value="stable">Stable</option><option value="beta">Beta</option></select>
+            </div>
+            <div class="setting-check-wrap">
+              <label class="setting-check"><input type="checkbox" id="githubAutoUpdateCheck" checked> Beim Programmstart automatisch nach Updates suchen</label>
+            </div>
+          </div>
+          <div class="actions-row">
+            <button class="btn secondary" id="checkGithubUpdate" type="button">Jetzt nach Updates suchen</button>
+            <button class="btn primary hidden" id="installGithubUpdate" type="button">Update installieren</button>
+          </div>
+          <p class="settings-note" id="githubUpdateStatus">Aktuelle Version wird beim Start ermittelt.</p>
+          <div class="github-release-notes hidden" id="githubReleaseNotes"></div>
+          <div class="manual-update-fallback">
+            <h3>Manuelles Update · Fallback</h3>
+            <p>Falls GitHub einmal nicht erreichbar ist, kann eine <code>.hcaupdate</code>-Datei weiterhin direkt eingespielt werden.</p>
+            <div class="actions-row">
+              <label class="btn secondary" for="updateFileInput">Update-Datei wählen</label>
+              <input id="updateFileInput" type="file" accept=".hcaupdate,.zip">
+              <button class="btn primary" id="applyUpdate" type="button" disabled>Update einspielen</button>
+            </div>
+            <p class="settings-note" id="updateStatus">Keine Update-Datei ausgewählt.</p>
+          </div>
+        </div>
+        <div class="panel">
+          <h2>Serielle Verbindung</h2>
+          <dl class="specs"><dt>Baudrate</dt><dd>38400</dd><dt>Datenbits</dt><dd>8</dd><dt>Parität</dt><dd>Keine</dd><dt>Stoppbits</dt><dd>1</dd><dt>Flow-Control</dt><dd>Aus</dd></dl>
+        </div>
+        <div class="panel">
+          <h2>Programmfenster</h2>
+          <p>Der HCA Produktionsmanager läuft in einem eigenen Windows-Programmfenster. Browser-Navigation, Edge-Dialoge und Edge-Symbole werden nicht als Programmoberfläche verwendet.</p>
+          <div class="app-mode-badge">HCA WINDOWS-MODUS AKTIV</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<datalist id="threadCatalogList"></datalist>
+<datalist id="centralArticleList"></datalist>
+<datalist id="windowsPrinterList"></datalist>
+
+<dialog id="centralOrderDialog" class="modal wide-modal">
+  <form method="dialog" autocomplete="off" data-form-type="other">
+    <div class="modal-head"><div><div class="eyebrow" id="centralOrderDialogEyebrow">PRODUKTIONSAUFTRAG</div><h2 id="centralOrderDialogTitle">Produktionsauftrag anlegen</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+    <div class="central-order-head-grid">
+      <div><label>Auftragsnummer</label><input id="centralOrderNo" class="text-input" autocomplete="off"></div>
+      <div><label>Kunde</label><input id="centralOrderCustomer" class="text-input" autocomplete="off"></div>
+      <div><label>Titel</label><input id="centralOrderTitle" class="text-input" autocomplete="off"></div>
+      <div><label>Liefertermin</label><input id="centralOrderDue" class="text-input" type="date" autocomplete="off"></div>
+      <div><label>Auftragstyp / Versand</label><select id="centralOrderType" class="text-input"><option value="standard">Standardauftrag · Gesamtversand</option><option value="none">Kein Versand / interner Auftrag</option><option value="merch">Merchauftrag · Einzelversand</option></select></div>
+    </div>
+    <p class="modal-help" id="centralOrderShippingNote"></p>
+    <div id="centralStandardShippingPanel" class="order-shipping-panel">
+      <h3>Lieferadresse für den Gesamtauftrag</h3>
+      <div class="central-order-head-grid shipping-address-grid">
+        <div><label>Empfänger / Ansprechpartner</label><input id="centralShipRecipient" class="text-input" autocomplete="off" data-form-type="other"></div>
+        <div><label>Firma</label><input id="centralShipCompany" class="text-input" autocomplete="off" data-form-type="other"></div>
+        <div><label>Straße</label><input id="centralShipStreet" class="text-input" autocomplete="off" data-form-type="other"></div>
+        <div><label>Hausnummer</label><input id="centralShipHouse" class="text-input" autocomplete="off" data-form-type="other"></div>
+        <div><label>Adresszusatz</label><input id="centralShipAddress2" class="text-input" autocomplete="off" data-form-type="other"></div>
+        <div><label>PLZ</label><input id="centralShipPostal" class="text-input" autocomplete="off" data-form-type="other"></div>
+        <div><label>Ort</label><input id="centralShipCity" class="text-input" autocomplete="off" data-form-type="other"></div>
+        <div><label>Land (ISO)</label><input id="centralShipCountry" class="text-input" value="DE" maxlength="2" autocomplete="off" data-form-type="other"></div>
+        <div><label>E-Mail</label><input id="centralShipEmail" class="text-input" type="email" autocomplete="off" data-form-type="other"></div>
+        <div><label>Telefon</label><input id="centralShipPhone" class="text-input" autocomplete="off" data-form-type="other"></div>
+      </div>
+    </div>
+    <div class="panel-head compact-head"><div><h3>Artikel, Größen &amp; Produktionspositionen</h3><p class="settings-note">Artikel einmal erfassen, darunter die benötigten Mengen je Größe eintragen. Vorderseite, Rückseite und weitere Positionen werden als eigene Produktionsschritte angelegt.</p></div><button class="btn secondary" id="addCentralArticle" type="button">+ Artikel hinzufügen</button></div>
+    <div id="centralOrderArticles" class="manual-order-articles"></div>
+    <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="saveCentralOrder">Auftrag speichern</button></div>
+  </form>
+</dialog>
+
+<dialog id="wooProductPickerDialog" class="modal wide-modal">
+  <form method="dialog" autocomplete="off">
+    <div class="modal-head"><div><div class="eyebrow">WOOCOMMERCE</div><h2>Artikel aus dem Onlineshop auswählen</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+    <p class="modal-help">Nach Produktname oder Artikelnummer/SKU suchen. Bei Variantenartikeln werden Farben getrennt angezeigt und die verfügbaren Größen automatisch übernommen.</p>
+    <div class="woo-product-toolbar"><input id="wooProductSearch" class="text-input" autocomplete="off" placeholder="Produktname oder Artikelnummer / SKU"><button type="button" class="btn primary" id="wooProductSearchButton">Suchen</button></div>
+    <p class="modal-help" id="wooProductSearchStatus">Mindestens 2 Zeichen eingeben.</p>
+    <div id="wooProductSearchResults" class="woo-product-results"></div>
+    <div class="modal-actions"><button value="cancel" class="btn secondary">Schließen</button></div>
+  </form>
+</dialog>
+
+<dialog id="motifThreadDialog" class="modal wide-modal">
+  <form method="dialog">
+    <div class="modal-head"><div><div class="eyebrow">STICKMOTIV</div><h2 id="motifThreadTitle">Vorschau &amp; Garnfarben</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+    <p class="modal-help" id="threadCatalogStatus">Garnkarten werden geladen …</p>
+    <canvas id="motifCanvas" width="900" height="460" style="width:100%;height:auto;display:block"></canvas>
+    <p class="modal-help" id="motifPreviewStats"></p>
+    <div class="motif-thread-slot-grid" id="motifThreadRows"></div>
+    <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="saveMotifThreads">Garnfolge speichern</button></div>
+  </form>
+</dialog>
+
+<dialog id="machineThreadDialog" class="modal wide-modal">
+  <form method="dialog">
+    <div class="modal-head"><div><div class="eyebrow">MASCHINENBESTAND</div><h2 id="machineThreadTitle">Nadelbelegung</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+    <p class="modal-help" id="machineThreadCatalogStatus">Garnkarten werden geladen …</p>
+    <div class="needle-slot-grid" id="machineThreadRows"></div>
+    <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="saveMachineThreads">Nadelbelegung speichern</button></div>
+  </form>
+</dialog>
+
+<dialog id="threadPickerDialog" class="modal thread-picker-modal">
+  <form method="dialog" autocomplete="off">
+    <div class="modal-head"><div><div class="eyebrow">GARN AUSWÄHLEN</div><h2 id="threadPickerTitle">Nadel</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+    <div class="thread-picker-toolbar"><input id="threadPickerSearch" class="text-input" autocomplete="off" placeholder="Farbnummer, Farbe oder Katalog suchen"></div>
+    <div class="thread-picker-layout">
+      <div id="threadPickerTabs" class="thread-picker-tabs"></div>
+      <div id="threadPickerColors" class="thread-color-list"></div>
+    </div>
+    <div class="modal-actions"><button type="button" class="btn danger" id="clearThreadPicker">Auswahl leeren</button><button value="cancel" class="btn secondary">Schließen</button></div>
+  </form>
+</dialog>
+
+<dialog id="missingThreadDialog" class="modal">
+  <form method="dialog">
+    <div class="modal-head"><div><div class="eyebrow">GARNPRÜFUNG</div><h2 id="missingThreadTitle">Benötigte Garne nicht verfügbar</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+    <p class="modal-help">Benötigte/s Garn(e) nicht auf der Maschine verfügbar. Du kannst das Garn auf einer Nadel tatsächlich wechseln oder für diesen Auftrag bewusst ein vorhandenes Garn als Ersatz verwenden.</p>
+    <div class="quantity-grid" id="missingThreadRows"></div>
+    <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="applyMissingThreads">Übernehmen</button></div>
+  </form>
+</dialog>
+
+
+<dialog id="merchImportDialog" class="modal wide-modal">
+  <form method="dialog">
+    <div class="modal-head"><div><div class="eyebrow">MERCHAUFTRAG · EINZELVERSAND</div><h2>Kundentabelle importieren</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+    <p class="modal-help">Eine Tabellenzeile = ein physischer Artikel = eine Empfängeradresse = eine spätere Sendung. Gewicht und Maße werden einmal für den fertig verpackten Musterartikel erfasst.</p>
+    <div class="central-order-head-grid">
+      <div><label>Auftragsnummer</label><input id="merchOrderNo" class="text-input"></div>
+      <div><label>Kunde</label><input id="merchCustomer" class="text-input"></div>
+      <div><label>Titel</label><input id="merchTitle" class="text-input" value="Merchauftrag / Einzelversand"></div>
+      <div><label>Liefertermin</label><input id="merchDue" class="text-input" type="date"></div>
+    </div>
+    <div class="order-shipping-panel">
+      <h3>Standard-Paketdaten je Einzelartikel</h3>
+      <div class="central-order-head-grid">
+        <div><label>Gewicht (kg)</label><input id="merchWeight" class="text-input" type="number" min="0.01" step="0.01"></div>
+        <div><label>Länge (cm)</label><input id="merchLength" class="text-input" type="number" min="0" step="0.1"></div>
+        <div><label>Breite (cm)</label><input id="merchWidth" class="text-input" type="number" min="0" step="0.1"></div>
+        <div><label>Höhe (cm)</label><input id="merchHeight" class="text-input" type="number" min="0" step="0.1"></div>
+      </div>
+      <div style="margin-top:10px"><label>Versandstrategie</label><select id="merchShippingStrategy" class="text-input"><option value="auto_cheapest">Günstigste verfügbare Versandart automatisch verwenden</option><option value="manual_cheapest">Günstigsten Preis anzeigen und manuell bestätigen</option></select></div>
+    </div>
+    <div class="merch-file-box"><label>Kundentabelle (.xlsx oder .csv)</label><input id="merchImportFile" class="text-input" type="file" accept=".xlsx,.csv,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"><p class="modal-help"><a href="/HCA_Merch_Einzelversand_Vorlage.xlsx" download>Merch-Einzelversand-Vorlage herunterladen</a></p></div>
+    <p class="modal-help" id="merchImportStatus">Eine Tabellenzeile entspricht genau einem Artikel und einer Einzelsendung.</p>
+    <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="saveMerchImport">Merchauftrag importieren</button></div>
+  </form>
+</dialog>
+
+<dialog id="shippingDialog" class="modal">
+  <form method="dialog">
+    <div class="modal-head"><div><div class="eyebrow">VERSAND</div><h2 id="shippingDialogTitle">Sendung</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+    <p class="modal-help" id="shippingDialogAddress"></p>
+    <div class="central-order-head-grid">
+      <div><label>Gewicht (kg)</label><input id="shippingWeight" class="text-input" type="number" min="0.01" step="0.01"></div>
+      <div><label>Länge (cm)</label><input id="shippingLength" class="text-input" type="number" min="0" step="0.1"></div>
+      <div><label>Breite (cm)</label><input id="shippingWidth" class="text-input" type="number" min="0" step="0.1"></div>
+      <div><label>Höhe (cm)</label><input id="shippingHeight" class="text-input" type="number" min="0" step="0.1"></div>
+    </div>
+    <label>Versandart</label>
+    <select id="shippingOption" class="text-input"><option value="">Zuerst Versandpreise ermitteln</option></select>
+    <p class="modal-help" id="shippingOptionStatus">Paketdaten eintragen und Versandpreise ermitteln.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn secondary" id="loadShippingOptions">Versandpreise ermitteln</button>
+      <button type="button" class="btn secondary" id="deferShipping">Bis Produktionsende zurückstellen</button>
+      <button type="button" class="btn primary" id="shipNow">Versandlabel erstellen &amp; drucken</button>
+    </div>
+  </form>
+</dialog>
+
+<dialog id="inventoryScanDialog" class="modal">
+  <form method="dialog" autocomplete="off">
+    <div class="modal-head"><div><div class="eyebrow">LAGER → PRODUKTION</div><h2>Artikel scannen</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+    <p class="modal-help" id="inventoryScanTaskText">Den Barcode des passenden Lagerartikels scannen. Der Scan bucht den Produktionsschritt und – wenn das Textil erstmals in die Produktion geht – den Lagerbestand.</p>
+    <label>Barcode</label>
+    <input id="inventoryProductionBarcode" class="text-input barcode-scan-input" autocomplete="off" autofocus placeholder="Barcode scannen …">
+    <p class="modal-help" id="inventoryScanStatus">Scanner auf das Lageretikett richten und Enter senden.</p>
+    <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="submitInventoryProductionScan">Scan buchen</button></div>
+  </form>
+</dialog>
+
+<dialog id="productionDialog" class="modal">
+  <form method="dialog" id="productionForm">
+    <div class="modal-head"><div><div class="eyebrow">NEUE PRODUKTION</div><h2>Stückzahlen festlegen</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+    <div class="central-order-head-grid">
+      <div><label>Auftragsnummer</label><input id="productionOrderNo" class="text-input"></div>
+      <div><label>Artikel</label><input id="productionArticle" class="text-input"></div>
+      <div><label>Artikelnummer / SKU</label><input id="productionSku" class="text-input"></div>
+      <div><label>Farbe</label><input id="productionColor" class="text-input"></div>
+    </div>
+    <label>Stickmotiv</label>
+    <select id="productionPattern" class="text-input" required></select>
+    <p class="modal-help">Mengen getrennt nach Herren, Damen und Kinder eintragen. Bei jedem Klick auf <strong>+1 fertig</strong> kann automatisch ein Artikeletikett mit Auftragsnummer, Artikelnummer und Größe gedruckt werden.</p><div class="quantity-grid" id="quantityGrid"></div>
+    <div class="modal-summary">Gesamtmenge: <strong id="newProductionTotal">0</strong> Textilien</div>
+    <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="createProduction">Produktion starten</button></div>
+  </form>
+</dialog>
+
+<dialog id="mobilePairingDialog" class="modal">
+  <form method="dialog">
+    <div class="modal-head"><div><div class="eyebrow">HCA LAGER</div><h2>Mobile-Device verbinden</h2></div><button class="modal-close" id="closeMobilePairing" type="button" aria-label="Schließen">×</button></div>
+    <p class="modal-help">QR-Code mit der normalen Kamera des Mobile-Devices scannen und den angezeigten Link öffnen. Der Pairing-Code ist einmalig und läuft automatisch ab.</p>
+    <div class="mobile-pairing-qr" id="mobilePairingQr"></div>
+    <p class="modal-help" id="mobilePairingStatus"></p>
+    <code class="mobile-pairing-url" id="mobilePairingUrl"></code>
+    <div class="modal-actions"><button class="btn secondary" id="copyMobilePairingLink" type="button">Pairing-Link kopieren</button><button class="btn primary" id="closeMobilePairingBottom" type="button">Fertig</button></div>
+  </form>
+</dialog>
+
+
+<dialog id="businessCustomerDialog" class="modal wide-modal">
+  <form method="dialog" autocomplete="off">
+    <div class="modal-head"><div><div class="eyebrow">CRM</div><h2 id="businessCustomerDialogTitle">Kunde anlegen</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+    <div class="business-form-grid">
+      <div class="span-2"><label>Firma / Organisation</label><input class="text-input" id="bcCompany"></div>
+      <div><label>Anrede</label><select class="text-input" id="bcSalutation"><option value="">–</option><option>Herr</option><option>Frau</option><option>Divers</option></select></div>
+      <div><label>Vorname</label><input class="text-input" id="bcFirst"></div><div><label>Nachname</label><input class="text-input" id="bcLast"></div>
+      <div><label>E-Mail</label><input class="text-input" id="bcEmail" type="email"></div><div><label>Telefon</label><input class="text-input" id="bcPhone"></div><div><label>Mobil</label><input class="text-input" id="bcMobile"></div>
+      <div><label>USt-IdNr.</label><input class="text-input" id="bcVat"></div><div><label>Steuernummer</label><input class="text-input" id="bcTax"></div>
+      <div class="span-2"><label>Standard-Zahlungsbedingung</label><select class="text-input" id="bcPaymentTerm"><option value="">Globale Standardzahlungsbedingung</option></select></div>
+      <div><label>Kundenrabatt %</label><input class="text-input" id="bcDiscount" type="number" min="0" max="100" step="0.1" value="0"></div><div><label>Guthaben EUR</label><input class="text-input" id="bcCredit" type="number" step="0.01" value="0"></div><div class="span-2"><label>Gutscheincodes</label><textarea class="text-input business-textarea compact" id="bcVouchers" placeholder="Ein Code pro Zeile"></textarea></div>
+      <div class="span-2"><label class="check-line"><input type="checkbox" id="bcDefaultCustomer"> Standardkunde für neue Angebote und Aufträge (z. B. Barverkauf)</label></div>
+    </div>
+    <p class="modal-help">Hier legst du die Standardadressen fest. Weitere Rechnungs- und Lieferadressen können anschließend direkt in der Kundenakte ergänzt werden.</p>
+    <div class="business-address-columns">
+      <div><h3>Rechnungsadresse</h3><label>Straße</label><input class="text-input" id="bcBillStreet"><div class="business-inline-grid"><div><label>PLZ</label><input class="text-input" id="bcBillZip"></div><div><label>Ort</label><input class="text-input" id="bcBillCity"></div></div><label>Land</label><input class="text-input" id="bcBillCountry" value="DE"></div>
+      <div><h3>Lieferadresse</h3><label>Straße</label><input class="text-input" id="bcShipStreet"><div class="business-inline-grid"><div><label>PLZ</label><input class="text-input" id="bcShipZip"></div><div><label>Ort</label><input class="text-input" id="bcShipCity"></div></div><label>Land</label><input class="text-input" id="bcShipCountry" value="DE"></div>
+    </div>
+    <label>Interne Notiz</label><textarea class="text-input business-textarea" id="bcNotes"></textarea>
+    <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="saveBusinessCustomer">Kunde speichern</button></div>
+  </form>
+</dialog>
+
+<dialog id="businessContactDialog" class="modal wide-modal">
+  <form method="dialog" autocomplete="off"><div class="modal-head"><div><div class="eyebrow">ANSPRECHPARTNER</div><h2 id="businessContactDialogTitle">Ansprechpartner anlegen</h2></div><button value="cancel" class="modal-close">×</button></div><div class="business-form-grid"><div><label>Anrede</label><select class="text-input" id="bctSalutation"><option value="">–</option><option>Herr</option><option>Frau</option><option>Divers</option></select></div><div><label>Rolle / Funktion</label><input class="text-input" id="bctRole"></div><div><label>Vorname</label><input class="text-input" id="bctFirst"></div><div><label>Nachname</label><input class="text-input" id="bctLast"></div><div><label>E-Mail</label><input class="text-input" id="bctEmail" type="email"></div><div><label>Telefon</label><input class="text-input" id="bctPhone"></div><div><label>Mobil</label><input class="text-input" id="bctMobile"></div><div><label>Standard-Rechnungsadresse</label><select class="text-input" id="bctBillingAddress"></select></div><div><label>Standard-Lieferadresse</label><select class="text-input" id="bctShippingAddress"></select></div><div class="span-2"><label class="check-line"><input type="checkbox" id="bctPrimary"> Hauptansprechpartner</label></div></div><p class="modal-help">Ohne individuelle Auswahl verwendet der Ansprechpartner automatisch die Standardadresse des Kunden.</p><div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="saveBusinessContact">Ansprechpartner speichern</button></div></form>
+</dialog>
+
+<dialog id="businessAddressDialog" class="modal wide-modal">
+  <form method="dialog" autocomplete="off"><div class="modal-head"><div><div class="eyebrow">KUNDENADRESSE</div><h2 id="businessAddressDialogTitle">Adresse anlegen</h2></div><button value="cancel" class="modal-close">×</button></div>
+    <div class="business-form-grid"><div><label>Bezeichnung</label><input class="text-input" id="bcaLabel" placeholder="z. B. Filiale Bonn"></div><div class="span-2"><label>Firma / Empfänger</label><input class="text-input" id="bcaCompany"></div><div><label>z. Hd. / Zusatz</label><input class="text-input" id="bcaAttention"></div><div class="span-2"><label>Straße / Hausnummer</label><input class="text-input" id="bcaStreet"></div><div><label>PLZ</label><input class="text-input" id="bcaZip"></div><div><label>Ort</label><input class="text-input" id="bcaCity"></div><div><label>Land</label><input class="text-input" id="bcaCountry" value="DE"></div><div class="span-2"><label class="check-line"><input type="checkbox" id="bcaDefaultBilling"> Als Standard-Rechnungsadresse verwenden</label><label class="check-line"><input type="checkbox" id="bcaDefaultShipping"> Als Standard-Lieferadresse verwenden</label></div></div>
+    <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="saveBusinessAddress">Adresse speichern</button></div></form>
+</dialog>
+
+
+<div id="financeCustomerInvoiceDialog" class="business-main-form panel">
+  <form autocomplete="off" onsubmit="return false">
+    <div class="modal-head"><div><div class="eyebrow">FINANZEN</div><h2 id="financeCustomerInvoiceDialogTitle">Kundenrechnung anlegen</h2></div></div>
+    <div class="business-form-grid"><div class="span-2"><label>Kunde</label><select id="financeInvoiceCustomer" class="text-input"></select></div><div><label>Ansprechpartner</label><select id="financeInvoiceContact" class="text-input"><option value="">Hauptkunde</option></select></div><div><label>Rechnungsadresse</label><select id="financeInvoiceBillingAddress" class="text-input"><option value="">Kundenstandard</option></select></div><div><label>Lieferadresse</label><select id="financeInvoiceShippingAddress" class="text-input"><option value="">Kundenstandard</option></select></div><div class="span-2"><label>Betreff</label><input id="financeInvoiceSubject" class="text-input" value="Rechnung"></div><div><label>Rechnungsdatum</label><input id="financeInvoiceDate" type="date" class="text-input"></div><div><label>Zahlungsbedingung</label><select id="financeInvoicePaymentTerm" class="text-input"></select></div><div><label>Fällig am</label><input id="financeInvoiceDue" type="date" class="text-input"></div><div class="span-2"><label>Kundenreferenz</label><input id="financeInvoiceReference" class="text-input"></div></div>
+    <div class="panel finance-dialog-panel"><div class="panel-head"><div><h3>Positionen</h3></div><button class="btn secondary" id="financeAddInvoiceLine" type="button">+ Position</button></div><div id="financeInvoiceLines" class="finance-dialog-lines"></div></div>
+    <label>Interne / zusätzliche Notiz</label><textarea id="financeInvoiceNotes" class="text-input business-textarea"></textarea>
+    <div class="modal-actions"><button type="button" id="cancelFinanceCustomerInvoice" class="btn secondary">Abbrechen</button><button type="button" class="btn secondary" id="saveFinanceCustomerInvoiceDraft">Als Entwurf speichern</button><button type="button" class="btn primary" id="saveFinanceCustomerInvoice">Rechnung anlegen</button></div>
+  </form>
+</div>
+
+<div id="financeSupplierInvoiceDialog" class="business-main-form panel">
+  <form autocomplete="off" onsubmit="return false">
+    <div class="modal-head"><div><div class="eyebrow">EINKAUF &amp; FINANZEN</div><h2>Lieferantenrechnung erfassen</h2></div></div>
+    <div class="business-form-grid"><div class="span-2"><label>Lieferant</label><input id="financeSupplierName" class="text-input" placeholder="Lieferantenname"></div><div><label>Rechnungsnummer des Lieferanten</label><input id="financeSupplierInvoiceNo" class="text-input"></div><div><label>Bestellung / Referenz</label><input id="financeSupplierPurchaseRef" class="text-input"></div><div class="span-2"><label>Betreff</label><input id="financeSupplierSubject" class="text-input" value="Lieferantenrechnung"></div><div><label>Rechnungsdatum</label><input id="financeSupplierDate" type="date" class="text-input"></div><div><label>Fällig am</label><input id="financeSupplierDue" type="date" class="text-input"></div><div><label>Netto</label><input id="financeSupplierNet" type="number" min="0" step="0.01" class="text-input"></div><div><label>MwSt.</label><input id="financeSupplierTax" type="number" min="0" step="0.01" class="text-input"></div><div><label>Brutto</label><input id="financeSupplierGross" type="number" min="0" step="0.01" class="text-input"></div><div><label>Steuersatz %</label><input id="financeSupplierTaxRate" type="number" min="0" step="0.01" value="19" class="text-input"></div><div class="span-2"><label>Originalbeleg (optional)</label><input id="financeSupplierFile" type="file" class="text-input" accept=".pdf,.jpg,.jpeg,.png,.xml,application/pdf,image/jpeg,image/png,text/xml,application/xml"></div></div>
+    <label>Notiz</label><textarea id="financeSupplierNotes" class="text-input business-textarea"></textarea>
+    <div class="modal-actions"><button type="button" id="cancelFinanceSupplierInvoice" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="saveFinanceSupplierInvoice">Lieferantenrechnung speichern</button></div>
+  </form>
+</div>
+
+<div id="businessSalesOrderDialog" class="business-main-form panel">
+  <form autocomplete="off" onsubmit="return false">
+    <div class="modal-head"><div><div class="eyebrow">VERTRIEB</div><h2 id="businessSalesOrderDialogTitle">Auftrag anlegen</h2></div></div>
+    <div class="business-form-grid"><div class="span-2"><label>Kunde</label><select id="businessOrderCustomer" class="text-input"></select></div><div><label>Ansprechpartner</label><select id="businessOrderContact" class="text-input"><option value="">Hauptkunde</option></select></div><div><label>Rechnungsadresse</label><select id="businessOrderBillingAddress" class="text-input"><option value="">Kundenstandard</option></select></div><div><label>Lieferadresse</label><select id="businessOrderShippingAddress" class="text-input"><option value="">Kundenstandard</option></select></div><div class="span-2"><label>Betreff</label><input id="businessOrderSubject" class="text-input" placeholder="z. B. Textilien mit Stick"></div><div><label>Liefer-/Fertigstellungstermin</label><input id="businessOrderDue" type="date" class="text-input"></div><div><label>Zahlungsbedingung</label><select id="businessOrderPaymentTerm" class="text-input"></select></div><div class="span-2"><label>Kundenreferenz</label><input id="businessOrderReference" class="text-input"></div></div>
+    <div class="panel finance-dialog-panel"><div class="panel-head"><div><h3>Positionen</h3><p class="settings-note">Einfache Position oder Position mit Veredelung – identisch zur Angebotserfassung.</p></div><div class="actions-row"><button class="btn secondary" id="businessOrderReprice" type="button">Shoppreise aktualisieren</button><button class="btn primary" id="businessOrderAddLine" type="button">+ Position</button></div></div><div id="businessOrderLines" class="business-quote-lines"></div></div>
+    <label>Interne Notiz</label><textarea id="businessOrderInternalNote" class="text-input business-textarea"></textarea>
+    <div class="modal-actions"><button type="button" id="cancelBusinessSalesOrder" class="btn secondary">Abbrechen</button><button type="button" class="btn secondary" id="saveBusinessSalesOrderDraft">Als Entwurf speichern</button><button type="button" class="btn primary" id="saveBusinessSalesOrder">Auftrag speichern</button></div>
+  </form>
+</div>
+
+<dialog id="businessQuoteEmailDialog" class="modal wide-modal">
+  <form method="dialog" autocomplete="off">
+    <div class="modal-head"><div><div class="eyebrow">ANGEBOT SENDEN</div><h2>Angebot per E-Mail senden</h2></div><button value="cancel" class="modal-close">×</button></div>
+    <label>Empfänger</label><input id="businessQuoteEmailTo" class="text-input" type="email">
+    <label>Betreff</label><input id="businessQuoteEmailSubject" class="text-input">
+    <label>Nachricht</label><textarea id="businessQuoteEmailBody" class="text-input business-textarea" rows="9"></textarea>
+    <p class="modal-help">Der Angebotsinhalt wird in einem einheitlichen HCA-Dokumentlayout in die E-Mail eingebettet. Die endgültige PDF-/Dokumentenvorlage passen wir anschließend an deine Vorgaben an.</p>
+    <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="sendBusinessQuoteEmail">E-Mail senden</button></div>
+  </form>
+</dialog>
+
+<dialog id="businessDocumentPreviewDialog" class="modal hca-document-preview-dialog">
+  <form method="dialog">
+    <div class="modal-head"><div><div class="eyebrow">DOKUMENTENVORSCHAU</div><h2 id="businessDocumentPreviewTitle">Angebot prüfen</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+    <iframe id="businessDocumentPreviewFrame" title="Dokumentenvorschau"></iframe>
+    <div class="modal-actions"><button value="cancel" class="btn secondary">Schließen</button></div>
+  </form>
+</dialog>
+
+<dialog id="businessProductionOrderDialog" class="modal">
+ <form method="dialog"><div class="modal-head"><div><div class="eyebrow">AUFTRAG → PRODUKTION</div><h2>Produktionsauftrag erzeugen</h2></div><button value="cancel" class="modal-close">×</button></div><p class="modal-help">Der kaufmännische Auftrag bleibt unverändert. HCA erzeugt daraus separate interne Produktionsaufträge mit eigener PA-Nummer.</p><label>Aufteilung</label><select class="text-input" id="businessProductionSplit"><option value="by_technique">Nach Produktionsverfahren aufteilen (empfohlen)</option><option value="all">Alle Positionen in einen Produktionsauftrag</option></select><div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="confirmBusinessProductionOrders">Produktionsauftrag erzeugen</button></div></form>
+</dialog>
+
+<dialog id="deliveryNoteCreateDialog" class="modal wide-modal">
+  <form method="dialog" autocomplete="off">
+    <div class="modal-head"><div><div class="eyebrow">LIEFERSCHEIN ERSTELLEN</div><h2 id="deliveryNoteCreateTitle">Artikel für die Lieferung auswählen</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+    <p class="modal-help" id="deliveryNoteCreateSource"></p>
+    <div id="deliveryNoteCandidateList" class="delivery-candidate-list"></div>
+    <label>Interne Notiz / Hinweis auf dem Lieferschein</label><textarea id="deliveryNoteCreateNotes" class="text-input business-textarea compact"></textarea>
+    <p class="modal-help">Bereits gelieferte Mengen werden abgezogen. Dadurch sind mehrere Teillieferungen möglich.</p>
+    <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn secondary" id="createDeliveryNoteDraft">Als Entwurf speichern</button><button type="button" class="btn primary" id="createDeliveryNote">Lieferschein erstellen</button></div>
+  </form>
+</dialog>
+
+<dialog id="deliveryTrackingDialog" class="modal">
+  <form method="dialog" autocomplete="off">
+    <div class="modal-head"><div><div class="eyebrow">LIEFERDATEN</div><h2>Sendungsverfolgung hinterlegen</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+    <div class="business-form-grid"><div><label>Versanddienstleister</label><input id="deliveryCarrier" class="text-input" placeholder="z. B. DHL, UPS oder Lieferant"></div><div><label>Sendungsnummer</label><input id="deliveryTrackingNumber" class="text-input"></div><div class="span-2"><label>Vollständiger Sendungslink</label><input id="deliveryTrackingUrl" class="text-input" type="url" placeholder="https://…"></div></div>
+    <p class="modal-help">Für eine Direktlieferung durch einen Lieferanten reicht eine Sendungsnummer oder ein vollständiger Trackinglink.</p>
+    <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn primary" id="saveDeliveryTracking">Lieferdaten speichern</button></div>
+  </form>
+</dialog>
+
+<dialog id="deliverySendcloudDialog" class="modal wide-modal">
+  <form method="dialog" autocomplete="off">
+    <div class="modal-head"><div><div class="eyebrow">LIEFERSCHEIN → SENDCLOUD</div><h2 id="deliverySendcloudTitle">Versand erstellen</h2></div><button value="cancel" class="modal-close" aria-label="Schließen">×</button></div>
+    <div class="business-form-grid"><div><label>Gewicht (kg)</label><input id="deliveryShipWeight" class="text-input" type="number" min="0.01" step="0.01"></div><div><label>Länge (cm)</label><input id="deliveryShipLength" class="text-input" type="number" min="0" step="0.1"></div><div><label>Breite (cm)</label><input id="deliveryShipWidth" class="text-input" type="number" min="0" step="0.1"></div><div><label>Höhe (cm)</label><input id="deliveryShipHeight" class="text-input" type="number" min="0" step="0.1"></div><div class="span-2"><label>Versandart</label><select id="deliveryShippingOption" class="text-input"><option value="">Zuerst Versandpreise ermitteln</option></select></div></div>
+    <p class="modal-help" id="deliveryShippingStatus">Paketdaten eingeben und Versandpreise ermitteln.</p>
+    <div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" class="btn secondary" id="loadDeliveryShippingOptions">Versandpreise ermitteln</button><button type="button" class="btn primary" id="shipDeliveryNote" disabled>Versandlabel erstellen</button></div>
+  </form>
+</dialog>
+
+<dialog id="mailAccountDialog" class="modal wide-modal"><form method="dialog" autocomplete="off"><div class="modal-head"><div><div class="eyebrow">POSTFACH</div><h2 id="mailAccountDialogTitle">Postfach einrichten</h2></div><button value="cancel" class="modal-close">×</button></div><div class="business-form-grid"><div><label>Bezeichnung</label><input id="mailAccountName" class="text-input"></div><div><label>E-Mail-Adresse</label><input id="mailAccountEmail" class="text-input" type="email"></div><div class="span-2"><label>Benutzername</label><input id="mailAccountUsername" class="text-input"></div><div><label>IMAP-Server</label><input id="mailAccountImapHost" class="text-input"></div><div><label>IMAP-Port</label><input id="mailAccountImapPort" class="text-input" type="number" value="993"></div><div><label>IMAP-Verschlüsselung</label><select id="mailAccountImapSecurity" class="text-input"><option value="ssl">SSL/TLS</option><option value="starttls">STARTTLS</option><option value="none">Keine</option></select></div><div><label>IMAP-Passwort</label><input id="mailAccountImapPassword" class="text-input" type="password" placeholder="leer = unverändert"></div><div><label>SMTP-Server</label><input id="mailAccountSmtpHost" class="text-input"></div><div><label>SMTP-Port</label><input id="mailAccountSmtpPort" class="text-input" type="number" value="587"></div><div><label>SMTP-Verschlüsselung</label><select id="mailAccountSmtpSecurity" class="text-input"><option value="starttls">STARTTLS</option><option value="ssl">SSL/TLS</option><option value="none">Keine</option></select></div><div><label>SMTP-Passwort</label><input id="mailAccountSmtpPassword" class="text-input" type="password" placeholder="leer = IMAP-Passwort / unverändert"></div><div><label>Absendername</label><input id="mailAccountFromName" class="text-input"></div><div><label>Antwortadresse</label><input id="mailAccountReplyTo" class="text-input" type="email"></div><div class="span-2"><label>Signatur</label><textarea id="mailAccountSignature" class="text-input business-textarea compact" rows="5" placeholder="Signatur dieses Postfachs"></textarea></div><div class="span-2"><label class="check-line"><input id="mailAccountDefault" type="checkbox"> Standardpostfach</label></div></div><div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" id="applyMailAccount" class="btn primary">Übernehmen</button></div></form></dialog>
+<dialog id="mailComposeDialog" class="modal wide-modal"><form method="dialog"><div class="modal-head"><div><div class="eyebrow">E-MAIL</div><h2>Neue Nachricht</h2></div><button value="cancel" class="modal-close">×</button></div><div class="hca-mail-compose-grid"><div class="span-2"><label>Empfänger</label><input id="mailComposeTo" class="text-input" type="email"></div><div><label>CC</label><input id="mailComposeCc" class="text-input" type="text"></div><div><label>BCC</label><input id="mailComposeBcc" class="text-input" type="text"></div><div class="span-2"><label>Betreff</label><input id="mailComposeSubject" class="text-input"></div><div class="span-2"><label>Nachricht</label><textarea id="mailComposeBody" class="text-input business-textarea" rows="12"></textarea></div><div class="span-2"><label>Anhänge</label><input id="mailComposeAttachments" class="text-input" type="file" multiple><div id="mailComposeAttachmentList" class="hca-mail-attachments"><span class="settings-note">Keine Anhänge ausgewählt.</span></div></div></div><div class="modal-actions"><button value="cancel" class="btn secondary">Abbrechen</button><button type="button" id="mailSend" class="btn primary">Senden</button></div></form></dialog>
+
+  <dialog id="hcaSupplierDialog" class="hca-dialog"><form method="dialog"><div class="dialog-head"><h3 id="hcaSupplierDialogTitle">Lieferant anlegen</h3><button value="cancel" class="icon-btn" type="submit">×</button></div><div class="dialog-body"><div class="business-form-grid"><div class="span-2"><label>Firmenname</label><input class="text-input" id="hcaSupplierName"></div><div><label>Kürzel</label><input class="text-input" id="hcaSupplierCode"></div><div><label>Eigene Kundennummer</label><input class="text-input" id="hcaSupplierCustomerNo"></div><div><label>Ansprechpartner</label><input class="text-input" id="hcaSupplierContact"></div><div><label>E-Mail</label><input class="text-input" id="hcaSupplierEmail" type="email"></div><div><label>Telefon</label><input class="text-input" id="hcaSupplierPhone"></div><div><label>Webseite</label><input class="text-input" id="hcaSupplierWebsite"></div><div class="span-2"><label>Straße</label><input class="text-input" id="hcaSupplierStreet"></div><div><label>PLZ</label><input class="text-input" id="hcaSupplierZip"></div><div><label>Ort</label><input class="text-input" id="hcaSupplierCity"></div><div><label>Land</label><input class="text-input" id="hcaSupplierCountry" value="DE"></div><div class="span-2"><label>Notizen</label><textarea class="text-input business-textarea compact" id="hcaSupplierNotes"></textarea></div></div></div><div class="dialog-actions"><button class="btn secondary" value="cancel" type="submit">Abbrechen</button><button class="btn primary" id="saveHcaSupplier" value="" type="button">Speichern</button></div></form></dialog>
+
+  <dialog id="hcaOwnArticleDialog" class="hca-dialog"><form method="dialog"><div class="dialog-head"><h3>Eigenen Artikel anlegen</h3><button value="cancel" class="icon-btn" type="submit">×</button></div><div class="dialog-body"><div class="business-form-grid"><div class="span-2"><label>Artikelname</label><input class="text-input" id="hcaOwnArticleName"></div><div><label>SKU / Artikelnummer</label><input class="text-input" id="hcaOwnArticleSku"></div><div><label>Hersteller</label><input class="text-input" id="hcaOwnArticleManufacturer"></div><div><label>Lieferant</label><select class="text-input" id="hcaOwnArticleSupplier"></select></div><div><label>Verkaufspreis netto</label><input class="text-input" id="hcaOwnArticlePrice" type="number" min="0" step="0.01" value="0"></div><div><label>MwSt.</label><input class="text-input" id="hcaOwnArticleTax" type="number" min="0" step="0.01" value="19"></div><div class="span-2"><label>Beschreibung</label><textarea class="text-input business-textarea" id="hcaOwnArticleDescription"></textarea></div><div class="span-2"><label class="check-line"><input id="hcaOwnArticleShop" type="checkbox"> Im Onlineshop anlegen</label></div><div id="hcaOwnArticleShopStatusWrap" class="span-2 hidden"><label>Shopstatus</label><select class="text-input" id="hcaOwnArticleShopStatus"><option value="draft">Entwurf – noch nicht sichtbar</option><option value="publish">Veröffentlicht – sofort sichtbar</option></select></div></div></div><div class="dialog-actions"><button class="btn secondary" value="cancel" type="submit">Abbrechen</button><button class="btn primary" id="saveHcaOwnArticle" value="" type="button">Artikel anlegen</button></div></form></dialog>
+
+<script src="/hca-auth-early.js?v=0.13.5.2"></script>\n<script src="/hca-ui.js?v=0.13.1"></script>
+<script src="/app.js?v=0.13.5.2"></script>
+<script src="/hca-v0132.js?v=0.13.5.2"></script>
+
+  <dialog id="inventoryLabelPreviewDialog" class="modal">
+    <form method="dialog">
+      <div class="modal-head">
+        <div><span class="eyebrow">ARTIKELBARCODEETIKETT</span><h2>Druckvorschau</h2></div>
+        <button class="modal-close" id="inventoryLabelPreviewCancel" type="button" aria-label="Schließen">×</button>
+      </div>
+      <p id="inventoryLabelPreviewMeta" class="modal-help"></p>
+      <div style="background:#e8e8e4;border:1px solid #d8d8d3;border-radius:12px;padding:18px;display:flex;justify-content:center;overflow:auto;">
+        <img id="inventoryLabelPreviewImage" alt="Artikelbarcodetikett Vorschau" style="display:block;max-width:100%;height:auto;background:#fff;box-shadow:0 4px 18px rgba(0,0,0,.14);">
+      </div>
+      <div class="modal-actions">
+        <button class="btn secondary" id="inventoryLabelPreviewCancelBottom" type="button">Abbrechen</button>
+        <button class="btn primary" id="inventoryLabelPreviewPrint" type="button">Drucken</button>
+      </div>
+    </form>
+  </dialog>
+  <script src="/hca-v0134.js?v=0.13.5.2"></script>\n  <script src="/hca-v0135.js?v=0.13.5.2"></script>
+</body>
+</html>

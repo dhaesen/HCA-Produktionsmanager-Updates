@@ -1,0 +1,9 @@
+HCA Produktionsmanager v0.13.1
+
+- Automatischer Programmneustart nach Clientupdates entfernt.
+- Nach erfolgreichem Update erscheint eine klare Abschlussmeldung.
+- HCA wird anschließend vom Anwender selbst geschlossen und erneut geöffnet.
+- Der technisch erwartete Verbindungsabbruch des lokalen Updatedienstes wird nicht mehr als „Failed to Fetch“ angezeigt.
+- GitHub- und manuell ausgewählte Updates verwenden denselben Ablauf.
+
+Hinweis: Beim Einspielen dieser Übergangsversion kann der bisherige Updater noch einmal automatisch neu starten. Ab v0.13.1 gilt der neue manuelle Neustart.
