@@ -1,4 +1,4 @@
-name: Build single EXE installer v0.13.5.3
+name: Build single EXE installer v0.13.5.4
 on:
   push:
     branches: [codex/v0.13.2-development]
@@ -19,10 +19,10 @@ jobs:
         run: |
           $ErrorActionPreference = 'Stop'
           New-Item -ItemType Directory -Force work, dist | Out-Null
-          $zip = Join-Path $env:RUNNER_TEMP 'HCA_Client_Vollinstallation_v0.13.5.3.zip'
-          Invoke-WebRequest -Uri 'https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.5.3/HCA_Client_Vollinstallation_v0.13.5.3.zip' -OutFile $zip
+          $zip = Join-Path $env:RUNNER_TEMP 'HCA_Client_Vollinstallation_v0.13.5.4.zip'
+          Invoke-WebRequest -Uri 'https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.5.4/HCA_Client_Vollinstallation_v0.13.5.4.zip' -OutFile $zip
           $actual = (Get-FileHash $zip -Algorithm SHA256).Hash.ToLowerInvariant()
-          if ($actual -ne '1927fc2d53e484ee49120343a05a0fef6e7084f6c6846e64692a4119991dbd66') {
+          if ($actual -ne '8d3985849b38361699d558dbd1b62a1c2dde38a39e3ac116d0aa6795c18055c3') {
             throw "Full installation checksum mismatch: $actual"
           }
           Expand-Archive $zip -DestinationPath work
@@ -49,30 +49,31 @@ jobs:
           $ErrorActionPreference = 'Stop'
           & $env:ISCC "/DSourceDir=$env:HCA_PAYLOAD" "/DOutputDir=$pwd\dist" "installer\HCA_Produktionsmanager.iss"
           if ($LASTEXITCODE -ne 0) { throw "Inno Setup failed with exit code $LASTEXITCODE" }
-          $setup = 'dist\HCA_Produktionsmanager_Setup_v0.13.5.3.exe'
+          $setup = 'dist\HCA_Produktionsmanager_Setup_v0.13.5.4.exe'
           if (-not (Test-Path $setup)) { throw 'Setup EXE missing' }
           if ((Get-Item $setup).Length -lt 4000000) { throw 'Setup EXE unexpectedly small' }
           $hash = (Get-FileHash $setup -Algorithm SHA256).Hash.ToLowerInvariant()
-          "$hash  HCA_Produktionsmanager_Setup_v0.13.5.3.exe" | Set-Content 'dist\HCA_Produktionsmanager_Setup_v0.13.5.3.exe.sha256'
-      - name: Validate installer metadata
+          "$hash  HCA_Produktionsmanager_Setup_v0.13.5.4.exe" | Set-Content 'dist\HCA_Produktionsmanager_Setup_v0.13.5.4.exe.sha256'
+      - name: Validate embedded application icon
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $setup = Resolve-Path 'dist\HCA_Produktionsmanager_Setup_v0.13.5.3.exe'
-          $info = [System.Diagnostics.FileVersionInfo]::GetVersionInfo($setup)
-          if ($info.ProductName -ne 'HCA Produktionsmanager') { throw "Wrong product name: $($info.ProductName)" }
-          if ($info.CompanyName -ne 'Werbestudio Königswinter') { throw "Wrong publisher: $($info.CompanyName)" }
-          if ($info.ProductVersion -notlike '0.13.5.3*') { throw "Wrong product version: $($info.ProductVersion)" }
+          Add-Type -AssemblyName System.Drawing
+          $setup = (Resolve-Path 'dist\HCA_Produktionsmanager_Setup_v0.13.5.4.exe').Path
+          $icon = [System.Drawing.Icon]::ExtractAssociatedIcon($setup)
+          if ($null -eq $icon) { throw 'Setup EXE has no embedded icon' }
+          if ($icon.Width -lt 16 -or $icon.Height -lt 16) { throw "Embedded icon is invalid: $($icon.Width)x$($icon.Height)" }
+          $icon.Dispose()
       - name: Publish setup and verify checksum
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           $ErrorActionPreference = 'Stop'
-          gh release upload v0.13.5.3 dist/HCA_Produktionsmanager_Setup_v0.13.5.3.exe dist/HCA_Produktionsmanager_Setup_v0.13.5.3.exe.sha256 --repo dhaesen/HCA-Produktionsmanager-Updates --clobber
+          gh release upload v0.13.5.4 dist/HCA_Produktionsmanager_Setup_v0.13.5.4.exe dist/HCA_Produktionsmanager_Setup_v0.13.5.4.exe.sha256 --repo dhaesen/HCA-Produktionsmanager-Updates --clobber
           New-Item -ItemType Directory -Force verify | Out-Null
-          Invoke-WebRequest -Uri 'https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.5.3/HCA_Produktionsmanager_Setup_v0.13.5.3.exe' -OutFile 'verify\setup.exe'
-          Invoke-WebRequest -Uri 'https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.5.3/HCA_Produktionsmanager_Setup_v0.13.5.3.exe.sha256' -OutFile 'verify\setup.sha256'
+          Invoke-WebRequest -Uri 'https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.5.4/HCA_Produktionsmanager_Setup_v0.13.5.4.exe' -OutFile 'verify\setup.exe'
+          Invoke-WebRequest -Uri 'https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.5.4/HCA_Produktionsmanager_Setup_v0.13.5.4.exe.sha256' -OutFile 'verify\setup.sha256'
           $expected = (Get-Content 'verify\setup.sha256').Split()[0].ToLowerInvariant()
           $actual = (Get-FileHash 'verify\setup.exe' -Algorithm SHA256).Hash.ToLowerInvariant()
           if ($actual -ne $expected) { throw 'Published setup checksum mismatch' }
