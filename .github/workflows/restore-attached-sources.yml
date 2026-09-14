@@ -1,0 +1,36 @@
+name: Restore attached v0.13.0 sources
+on:
+  push:
+    branches:
+      - codex/v0.13.2-development
+    paths:
+      - .github/workflows/restore-attached-sources.yml
+permissions:
+  contents: write
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Download attached source archives
+        run: |
+          mkdir -p development/source-archives development/reports
+          code_nas=$(curl -L -sS -o development/source-archives/HCA_NAS_v0.13.0.zip -w '%{http_code}' 'https://chatgpt.com/api/library/files/libfile_4f5efa67daa481919cebcd01a33d82e7/download' || true)
+          code_plugin=$(curl -L -sS -o development/source-archives/wk-plugin-2.10.43.zip -w '%{http_code}' 'https://chatgpt.com/api/library/files/libfile_583adf8e9b4c81919dd3e6a99e124897/download' || true)
+          echo "NAS HTTP: $code_nas" > development/reports/source-download.txt
+          echo "Plugin HTTP: $code_plugin" >> development/reports/source-download.txt
+          file development/source-archives/* >> development/reports/source-download.txt || true
+          if unzip -t development/source-archives/HCA_NAS_v0.13.0.zip >/dev/null 2>&1 && unzip -t development/source-archives/wk-plugin-2.10.43.zip >/dev/null 2>&1; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add development/source-archives development/reports/source-download.txt
+          else
+            rm -f development/source-archives/*
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add development/reports/source-download.txt
+          fi
+          git commit -m "Restore attached v0.13.0 source archives" || exit 0
+          git push
