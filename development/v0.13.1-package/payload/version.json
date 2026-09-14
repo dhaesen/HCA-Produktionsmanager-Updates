@@ -1,1 +1,5 @@
-{"product":"HCA Produktionsmanager","version":"0.13.4","channel":"stable"}
+{
+  "product": "HCA Produktionsmanager",
+  "version": "0.13.5",
+  "channel": "stable"
+}
