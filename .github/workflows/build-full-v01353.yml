@@ -205,7 +205,7 @@ jobs:
                           await ConfigureWebViewAsync(_webView);
 
                           var navigation = new TaskCompletionSource<bool>();
-                          CoreWebView2NavigationCompletedEventHandler completedHandler = null;
+                          EventHandler<CoreWebView2NavigationCompletedEventArgs> completedHandler = null;
                           completedHandler = (sender, args) =>
                           {
                               _webView.CoreWebView2.NavigationCompleted -= completedHandler;
