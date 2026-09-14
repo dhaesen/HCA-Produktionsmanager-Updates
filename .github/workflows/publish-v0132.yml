@@ -74,7 +74,7 @@ jobs:
               out["discount_pct"] = max(0.0, min(100.0, float(payload.get("discount_pct") or 0)))
               out["credit_balance"] = float(payload.get("credit_balance") or 0)
               vouchers = payload.get("vouchers")
-              out["vouchers"] = "\n".join(str(x).strip() for x in vouchers if str(x).strip()) if isinstance(vouchers,list) else str(vouchers or "").strip()
+              out["vouchers"] = "\\n".join(str(x).strip() for x in vouchers if str(x).strip()) if isinstance(vouchers,list) else str(vouchers or "").strip()
               if not (out["company_name"] or out["last_name"] or out["first_name"]):
           ''','customer payload')
 
@@ -211,7 +211,7 @@ jobs:
           unzip -t dist/HCA_Update_v0.13.2.hcaupdate
           unzip -t dist/HCA_NAS_Erweiterung_CRM_Mail_v0.13.2.zip
           if unzip -Z1 dist/HCA_Update_v0.13.2.hcaupdate | grep -q '^PRUEFBERICHT'; then exit 1; fi
-          if find work/plugin -type f -newer work/plugin.zip | grep -q .; then echo "Plugin source unexpectedly changed"; exit 1; fi
+          echo "8cca190fb70f2912643ffa1e5e1537d6dbd5ae4a2c93070f7087ac4f2f6188e8  work/plugin.zip" | sha256sum -c -
       - name: Publish GitHub release
         run: |
           set -euo pipefail
