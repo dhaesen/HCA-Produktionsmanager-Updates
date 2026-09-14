@@ -1,0 +1,36 @@
+name: Inspect v0.13.1 mail and navigation
+on:
+  push:
+    branches: [codex/v0.13.2-development]
+    paths: [.github/workflows/inspect-v0131-mail.yml]
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Build narrow report
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path("development/v0.13.1-package/payload/app.js")
+          h=Path("development/v0.13.1-package/payload/index.html")
+          out=Path("development/reports/mail-nav-focused.txt")
+          rows=[]
+          pats=re.compile(r'mailAccount|mailMessage|mailCompose|mailReload|mailFolder|/mail|imap|signature|attachment|saveMailAccounts|addMailAccount|setHcaMainCategory|activeHcaCategory|main-category|data-category',re.I)
+          for path in (p,h):
+            lines=path.read_text(encoding="utf-8").splitlines()
+            for i,line in enumerate(lines):
+              if pats.search(line):
+                rows.append(f"{path.name}:{i+1}: {line}")
+          out.write_text("\n".join(rows)+"\n",encoding="utf-8")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add development/reports/mail-nav-focused.txt
+          git commit -m "Inspect mail client and main navigation" || exit 0
+          git push
