@@ -1,0 +1,365 @@
+name: Build and publish HCA v0.13.5
+on:
+  push:
+    branches:
+      - codex/v0.13.2-development
+    paths:
+      - .github/workflows/publish-v0135.yml
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Restore verified NAS v0.13.4
+        run: |
+          set -euo pipefail
+          curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.4/HCA_NAS_Erweiterung_Finanzen_v0.13.4.zip" -o /tmp/nas.zip
+          echo "a42ea4502859ee0e80d7a65b037f166139e74f86b26eea28faa80dfb8c77dd56  /tmp/nas.zip" | sha256sum -c -
+          mkdir -p work/nas
+          unzip -q /tmp/nas.zip -d work/nas
+      - name: Add user authentication backend
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=next(Path("work/nas").rglob("hca_shared.py"))
+          s=p.read_text(encoding="utf-8")
+          old='''def _require_hca_key(x_hca_key: str | None = Header(default=None)) -> None:
+              expected = str(os.getenv("HCA_API_KEY", "") or "").strip()
+              if expected and str(x_hca_key or "") != expected:
+                  raise HTTPException(status_code=401, detail="Ungültiger HCA API-Schlüssel.")
+          '''
+          new='''def _require_hca_key(request: Request, x_hca_key: str | None = Header(default=None), x_hca_session: str | None = Header(default=None, alias="X-HCA-Session")) -> None:
+              expected = str(os.getenv("HCA_API_KEY", "") or "").strip()
+              if expected and str(x_hca_key or "") != expected:
+                  raise HTTPException(status_code=401, detail="Ungültiger HCA API-Schlüssel.")
+              session_required = globals().get("_hca135_requires_user_session")
+              session_user = globals().get("_hca135_session_user")
+              if callable(session_required) and callable(session_user) and session_required(str(request.url.path or "")):
+                  if not session_user(str(x_hca_session or "")):
+                      raise HTTPException(status_code=401, detail="HCA-Anmeldung erforderlich.")
+          '''
+          if s.count(old)!=1: raise SystemExit(f"auth function: expected 1 match, got {s.count(old)}")
+          s=s.replace(old,new,1)
+          s=s.replace('HCA_BUSINESS_SCHEMA_VERSION = "0.13.4"','HCA_BUSINESS_SCHEMA_VERSION = "0.13.5"',1)
+          appendix=r'''
+
+          # ---------------------------------------------------------------------------
+          # HCA v0.13.5 · persönliche Benutzerkonten und Sitzungen
+          # ---------------------------------------------------------------------------
+          import hashlib as _hca135_hashlib
+          import hmac as _hca135_hmac
+          import secrets as _hca135_secrets
+
+          _HCA135_PASSWORD_ITERATIONS = 600000
+          _HCA135_SESSION_HOURS = 12
+          _HCA135_REMEMBER_DAYS = 30
+
+          def _hca135_user_schema(conn: sqlite3.Connection) -> None:
+              conn.executescript("""
+                  CREATE TABLE IF NOT EXISTS hca_users (
+                      id TEXT PRIMARY KEY,
+                      username TEXT NOT NULL UNIQUE COLLATE NOCASE,
+                      display_name TEXT NOT NULL DEFAULT '',
+                      role TEXT NOT NULL DEFAULT 'employee',
+                      password_hash TEXT NOT NULL,
+                      signature_html TEXT NOT NULL DEFAULT '',
+                      active INTEGER NOT NULL DEFAULT 1,
+                      created_at TEXT NOT NULL,
+                      updated_at TEXT NOT NULL,
+                      last_login_at TEXT NOT NULL DEFAULT ''
+                  );
+                  CREATE TABLE IF NOT EXISTS hca_user_sessions (
+                      token_hash TEXT PRIMARY KEY,
+                      user_id TEXT NOT NULL,
+                      created_at TEXT NOT NULL,
+                      expires_at TEXT NOT NULL,
+                      FOREIGN KEY(user_id) REFERENCES hca_users(id) ON DELETE CASCADE
+                  );
+                  CREATE INDEX IF NOT EXISTS idx_hca_user_sessions_user ON hca_user_sessions(user_id);
+                  CREATE INDEX IF NOT EXISTS idx_hca_user_sessions_expires ON hca_user_sessions(expires_at);
+              """)
+
+          def _hca135_now_dt() -> datetime:
+              return datetime.now(timezone.utc)
+
+          def _hca135_iso(value: datetime | None = None) -> str:
+              return (value or _hca135_now_dt()).isoformat()
+
+          def _hca135_password_hash(password: str) -> str:
+              raw=str(password or "")
+              if len(raw)<8: raise ValueError("Das Passwort muss mindestens 8 Zeichen lang sein.")
+              salt=_hca135_secrets.token_bytes(16)
+              digest=_hca135_hashlib.pbkdf2_hmac("sha256",raw.encode("utf-8"),salt,_HCA135_PASSWORD_ITERATIONS)
+              return "pbkdf2_sha256$"+str(_HCA135_PASSWORD_ITERATIONS)+"$"+salt.hex()+"$"+digest.hex()
+
+          def _hca135_password_valid(password: str, encoded: str) -> bool:
+              try:
+                  scheme,iterations,salt_hex,digest_hex=str(encoded or "").split("$",3)
+                  if scheme!="pbkdf2_sha256": return False
+                  digest=_hca135_hashlib.pbkdf2_hmac("sha256",str(password or "").encode("utf-8"),bytes.fromhex(salt_hex),int(iterations))
+                  return _hca135_hmac.compare_digest(digest.hex(),digest_hex)
+              except Exception:
+                  return False
+
+          def _hca135_token_hash(token: str) -> str:
+              return _hca135_hashlib.sha256(str(token or "").encode("utf-8")).hexdigest()
+
+          def _hca135_public_user(row: sqlite3.Row | dict[str, Any]) -> dict[str, Any]:
+              item=dict(row)
+              return {key:item.get(key) for key in ("id","username","display_name","role","signature_html","active","created_at","updated_at","last_login_at")}
+
+          def _hca135_session_user(token: str) -> dict[str, Any] | None:
+              if not str(token or ""): return None
+              with _db() as conn:
+                  _hca135_user_schema(conn)
+                  now=_hca135_iso()
+                  conn.execute("DELETE FROM hca_user_sessions WHERE expires_at<=?",(now,))
+                  row=conn.execute("""SELECT u.* FROM hca_user_sessions s
+                      JOIN hca_users u ON u.id=s.user_id
+                      WHERE s.token_hash=? AND s.expires_at>? AND u.active=1""",(_hca135_token_hash(token),now)).fetchone()
+                  return _hca135_public_user(row) if row else None
+
+          def _hca135_requires_user_session(path: str) -> bool:
+              tail=str(path or "").split("/api/hca-shared",1)[-1]
+              public_prefixes=("/auth/","/mobile","/pair","/portal","/public","/health","/status","/version")
+              if any(tail.startswith(prefix) for prefix in public_prefixes): return False
+              try:
+                  with _db() as conn:
+                      _hca135_user_schema(conn)
+                      return bool(conn.execute("SELECT 1 FROM hca_users WHERE active=1 LIMIT 1").fetchone())
+              except Exception:
+                  return False
+
+          def _hca135_current_user(token: str, admin: bool=False) -> dict[str, Any]:
+              user=_hca135_session_user(token)
+              if not user: raise HTTPException(status_code=401,detail="HCA-Anmeldung erforderlich.")
+              if admin and user.get("role")!="admin": raise HTTPException(status_code=403,detail="Administratorrechte erforderlich.")
+              return user
+
+          def _hca135_username(value: Any) -> str:
+              username=str(value or "").strip().lower()
+              if len(username)<3 or len(username)>64 or not all(ch.isalnum() or ch in "._-" for ch in username):
+                  raise HTTPException(status_code=400,detail="Der Benutzername benötigt 3 bis 64 Zeichen und darf Buchstaben, Zahlen, Punkt, Minus und Unterstrich enthalten.")
+              return username
+
+          def _hca135_create_session(conn: sqlite3.Connection, user_id: str, remember: bool=False) -> tuple[str,str]:
+              token=_hca135_secrets.token_urlsafe(48)
+              expires=_hca135_now_dt()+(timedelta(days=_HCA135_REMEMBER_DAYS) if remember else timedelta(hours=_HCA135_SESSION_HOURS))
+              conn.execute("INSERT INTO hca_user_sessions(token_hash,user_id,created_at,expires_at) VALUES(?,?,?,?)",(_hca135_token_hash(token),user_id,_hca135_iso(),_hca135_iso(expires)))
+              return token,_hca135_iso(expires)
+
+          @router.get("/auth/status", dependencies=auth)
+          async def hca135_auth_status(x_hca_session: str | None = Header(default=None, alias="X-HCA-Session")) -> dict[str, Any]:
+              with _db() as conn:
+                  _hca135_user_schema(conn)
+                  configured=bool(conn.execute("SELECT 1 FROM hca_users WHERE active=1 LIMIT 1").fetchone())
+              user=_hca135_session_user(str(x_hca_session or "")) if configured else None
+              return {"ok":True,"users_configured":configured,"authenticated":bool(user),"user":user}
+
+          @router.post("/auth/bootstrap", dependencies=auth)
+          async def hca135_auth_bootstrap(request: Request) -> dict[str, Any]:
+              body=await request.json(); body=body if isinstance(body,dict) else {}
+              username=_hca135_username(body.get("username"))
+              display=str(body.get("display_name") or "").strip()
+              if not display: raise HTTPException(status_code=400,detail="Bitte den vollständigen Namen eingeben.")
+              try: password_hash=_hca135_password_hash(str(body.get("password") or ""))
+              except ValueError as exc: raise HTTPException(status_code=400,detail=str(exc)) from exc
+              now=_hca135_iso(); uid=str(uuid.uuid4())
+              with _db() as conn:
+                  _hca135_user_schema(conn)
+                  if conn.execute("SELECT 1 FROM hca_users LIMIT 1").fetchone():
+                      raise HTTPException(status_code=409,detail="Die Benutzerverwaltung wurde bereits eingerichtet.")
+                  conn.execute("INSERT INTO hca_users(id,username,display_name,role,password_hash,active,created_at,updated_at,last_login_at) VALUES(?,?,?,?,?,?,?,?,?)",(uid,username,display,"admin",password_hash,1,now,now,now))
+                  token,expires=_hca135_create_session(conn,uid,True)
+                  row=conn.execute("SELECT * FROM hca_users WHERE id=?",(uid,)).fetchone()
+                  return {"ok":True,"session_token":token,"expires_at":expires,"user":_hca135_public_user(row)}
+
+          @router.post("/auth/login", dependencies=auth)
+          async def hca135_auth_login(request: Request) -> dict[str, Any]:
+              body=await request.json(); body=body if isinstance(body,dict) else {}
+              username=str(body.get("username") or "").strip()
+              password=str(body.get("password") or "")
+              with _db() as conn:
+                  _hca135_user_schema(conn)
+                  row=conn.execute("SELECT * FROM hca_users WHERE username=? COLLATE NOCASE",(username,)).fetchone()
+                  if not row or not row["active"] or not _hca135_password_valid(password,str(row["password_hash"] or "")):
+                      raise HTTPException(status_code=401,detail="Benutzername oder Passwort ist falsch.")
+                  now=_hca135_iso()
+                  conn.execute("UPDATE hca_users SET last_login_at=?,updated_at=? WHERE id=?",(now,now,row["id"]))
+                  token,expires=_hca135_create_session(conn,str(row["id"]),bool(body.get("remember")))
+                  row=conn.execute("SELECT * FROM hca_users WHERE id=?",(row["id"],)).fetchone()
+                  return {"ok":True,"session_token":token,"expires_at":expires,"user":_hca135_public_user(row)}
+
+          @router.post("/auth/logout", dependencies=auth)
+          async def hca135_auth_logout(x_hca_session: str | None = Header(default=None, alias="X-HCA-Session")) -> dict[str, Any]:
+              if x_hca_session:
+                  with _db() as conn:
+                      _hca135_user_schema(conn)
+                      conn.execute("DELETE FROM hca_user_sessions WHERE token_hash=?",(_hca135_token_hash(x_hca_session),))
+              return {"ok":True}
+
+          @router.get("/auth/profile", dependencies=auth)
+          async def hca135_auth_profile(x_hca_session: str | None = Header(default=None, alias="X-HCA-Session")) -> dict[str, Any]:
+              return {"ok":True,"user":_hca135_current_user(str(x_hca_session or ""))}
+
+          @router.put("/auth/profile", dependencies=auth)
+          async def hca135_auth_profile_put(request: Request, x_hca_session: str | None = Header(default=None, alias="X-HCA-Session")) -> dict[str, Any]:
+              current=_hca135_current_user(str(x_hca_session or ""))
+              body=await request.json(); body=body if isinstance(body,dict) else {}
+              display=str(body.get("display_name") or "").strip()
+              if not display: raise HTTPException(status_code=400,detail="Der Anzeigename darf nicht leer sein.")
+              signature=str(body.get("signature_html") or "")[:50000]
+              password=str(body.get("new_password") or "")
+              try: password_hash=_hca135_password_hash(password) if password else ""
+              except ValueError as exc: raise HTTPException(status_code=400,detail=str(exc)) from exc
+              now=_hca135_iso()
+              with _db() as conn:
+                  _hca135_user_schema(conn)
+                  if password_hash:
+                      conn.execute("UPDATE hca_users SET display_name=?,signature_html=?,password_hash=?,updated_at=? WHERE id=?",(display,signature,password_hash,now,current["id"]))
+                      conn.execute("DELETE FROM hca_user_sessions WHERE user_id=? AND token_hash<>?",(current["id"],_hca135_token_hash(str(x_hca_session or ""))))
+                  else:
+                      conn.execute("UPDATE hca_users SET display_name=?,signature_html=?,updated_at=? WHERE id=?",(display,signature,now,current["id"]))
+                  row=conn.execute("SELECT * FROM hca_users WHERE id=?",(current["id"],)).fetchone()
+                  return {"ok":True,"user":_hca135_public_user(row)}
+
+          @router.get("/auth/users", dependencies=auth)
+          async def hca135_users_get(x_hca_session: str | None = Header(default=None, alias="X-HCA-Session")) -> dict[str, Any]:
+              _hca135_current_user(str(x_hca_session or ""),True)
+              with _db() as conn:
+                  _hca135_user_schema(conn)
+                  rows=conn.execute("SELECT * FROM hca_users ORDER BY active DESC,display_name COLLATE NOCASE,username COLLATE NOCASE").fetchall()
+                  return {"ok":True,"items":[_hca135_public_user(row) for row in rows]}
+
+          @router.post("/auth/users", dependencies=auth)
+          async def hca135_users_post(request: Request, x_hca_session: str | None = Header(default=None, alias="X-HCA-Session")) -> dict[str, Any]:
+              _hca135_current_user(str(x_hca_session or ""),True)
+              body=await request.json(); body=body if isinstance(body,dict) else {}
+              username=_hca135_username(body.get("username"))
+              display=str(body.get("display_name") or "").strip()
+              if not display: raise HTTPException(status_code=400,detail="Bitte den vollständigen Namen eingeben.")
+              role=str(body.get("role") or "employee")
+              if role not in {"admin","employee"}: role="employee"
+              try: password_hash=_hca135_password_hash(str(body.get("password") or ""))
+              except ValueError as exc: raise HTTPException(status_code=400,detail=str(exc)) from exc
+              now=_hca135_iso(); uid=str(uuid.uuid4())
+              try:
+                  with _db() as conn:
+                      _hca135_user_schema(conn)
+                      conn.execute("INSERT INTO hca_users(id,username,display_name,role,password_hash,active,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?)",(uid,username,display,role,password_hash,1,now,now))
+                      return {"ok":True,"user":_hca135_public_user(conn.execute("SELECT * FROM hca_users WHERE id=?",(uid,)).fetchone())}
+              except sqlite3.IntegrityError as exc:
+                  raise HTTPException(status_code=409,detail="Dieser Benutzername ist bereits vergeben.") from exc
+
+          @router.put("/auth/users/{user_id}", dependencies=auth)
+          async def hca135_users_put(user_id: str, request: Request, x_hca_session: str | None = Header(default=None, alias="X-HCA-Session")) -> dict[str, Any]:
+              current=_hca135_current_user(str(x_hca_session or ""),True)
+              if str(current["id"])==str(user_id): raise HTTPException(status_code=409,detail="Das eigene Administratorkonto kann hier nicht deaktiviert oder herabgestuft werden.")
+              body=await request.json(); body=body if isinstance(body,dict) else {}
+              role=str(body.get("role") or "employee")
+              if role not in {"admin","employee"}: role="employee"
+              active=1 if bool(body.get("active",True)) else 0
+              with _db() as conn:
+                  _hca135_user_schema(conn)
+                  row=conn.execute("SELECT * FROM hca_users WHERE id=?",(user_id,)).fetchone()
+                  if not row: raise HTTPException(status_code=404,detail="Benutzer nicht gefunden.")
+                  if row["role"]=="admin" and row["active"] and (role!="admin" or not active):
+                      other=conn.execute("SELECT 1 FROM hca_users WHERE role='admin' AND active=1 AND id<>? LIMIT 1",(user_id,)).fetchone()
+                      if not other: raise HTTPException(status_code=409,detail="Der letzte aktive Administrator kann nicht deaktiviert oder herabgestuft werden.")
+                  conn.execute("UPDATE hca_users SET role=?,active=?,updated_at=? WHERE id=?",(role,active,_hca135_iso(),user_id))
+                  if not active: conn.execute("DELETE FROM hca_user_sessions WHERE user_id=?",(user_id,))
+                  return {"ok":True,"user":_hca135_public_user(conn.execute("SELECT * FROM hca_users WHERE id=?",(user_id,)).fetchone())}
+
+          @router.put("/auth/users/{user_id}/password", dependencies=auth)
+          async def hca135_users_password(user_id: str, request: Request, x_hca_session: str | None = Header(default=None, alias="X-HCA-Session")) -> dict[str, Any]:
+              _hca135_current_user(str(x_hca_session or ""),True)
+              body=await request.json(); body=body if isinstance(body,dict) else {}
+              try: password_hash=_hca135_password_hash(str(body.get("password") or ""))
+              except ValueError as exc: raise HTTPException(status_code=400,detail=str(exc)) from exc
+              with _db() as conn:
+                  _hca135_user_schema(conn)
+                  if not conn.execute("SELECT 1 FROM hca_users WHERE id=?",(user_id,)).fetchone(): raise HTTPException(status_code=404,detail="Benutzer nicht gefunden.")
+                  conn.execute("UPDATE hca_users SET password_hash=?,updated_at=? WHERE id=?",(password_hash,_hca135_iso(),user_id))
+                  conn.execute("DELETE FROM hca_user_sessions WHERE user_id=?",(user_id,))
+              return {"ok":True}
+          '''
+          s += appendix
+          p.write_text(s,encoding="utf-8")
+          PY
+      - name: Validate complete source set
+        run: |
+          set -euo pipefail
+          backend=$(find work/nas -name hca_shared.py -print -quit)
+          python -m py_compile "$backend"
+          node --check development/v0.13.1-package/payload/app.js
+          node --check development/v0.13.1-package/payload/hca-v0132.js
+          node --check development/v0.13.1-package/payload/hca-v0134.js
+          node --check development/v0.13.1-package/payload/hca-auth-early.js
+          node --check development/v0.13.1-package/payload/hca-v0135.js
+          python - <<'PY'
+          from pathlib import Path
+          import json,re
+          root=Path("development/v0.13.1-package")
+          assert json.loads((root/"hca-update.json").read_text())["version"]=="0.13.5"
+          assert json.loads((root/"payload/version.json").read_text())["version"]=="0.13.5"
+          html=(root/"payload/index.html").read_text()
+          for item in ["hca-auth-early.js?v=0.13.5","hca-v0135.js?v=0.13.5","hca-v0135.css?v=0.13.5"]: assert item in html
+          backend=next(Path("work/nas").rglob("hca_shared.py")).read_text()
+          for item in ["pbkdf2_sha256","hca_user_sessions","/auth/bootstrap","/auth/login","/auth/profile","/auth/users","X-HCA-Session"]: assert item in backend
+          ids=re.findall(r'id="([^"]+)"',html)
+          assert len(ids)==len(set(ids))
+          PY
+      - name: Build packages
+        run: |
+          set -euo pipefail
+          rm -f work/nas/INSTALLATION_v0.13.4.txt
+          cat > work/nas/INSTALLATION_v0.13.5.txt <<'EOF'
+          HCA NAS-Erweiterung v0.13.5
+
+          1. Vorhandene hca_shared.py sichern.
+          2. app/hca_shared.py und app/assets in die bestehende NAS-App kopieren.
+          3. HCA-Dienst beziehungsweise Container neu starten.
+          4. Danach das Clientupdate v0.13.5 installieren.
+          5. Beim ersten Start den ersten HCA-Administrator anlegen.
+
+          Vor der Anlage des ersten Administrators bleibt der bisherige Clientzugang aktiv.
+          Danach ist für die Desktop-API eine persönliche HCA-Anmeldung erforderlich.
+          Mobile Lagerzugänge bleiben getrennt erhalten.
+          EOF
+          mkdir -p dist
+          (cd development/v0.13.1-package && zip -qr "$GITHUB_WORKSPACE/dist/HCA_Update_v0.13.5.hcaupdate" hca-update.json payload)
+          (cd work/nas && zip -qr "$GITHUB_WORKSPACE/dist/HCA_NAS_Erweiterung_Benutzer_v0.13.5.zip" .)
+          (cd dist && sha256sum HCA_Update_v0.13.5.hcaupdate > HCA_Update_v0.13.5.sha256)
+          (cd dist && sha256sum HCA_NAS_Erweiterung_Benutzer_v0.13.5.zip > HCA_NAS_Erweiterung_Benutzer_v0.13.5.sha256)
+          (cd dist && sha256sum -c HCA_Update_v0.13.5.sha256 && sha256sum -c HCA_NAS_Erweiterung_Benutzer_v0.13.5.sha256)
+          unzip -t dist/HCA_Update_v0.13.5.hcaupdate
+          unzip -t dist/HCA_NAS_Erweiterung_Benutzer_v0.13.5.zip
+      - name: Publish and verify release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.md <<'EOF'
+          HCA Produktionsmanager v0.13.5 Testbuild
+
+          - persönliche HCA-Benutzerkonten
+          - sicher gehashte Passwörter und zeitlich begrenzte Sitzungen
+          - Administrator- und Mitarbeiterrolle
+          - Benutzer aktivieren/deaktivieren und Passwörter zurücksetzen
+          - persönliche WYSIWYG-E-Mail-Signatur je Benutzer
+          - Signatur wird automatisch in neue Nachrichten eingesetzt
+          - Grundlage für spätere Windows-Hello- und NFC-Anmeldung
+
+          Zuerst das NAS-Paket installieren, danach das Clientupdate.
+          Das WooCommerce-Plugin wurde nicht verändert.
+          EOF
+          gh release create v0.13.5 dist/* --repo dhaesen/HCA-Produktionsmanager-Updates --title "HCA Produktionsmanager 0.13.5 Testbuild" --notes-file /tmp/notes.md --prerelease
+          mkdir verify
+          for file in HCA_Update_v0.13.5.hcaupdate HCA_Update_v0.13.5.sha256 HCA_NAS_Erweiterung_Benutzer_v0.13.5.zip HCA_NAS_Erweiterung_Benutzer_v0.13.5.sha256; do
+            curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.5/$file" -o "verify/$file"
+          done
+          (cd verify && sha256sum -c HCA_Update_v0.13.5.sha256 && sha256sum -c HCA_NAS_Erweiterung_Benutzer_v0.13.5.sha256)
