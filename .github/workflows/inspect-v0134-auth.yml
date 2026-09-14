@@ -1,0 +1,46 @@
+name: Inspect HCA NAS v0.13.4 authentication
+on:
+  push:
+    branches:
+      - codex/v0.13.2-development
+    paths:
+      - .github/workflows/inspect-v0134-auth.yml
+permissions:
+  contents: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - run: |
+          set -euo pipefail
+          curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.4/HCA_NAS_Erweiterung_Finanzen_v0.13.4.zip" -o /tmp/nas.zip
+          mkdir -p /tmp/nas
+          unzip -q /tmp/nas.zip -d /tmp/nas
+          python - <<'PY'
+          from pathlib import Path
+          p=next(Path("/tmp/nas").rglob("hca_shared.py"))
+          s=p.read_text(encoding="utf-8")
+          lines=s.splitlines()
+          terms=["def _auth","async def _auth","auth =","Header(","authorization","x_hca","api_key","API_KEY","def _mail_accounts","/mail/accounts","MAIL_ACCOUNTS_FILE","dependencies=auth"]
+          ranges=[(0,min(220,len(lines)))]
+          for i,line in enumerate(lines):
+              if any(t.lower() in line.lower() for t in terms):
+                  ranges.append((max(0,i-12),min(len(lines),i+35)))
+          merged=[]
+          for a,b in sorted(ranges):
+              if merged and a<=merged[-1][1]+2: merged[-1]=(merged[-1][0],max(merged[-1][1],b))
+              else: merged.append((a,b))
+          out=[]
+          for a,b in merged:
+              out.append(f"\n===== lines {a+1}-{b} =====")
+              out.extend(f"{i+1}: {lines[i]}" for i in range(a,b))
+          Path("development/reports/nas-auth-v0134.txt").write_text("\n".join(out),encoding="utf-8")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add development/reports/nas-auth-v0134.txt
+          git commit -m "Inspect v0.13.4 authentication backend"
+          git push
