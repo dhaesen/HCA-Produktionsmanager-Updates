@@ -276,6 +276,17 @@ jobs:
         with:
           name: native-build-diagnostics
           path: native-build.log
+      - name: Commit native diagnostics on failure
+        if: steps.native.outcome == 'failure'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force development/diagnostics | Out-Null
+          Copy-Item native-build.log development/diagnostics/native-build-v01353.log -Force
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add development/diagnostics/native-build-v01353.log
+          git commit -m "Record native v0.13.5.3 build failure"
+          git push origin HEAD:codex/v0.13.2-development
       - name: Stop after native build failure
         if: steps.native.outcome == 'failure'
         shell: pwsh
