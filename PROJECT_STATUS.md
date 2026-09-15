@@ -1,7 +1,7 @@
 # HCA Produktionsmanager – Projektstatus
 
 Stand: 15. September 2026  
-Aktuelle Testversion: **0.13.7**  
+Aktuelle Testversion: **0.13.8**  
 Quellbranch: `codex/v0.13.2-development`
 
 ## Aktueller Lieferumfang
@@ -151,3 +151,23 @@ Quellbranch: `codex/v0.13.2-development`
 2. Clientupdate 0.13.7 einspielen.
 3. HCA manuell schließen und neu starten.
 4. Ein Testangebot mit ausgewähltem Artikeldatenblatt erstellen und dessen PDF prüfen.
+
+
+## Version 0.13.8 – Robuste Kundensuche und vollständige Artikeldatenblätter
+
+- Das Kundenfeld im Angebotsformular wird unabhängig vom verwendeten Renderpfad als direkt beschreibbares Kombinationsfeld aktiviert.
+- Die Suche liest die tatsächlich im Dropdown vorhandenen Kunden und findet Kundennummer, Firma, Vorname, Nachname und E-Mail; Treffer mit passenden Anfangsbuchstaben stehen zuerst.
+- Der Lieferant wird in Artikeldatenblättern grundsätzlich nicht mehr ausgegeben, auch nicht bei älteren gespeicherten Angebotsdaten.
+- Als Herkunftsangabe erscheint ausschließlich Hersteller beziehungsweise Marke aus WooCommerce.
+- Hauptbild und ausgewählte Galeriebilder werden getrennt von den Farbvarianten dargestellt.
+- Sämtliche in WooCommerce hinterlegten Farbvarianten werden mit Namen und kleinen Bildern in das Datenblatt übernommen.
+- Veredelungspositionen, zulässige Veredelungsarten und vorhandene Positionsbilder werden aus der WooCommerce-Wizard-Konfiguration übernommen.
+- Client- und NAS-Paket wurden nach Veröffentlichung erneut per SHA-256 und ZIP-Integritätsprüfung verifiziert.
+- Das WooCommerce-Plugin wurde nicht verändert.
+
+### Installation 0.13.8
+
+1. NAS-Erweiterung 0.13.8 installieren und den NAS-Dienst neu starten.
+2. Clientupdate 0.13.8 einspielen.
+3. HCA vollständig schließen und neu starten.
+4. Ein neues Testangebot mit farbigem Artikel und aktiviertem Artikeldatenblatt prüfen.
