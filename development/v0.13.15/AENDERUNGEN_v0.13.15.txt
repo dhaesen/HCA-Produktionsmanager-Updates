@@ -1,0 +1,8 @@
+HCA Produktionsmanager v0.13.15
+
+- Preisberechnung auf den bis v0.13.10 bewährten WooCommerce-Ablauf zurückgesetzt.
+- Fehlerhafte Preis-Overrides aus v0.13.11 bis v0.13.14 werden nicht mehr geladen.
+- Produktpreis, Veredelungspreis, Einrichtungskosten und Bearbeitungskosten werden wieder getrennt übernommen.
+- Alte Angebote werden beim Öffnen im Arbeitsspeicher neu kalkuliert; gespeichert wird erst durch den Benutzer.
+- Größenbezeichnungen bleiben im Produktionsmonitor auch mit eingeblendeter Verpackungseinheit sichtbar.
+- WooCommerce-Plugin und gespeicherte Geschäftsdaten werden durch dieses Clientupdate nicht verändert.

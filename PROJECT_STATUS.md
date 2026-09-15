@@ -1,7 +1,7 @@
 # HCA Produktionsmanager – Projektstatus
 
 Stand: 15. September 2026  
-Aktuelle Testversion: **0.13.14**  
+Aktuelle Testversion: **0.13.15**  
 Quellbranch: `codex/v0.13.2-development`
 
 ## Aktueller Lieferumfang
@@ -295,3 +295,20 @@ Quellbranch: `codex/v0.13.2-development`
 2. HCA vollständig schließen und neu starten.
 3. Das betroffene Angebot öffnen und „Shoppreise aktualisieren“ ausführen.
 4. Erst nach vier sichtbaren Positionen speichern.
+
+
+## Version 0.13.15 – Rettungsupdate Preisberechnung und Produktionsgrößen
+
+- Die fehlerhaften Client-Preisüberschreibungen aus 0.13.11 bis 0.13.14 werden nicht mehr geladen.
+- Die WooCommerce-Preisberechnung verwendet wieder den bis 0.13.10 bewährten Ablauf.
+- Produktpreis, Druckpreis, Einrichtungskosten und Bearbeitungskosten werden wieder getrennt aus der WooCommerce-Druckpreisverwaltung übernommen.
+- Bereits bestehende Angebote mit Veredelungen werden beim Öffnen neu kalkuliert. Die gespeicherten Daten ändern sich erst, wenn der Benutzer selbst speichert.
+- Die zusätzlich eingeführte Verpackungseinheit schneidet im Produktionsmonitor die Größenbezeichnung nicht mehr ab. Größen bleiben auch bei geringer Fensterhöhe sichtbar.
+- Das Update verändert weder das WooCommerce-Plugin noch die HCA-Datenbank.
+
+### Installation 0.13.15
+
+1. Nur das Clientupdate 0.13.15 einspielen; eine NAS-Erweiterung ist nicht erforderlich.
+2. HCA vollständig schließen und manuell neu starten.
+3. Ein vorhandenes Angebot mit Veredelung öffnen und prüfen, dass Produkt, Veredelung, Einrichtung und Bearbeitung wieder einzeln erscheinen.
+4. Einen Textil-Produktionsauftrag öffnen und die Größenanzeige prüfen.

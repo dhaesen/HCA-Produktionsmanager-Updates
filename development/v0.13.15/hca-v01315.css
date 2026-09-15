@@ -1,0 +1,27 @@
+/* HCA v0.13.15 · Größen im Produktionsmonitor dauerhaft sichtbar */
+body.production-monitor-mode .size-card{
+  justify-content:flex-start;
+  overflow-y:auto;
+  overflow-x:hidden;
+}
+body.production-monitor-mode .size-card .size-name{
+  display:block;
+  flex:0 0 auto;
+  visibility:visible;
+  opacity:1;
+  color:var(--ink,#1d1d1b);
+  -webkit-text-fill-color:var(--ink,#1d1d1b);
+  font-weight:900;
+  position:relative;
+  z-index:2;
+}
+body.production-monitor-mode .size-card .hca136-task-package{
+  flex:0 0 auto;
+  justify-content:center;
+  margin:4px 0 0;
+}
+body.production-monitor-mode .size-card .hca136-task-package input{
+  color:var(--ink,#1d1d1b);
+  -webkit-text-fill-color:var(--ink,#1d1d1b);
+  background:#fff;
+}
