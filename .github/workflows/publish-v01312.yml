@@ -1,0 +1,99 @@
+name: Build and publish HCA v0.13.12
+on:
+  push:
+    branches: [codex/v0.13.2-development]
+    paths: [.github/workflows/publish-v01312.yml]
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Prepare client
+        run: |
+          set -euo pipefail
+          rm -rf work/v01312 dist
+          mkdir -p work/v01312/client/payload dist
+          cp development/current-v0.13.5/client/* work/v01312/client/payload/
+          mv work/v01312/client/payload/hca-update.json work/v01312/client/hca-update.json
+          for version in 0136 0137 0138; do cp development/v0.13.${version#013}/hca-v${version}.js development/v0.13.${version#013}/hca-v${version}.css work/v01312/client/payload/; done
+          for version in 01310 01311; do cp development/v0.13.${version#013}/hca-v${version}.js development/v0.13.${version#013}/hca-v${version}.css work/v01312/client/payload/; done
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          root=Path("work/v01312/client");payload=root/"payload";html=(payload/"index.html").read_text(encoding="utf-8")
+          early="<script id=\"hca-native-splash-guard\">if(window.chrome&&window.chrome.webview)document.documentElement.classList.add('hca-native-host')</script>"
+          if "hca-native-splash-guard" not in html:html=html.replace("<head>","<head>\n  "+early,1)
+          for version in ("0136","0137","0138","01310","01311"):
+              css=f"hca-v{version}.css";js=f"hca-v{version}.js"
+              if css not in html:html=html.replace("</head>",f'  <link rel="stylesheet" href="/{css}?v=0.13.12">\n</head>')
+              if js not in html:html=html.replace("</body>",f'  <script src="/{js}?v=0.13.12"></script>\n</body>')
+          (payload/"index.html").write_text(html,encoding="utf-8")
+          (payload/"version.json").write_text(json.dumps({"version":"0.13.12","channel":"test","released":"2026-09-15"},ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          (root/"hca-update.json").write_text(json.dumps({"product":"HCA Produktionsmanager","version":"0.13.12","description":"Behebt den DOM-Fehler beim Öffnen und Neuberechnen alter und neuer Angebote."},ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          (payload/"AENDERUNGEN_v0.13.12.txt").write_text("""HCA v0.13.12
+          - unsichere insertBefore-Operation in der Angebotskopfzeile korrigiert
+          - ältere Angebote lassen sich wieder ohne DOM-Fehler öffnen
+          - Preisberechnung kann die Oberfläche nach dem Laden wieder fehlerfrei aktualisieren
+          - irreführende Meldung Shoppreise konnten nicht vollständig geladen werden beseitigt
+          - Kundensuche und alternative Angebotsmengen bleiben erhalten
+          - kein NAS-Update erforderlich
+          - WooCommerce-Plugin unverändert
+          """,encoding="utf-8")
+          PY
+      - name: Validate
+        run: |
+          set -euo pipefail
+          for file in work/v01312/client/payload/app.js work/v01312/client/payload/hca-v0132.js work/v01312/client/payload/hca-v0134.js work/v01312/client/payload/hca-v0135.js work/v01312/client/payload/hca-v0136.js work/v01312/client/payload/hca-v0137.js work/v01312/client/payload/hca-v0138.js work/v01312/client/payload/hca-v01310.js work/v01312/client/payload/hca-v01311.js; do node --check "$file"; done
+          python - <<'PY'
+          from pathlib import Path
+          import json,re
+          c=Path("work/v01312/client");h=(c/"payload/index.html").read_text();j=(c/"payload/hca-v0136.js").read_text()
+          assert json.loads((c/"hca-update.json").read_text())["version"]=="0.13.12"
+          assert json.loads((c/"payload/version.json").read_text())["version"]=="0.13.12"
+          assert "if(intro?.parentNode===head)head.insertBefore(panel,intro);else head.appendChild(panel);" in j
+          assert "if(intro)head.insertBefore(panel,intro)" not in j
+          assert "selectParent.insertBefore(wrap,select)" in j
+          assert "hca-v0139" not in h and not (c/"payload/hca-v0139.js").exists()
+          for marker in ("hca-v0136.js?v=0.13.12","hca-v01311.js?v=0.13.12"):assert marker in h
+          assert "wk-werbeartikel-konfigurator" not in "\n".join(str(p) for p in Path("work/v01312").rglob("*"))
+          PY
+          node <<'NODE'
+          class NodeLike{
+            constructor(name){this.name=name;this.children=[];this.parentNode=null}
+            appendChild(child){if(child.parentNode)child.parentNode.children=child.parentNode.children.filter(x=>x!==child);child.parentNode=this;this.children.push(child);return child}
+            insertBefore(child,reference){if(reference.parentNode!==this)throw new Error('reference is not a child');const index=this.children.indexOf(reference);child.parentNode=this;this.children.splice(index,0,child);return child}
+          }
+          const head=new NodeLike('head'),group=new NodeLike('group'),intro=new NodeLike('intro'),panel=new NodeLike('panel');head.appendChild(group);group.appendChild(intro);
+          if(intro?.parentNode===head)head.insertBefore(panel,intro);else head.appendChild(panel);
+          if(panel.parentNode!==head)throw new Error('safe fallback failed');
+          console.log('Alte verschachtelte Angebotsstruktur ohne insertBefore-Fehler getestet.');
+          NODE
+      - name: Package
+        run: |
+          set -euo pipefail
+          (cd work/v01312/client && zip -qr "$GITHUB_WORKSPACE/dist/HCA_Update_v0.13.12.hcaupdate" hca-update.json payload)
+          (cd dist && sha256sum HCA_Update_v0.13.12.hcaupdate > HCA_Update_v0.13.12.sha256)
+          unzip -t dist/HCA_Update_v0.13.12.hcaupdate
+          (cd dist && sha256sum -c HCA_Update_v0.13.12.sha256)
+          test "$(unzip -Z1 dist/HCA_Update_v0.13.12.hcaupdate | awk -F/ 'NF==1&&$0!=""{print}' | tr '\n' ' ')" = "hca-update.json "
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.md <<'EOF'
+          HCA Produktionsmanager v0.13.12 Testbuild
+
+          Dieses reine Clientupdate behebt den insertBefore-DOM-Fehler beim Öffnen älterer
+          Angebote und beim Neuzeichnen nach der WooCommerce-Preisberechnung.
+
+          Kein NAS-Update erforderlich. Das WooCommerce-Plugin wurde nicht verändert.
+          EOF
+          gh release create v0.13.12 dist/* --repo dhaesen/HCA-Produktionsmanager-Updates --title "HCA Produktionsmanager 0.13.12 Testbuild" --notes-file /tmp/notes.md --prerelease
+          mkdir verify
+          for f in dist/*;do name=$(basename "$f");curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.12/$name" -o "verify/$name";done
+          (cd verify && sha256sum -c HCA_Update_v0.13.12.sha256)
