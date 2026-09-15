@@ -1,0 +1,9 @@
+HCA Produktionsmanager v0.13.21
+
+- Produktstaffelpreise werden für jede angefragte Menge erneut über den WK-Werbeartikelkonfigurator berechnet.
+- Mengen aus „Mengenstaffel“ erzeugen echte optionale Angebotspositionen.
+- Jede Mengenoption berücksichtigt Produkt-, Druck-, Einrichtungs- und Bearbeitungsstaffeln.
+- Optionale Mengen werden weiterhin nicht in die Angebotssumme eingerechnet.
+- Farbvariantenbilder werden auch dann aufgelöst, wenn WooCommerce nur Bild-IDs gespeichert hat.
+- Das Artikeldatenblatt erhält dadurch alle im WK-Konfigurator gepflegten Farbvarianten.
+- Das WooCommerce-Plugin wird nicht verändert.

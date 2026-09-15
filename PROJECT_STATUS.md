@@ -307,3 +307,25 @@ Quellbranch: `codex/v0.13.2-development`
 2. HCA vollständig schließen und manuell neu starten.
 3. Ein betroffenes Angebot öffnen und „Shoppreise aktualisieren“ ausführen.
 4. Prüfen, dass Produkt, Veredelung, Einrichtung und Bearbeitung wieder als getrennte Preisbestandteile erscheinen.
+
+
+## Version 0.13.21 – Produktstaffeln, Mengenoptionen und Farbvarianten
+
+- Die funktionierende Veredelungspreisberechnung aus 0.13.20 bleibt unverändert erhalten.
+- Vor jeder Shopkalkulation lädt der Client die aktuelle WK-Produktkonfiguration neu.
+- Artikelstaffelpreise werden für jede angefragte Menge durch den WK-Werbeartikelkonfigurator berechnet.
+- Die unter „Mengenstaffel“ eingetragenen Zusatzmengen werden als echte optionale Angebotspositionen angelegt.
+- Für jede Zusatzmenge werden Produktpreis, Druckpreis, Einrichtungskosten und Bearbeitungskosten separat neu berechnet.
+- Automatische Mengenoptionen werden nicht in die Gesamtsumme des Angebots eingerechnet.
+- Alte Staffel-Vorschauwerte werden beim Neuaufbau entfernt; manuell angelegte optionale Positionen bleiben erhalten.
+- Die NAS-Erweiterung löst die vom WK-Konfigurator gespeicherten Farb-Bild-IDs über die WooCommerce-Produktbilder auf.
+- Das einseitige Artikeldatenblatt kann dadurch alle gepflegten Farbvarianten darstellen.
+- Das WooCommerce-Plugin und die HCA-Datenbank werden nicht verändert.
+
+### Installation 0.13.21
+
+1. Vorhandene `app/hca_shared.py` auf dem NAS sichern.
+2. NAS-Erweiterung 0.13.21 installieren und den NAS-Dienst neu starten.
+3. Clientupdate 0.13.21 einspielen.
+4. HCA vollständig schließen und manuell neu starten.
+5. Einen Werbeartikel mit Produkt- und Druckstaffeln öffnen, Zusatzmengen berechnen und Dokumentvorschau samt Datenblatt prüfen.

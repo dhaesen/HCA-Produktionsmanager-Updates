@@ -1,0 +1,8 @@
+HCA NAS-Erweiterung v0.13.21
+
+1. Vorhandene app/hca_shared.py auf dem NAS sichern.
+2. app/hca_shared.py aus diesem Paket in den bestehenden HCA-NAS-Ordner kopieren.
+3. HCA-NAS-Dienst beziehungsweise Container neu starten.
+4. Erst danach das Clientupdate v0.13.21 einspielen.
+
+Die HCA-Datenbank und das WooCommerce-Plugin werden nicht verändert.

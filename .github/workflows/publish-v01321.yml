@@ -1,0 +1,56 @@
+name: Build and publish HCA v0.13.21
+on:
+  push:
+    branches: [codex/v0.13.2-development]
+    paths:
+      - .github/workflows/publish-v01321.yml
+      - development/v0.13.21/**
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Fetch verified client base
+        run: |
+          set -euo pipefail
+          mkdir -p ../build
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.20/HCA_Update_v0.13.20.hcaupdate -o ../build/HCA_Update_v0.13.20.hcaupdate
+          printf '%s  %s\n' '6afc8c7c33e4b8880e2ff10ed532332cfe03aa9312e39b2c4cc7ed639a54ae44' '../build/HCA_Update_v0.13.20.hcaupdate' | sha256sum -c -
+      - name: Test and build
+        run: |
+          set -euo pipefail
+          node --check development/v0.13.21/hca-v01321.js
+          node development/v0.13.21/test_client.js
+          python -m py_compile development/v0.13.21/patch_server.py development/v0.13.21/build_v01321.py development/v0.13.21/test_server.py
+          python development/v0.13.21/test_server.py
+          python development/v0.13.21/build_v01321.py
+          (cd ../build && sha256sum -c HCA_Update_v0.13.21.sha256 && sha256sum -c HCA_NAS_Erweiterung_v0.13.21.sha256)
+          unzip -t ../build/HCA_Update_v0.13.21.hcaupdate
+          unzip -t ../build/HCA_NAS_Erweiterung_v0.13.21.zip
+      - name: Publish and verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.md <<'EOF'
+          HCA v0.13.21
+
+          Zusatzmengen aus „Mengenstaffel“ werden als echte optionale Angebotspositionen
+          erzeugt. Jede Menge wird durch den vorhandenen WK-Rechner neu kalkuliert und
+          berücksichtigt damit Artikel-, Druck-, Einrichtungs- und Bearbeitungsstaffeln.
+
+          Die NAS-Erweiterung löst Farbvariantenbilder aus den im WK-Konfigurator
+          gespeicherten WooCommerce-Bild-IDs auf. Das WooCommerce-Plugin und die
+          HCA-Datenbank werden nicht verändert.
+          EOF
+          gh release create v0.13.21 ../build/HCA_Update_v0.13.21.hcaupdate ../build/HCA_Update_v0.13.21.sha256 ../build/HCA_NAS_Erweiterung_v0.13.21.zip ../build/HCA_NAS_Erweiterung_v0.13.21.sha256 --repo dhaesen/HCA-Produktionsmanager-Updates --title 'HCA 0.13.21' --notes-file /tmp/notes.md --prerelease
+          mkdir verify
+          for file in HCA_Update_v0.13.21.hcaupdate HCA_NAS_Erweiterung_v0.13.21.zip; do
+            curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.21/$file" -o "verify/$file"
+          done
+          cp ../build/HCA_Update_v0.13.21.sha256 ../build/HCA_NAS_Erweiterung_v0.13.21.sha256 verify/
+          (cd verify && sha256sum -c HCA_Update_v0.13.21.sha256 && sha256sum -c HCA_NAS_Erweiterung_v0.13.21.sha256)
