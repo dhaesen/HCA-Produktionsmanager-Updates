@@ -1,0 +1,15 @@
+name: Promote HCA v0.13.16
+on:
+  push:
+    branches: [codex/v0.13.2-development]
+    paths: [.github/workflows/promote-v01316.yml]
+permissions:
+  contents: write
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mark verified release stable
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release edit v0.13.16 --repo dhaesen/HCA-Produktionsmanager-Updates --prerelease=false --latest
