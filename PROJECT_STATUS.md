@@ -1,7 +1,7 @@
 # HCA Produktionsmanager – Projektstatus
 
 Stand: 15. September 2026  
-Aktuelle Testversion: **0.13.11**  
+Aktuelle Testversion: **0.13.12**  
 Quellbranch: `codex/v0.13.2-development`
 
 ## Aktueller Lieferumfang
@@ -238,3 +238,21 @@ Quellbranch: `codex/v0.13.2-development`
 2. Clientupdate 0.13.11 einspielen.
 3. HCA vollständig schließen und neu starten.
 4. Einen Artikel mit mindestens einer Veredelung auswählen, Menge und Veredelungsart wechseln und prüfen, ob der grüne Hinweis zur vollständigen Preisübernahme erscheint.
+
+
+## Version 0.13.12 – DOM-Fehler bei Angeboten behoben
+
+- Die Ursache der irreführenden Shoppreis-Fehlermeldung wurde als Oberflächenfehler nach einer erfolgreichen Preisabfrage identifiziert.
+- Eine ältere Erweiterung versuchte, den Mengenbereich vor einem verschachtelten statt direkt untergeordneten Element der Angebotskopfzeile einzufügen.
+- Die `insertBefore`-Operation prüft jetzt ausdrücklich die tatsächliche Eltern-Kind-Beziehung und verwendet andernfalls eine sichere Einfügung am Ende der Kopfzeile.
+- Auch die ältere Kundenauswahl prüft ihren tatsächlichen Elternknoten vor einer DOM-Verschiebung.
+- Alte und neue Angebote lassen sich wieder öffnen und nach einer Preisberechnung fehlerfrei neu zeichnen.
+- Kundensuche, alternative Angebotsmengen und die Preiszuverlässigkeitsprüfung aus 0.13.11 bleiben erhalten.
+- Es ist kein NAS-Update erforderlich.
+- Das WooCommerce-Plugin wurde nicht verändert.
+
+### Installation 0.13.12
+
+1. Nur das Clientupdate 0.13.12 einspielen.
+2. HCA vollständig schließen und neu starten.
+3. Ein vor 0.13.9 angelegtes Angebot öffnen und anschließend bei einem Artikel mit Veredelung die Preise aktualisieren.
