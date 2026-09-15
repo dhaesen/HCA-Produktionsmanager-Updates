@@ -1,0 +1,24 @@
+html.hca-native-host #hcaStartupSplash{display:none!important}
+.hca137-customer-combo{position:relative;display:grid;grid-template-columns:1fr 42px;align-items:stretch}
+.hca137-customer-input{grid-column:1/3;padding-right:46px}
+.hca137-combo-toggle{position:absolute;right:1px;top:1px;bottom:1px;width:40px;border:0;border-left:1px solid #c8c8c2;border-radius:0 7px 7px 0;background:#f2f2ee;color:#222;font-size:17px;cursor:pointer}
+.hca137-combo-toggle:hover,.hca137-combo-toggle:focus{background:#e7e7e1;outline:2px solid #ef4a1b;outline-offset:-2px}
+.hca137-customer-list{position:absolute;left:0;right:0;top:calc(100% + 4px);z-index:1200;max-height:330px;overflow:auto;padding:5px;background:#fff;border:1px solid #bdbdb6;border-radius:8px;box-shadow:0 12px 28px rgba(0,0,0,.2)}
+.hca137-customer-list button{display:flex;width:100%;flex-direction:column;gap:3px;padding:10px 12px;border:0;border-radius:6px;background:#fff;color:#202020;text-align:left;cursor:pointer}
+.hca137-customer-list button:hover,.hca137-customer-list button:focus{background:#fff2ec;outline:2px solid #ef4a1b}
+.hca137-customer-list button span{color:#666;font-size:12px}
+.hca137-no-result{padding:14px;color:#666}.hca137-native-select{display:none!important}
+.business-product-search-results .hca137-product-result{display:grid!important;grid-template-columns:64px minmax(0,1fr);gap:12px;align-items:center}
+.hca137-product-thumb{display:block;width:58px;height:58px;object-fit:contain;border:1px solid #ddd;border-radius:7px;background:#fff}
+.hca137-product-thumb.empty{display:flex;align-items:center;justify-content:center;color:#777;font-size:10px;text-align:center}
+.hca137-product-copy{display:flex;min-width:0;flex-direction:column;gap:4px;text-align:left}
+.hca137-invoice-results{position:absolute;z-index:1000;left:32px;right:10px;top:46px;max-height:340px;overflow:auto;background:#fff;border:1px solid #bbb;border-radius:8px;box-shadow:0 12px 28px rgba(0,0,0,.2)}
+.finance-line-row{position:relative}.hca137-invoice-results button{width:100%;padding:8px 10px;border:0;border-bottom:1px solid #eee;background:#fff}
+.hca137-datasheet{margin-top:14px;padding:14px;border:1px solid #d2d2cc;border-left:4px solid #ef4a1b;border-radius:8px;background:#fafaf7}
+.hca137-datasheet-toggle{display:flex;gap:9px;align-items:center;font-weight:700}
+.hca137-datasheet-images{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;margin-top:12px}
+.hca137-datasheet-images>div{grid-column:1/-1;display:flex;justify-content:space-between;align-items:end}
+.hca137-datasheet-images small{color:#666}.hca137-datasheet-images label{position:relative;display:grid;gap:5px;padding:8px;border:2px solid transparent;border-radius:8px;background:#fff;cursor:pointer}
+.hca137-datasheet-images label.selected{border-color:#ef4a1b;background:#fff4ee}
+.hca137-datasheet-images label input{position:absolute;top:12px;left:12px}
+.hca137-datasheet-images img{width:100%;height:92px;object-fit:contain}.hca137-datasheet-images label span{text-align:center;font-size:11px}
