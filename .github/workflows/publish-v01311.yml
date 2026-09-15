@@ -1,0 +1,105 @@
+name: Build and publish HCA v0.13.11
+on:
+  push:
+    branches: [codex/v0.13.2-development]
+    paths: [.github/workflows/publish-v01311.yml]
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Prepare client and NAS
+        run: |
+          set -euo pipefail
+          rm -rf work/v01311 dist
+          mkdir -p work/v01311/client/payload work/v01311/nas/app dist
+          cp development/current-v0.13.5/client/* work/v01311/client/payload/
+          mv work/v01311/client/payload/hca-update.json work/v01311/client/hca-update.json
+          for version in 0136 0137 0138; do cp development/v0.13.${version#013}/hca-v${version}.js development/v0.13.${version#013}/hca-v${version}.css work/v01311/client/payload/; done
+          for version in 01310 01311; do cp development/v0.13.${version#013}/hca-v${version}.js development/v0.13.${version#013}/hca-v${version}.css work/v01311/client/payload/; done
+          cp development/current-v0.13.5/nas/hca_shared.py work/v01311/nas/app/hca_shared.py
+          for version in 6 7 8; do python development/v0.13.$version/patch_server.py work/v01311/nas/app/hca_shared.py; done
+          python development/v0.13.10/patch_server.py work/v01311/nas/app/hca_shared.py
+          python development/v0.13.11/patch_server.py work/v01311/nas/app/hca_shared.py
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          root=Path("work/v01311/client");payload=root/"payload";html=(payload/"index.html").read_text(encoding="utf-8")
+          early="<script id=\"hca-native-splash-guard\">if(window.chrome&&window.chrome.webview)document.documentElement.classList.add('hca-native-host')</script>"
+          if "hca-native-splash-guard" not in html:html=html.replace("<head>","<head>\n  "+early,1)
+          for version in ("0136","0137","0138","01310","01311"):
+              css=f"hca-v{version}.css";js=f"hca-v{version}.js"
+              if css not in html:html=html.replace("</head>",f'  <link rel="stylesheet" href="/{css}?v=0.13.11">\n</head>')
+              if js not in html:html=html.replace("</body>",f'  <script src="/{js}?v=0.13.11"></script>\n</body>')
+          (payload/"index.html").write_text(html,encoding="utf-8")
+          (payload/"version.json").write_text(json.dumps({"version":"0.13.11","channel":"test","released":"2026-09-15"},ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          (root/"hca-update.json").write_text(json.dumps({"product":"HCA Produktionsmanager","version":"0.13.11","description":"Zuverlässige WooCommerce-Veredelungspreise mit vollständiger Prüfung, Wiederholung und sichtbarer Fehlerbehandlung."},ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          (payload/"AENDERUNGEN_v0.13.11.txt").write_text("""HCA v0.13.11
+          - verspätete Preisantworten können aktuelle Eingaben nicht mehr überschreiben
+          - WooCommerce-Preiskalkulation wird bei kurzzeitigem Fehler einmal wiederholt
+          - jede gewählte Veredelung muss einen vollständigen Preis liefern
+          - kein stiller Rückfall auf 0,00-Euro-Veredelungspreise mehr
+          - sichtbarer Ladestatus und verständliche Fehlermeldung direkt an der Position
+          - Preisabfrage kann an der betroffenen Position erneut ausgelöst werden
+          - Artikelpreis-Fallback bleibt ausschließlich für Artikel ohne Veredelung erhalten
+          - WooCommerce-Plugin unverändert
+          """,encoding="utf-8")
+          PY
+      - name: Validate
+        run: |
+          set -euo pipefail
+          python -m py_compile development/v0.13.11/patch_server.py work/v01311/nas/app/hca_shared.py
+          for file in work/v01311/client/payload/app.js work/v01311/client/payload/hca-v0132.js work/v01311/client/payload/hca-v0134.js work/v01311/client/payload/hca-v0135.js work/v01311/client/payload/hca-v0136.js work/v01311/client/payload/hca-v0137.js work/v01311/client/payload/hca-v0138.js work/v01311/client/payload/hca-v01310.js work/v01311/client/payload/hca-v01311.js; do node --check "$file"; done
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          c=Path("work/v01311/client");h=(c/"payload/index.html").read_text();j=(c/"payload/hca-v01311.js").read_text();s=Path("work/v01311/nas/app/hca_shared.py").read_text()
+          assert json.loads((c/"hca-update.json").read_text())["version"]=="0.13.11"
+          assert json.loads((c/"payload/version.json").read_text())["version"]=="0.13.11"
+          assert "hca-v0139" not in h and not (c/"payload/hca-v0139.js").exists()
+          for marker in ("sequence!==state.sequence","positions.length!==steps.length","Erneut laden","Veredelungspreise werden geladen","await waits(350)"):assert marker in j
+          for marker in ("Veredelungspreise konnten nicht vollständig geladen werden","configuration.get(\"positions\")","Nur bei reinen Produktpositionen"):assert marker in s
+          for marker in ("hca-v01311.js?v=0.13.11","hca-v01311.css?v=0.13.11"):assert marker in h
+          assert "wk-werbeartikel-konfigurator" not in "\n".join(str(p) for p in Path("work/v01311").rglob("*"))
+          PY
+      - name: Package
+        run: |
+          set -euo pipefail
+          cat > work/v01311/nas/INSTALLATION_v0.13.11.txt <<'EOF'
+          HCA NAS-Erweiterung v0.13.11
+
+          1. Bestehende app/hca_shared.py sichern.
+          2. app/hca_shared.py aus diesem Paket ersetzen.
+          3. NAS-Dienst beziehungsweise Container neu starten.
+          4. Erst danach HCA_Update_v0.13.11.hcaupdate am Client einspielen.
+          EOF
+          (cd work/v01311/client && zip -qr "$GITHUB_WORKSPACE/dist/HCA_Update_v0.13.11.hcaupdate" hca-update.json payload)
+          (cd work/v01311/nas && zip -qr "$GITHUB_WORKSPACE/dist/HCA_NAS_Erweiterung_Preiszuverlaessigkeit_v0.13.11.zip" .)
+          (cd dist && sha256sum HCA_Update_v0.13.11.hcaupdate > HCA_Update_v0.13.11.sha256)
+          (cd dist && sha256sum HCA_NAS_Erweiterung_Preiszuverlaessigkeit_v0.13.11.zip > HCA_NAS_Erweiterung_Preiszuverlaessigkeit_v0.13.11.sha256)
+          unzip -t dist/HCA_Update_v0.13.11.hcaupdate
+          unzip -t dist/HCA_NAS_Erweiterung_Preiszuverlaessigkeit_v0.13.11.zip
+          (cd dist && sha256sum -c HCA_Update_v0.13.11.sha256 && sha256sum -c HCA_NAS_Erweiterung_Preiszuverlaessigkeit_v0.13.11.sha256)
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.md <<'EOF'
+          HCA Produktionsmanager v0.13.11 Testbuild
+
+          Die Produkt- und Veredelungspreise werden vollständig geprüft. Kurzzeitige Fehler
+          werden einmal wiederholt; unvollständige WooCommerce-Antworten werden sichtbar
+          gemeldet und können nicht mehr als scheinbar erfolgreiche 0,00-Euro-Preise gelten.
+
+          Zuerst das NAS-Paket, danach das Clientupdate installieren.
+          Das WooCommerce-Plugin wurde nicht verändert.
+          EOF
+          gh release create v0.13.11 dist/* --repo dhaesen/HCA-Produktionsmanager-Updates --title "HCA Produktionsmanager 0.13.11 Testbuild" --notes-file /tmp/notes.md --prerelease
+          mkdir verify
+          for f in dist/*;do name=$(basename "$f");curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.11/$name" -o "verify/$name";done
+          (cd verify && sha256sum -c HCA_Update_v0.13.11.sha256 && sha256sum -c HCA_NAS_Erweiterung_Preiszuverlaessigkeit_v0.13.11.sha256)
