@@ -1,7 +1,7 @@
 # HCA Produktionsmanager – Projektstatus
 
 Stand: 15. September 2026  
-Aktuelle Testversion: **0.13.8**  
+Aktuelle Testversion: **0.13.9**  
 Quellbranch: `codex/v0.13.2-development`
 
 ## Aktueller Lieferumfang
@@ -171,3 +171,25 @@ Quellbranch: `codex/v0.13.2-development`
 2. Clientupdate 0.13.8 einspielen.
 3. HCA vollständig schließen und neu starten.
 4. Ein neues Testangebot mit farbigem Artikel und aktiviertem Artikeldatenblatt prüfen.
+
+
+## Version 0.13.9 – Alte Angebote, Positionsstaffeln und einseitiges Datenblatt
+
+- Der DOM-Fehler beim Öffnen älterer Angebote wurde behoben. Die Kundenauswahl ersetzt das bestehende Feld nun ohne unsichere `insertBefore`-Operation.
+- Bestehende Angebotsdaten werden weder verändert noch migriert.
+- Jede normale Angebotsposition besitzt eine eigene sichtbare Eingabe für mehrere Mengenstaffeln, beispielsweise 500, 1000 und 1500 Stück.
+- Staffelpreise werden positionsbezogen berechnet, tabellarisch angezeigt und zusammen mit der jeweiligen Position gespeichert.
+- Das globale, missverständliche Mengenstaffelfeld im Angebotskopf wurde entfernt.
+- Pro ausgewähltem Artikel wird genau eine Artikeldatenblattseite erzeugt.
+- Das Hauptbild steht links, die Produkteigenschaften und Beschreibung rechts, bis zu fünf Galeriebilder klein darunter.
+- Farbvarianten werden kompakt dargestellt; Veredelungspositionen, Verfahren und Positionsbilder stehen im unteren Seitenbereich.
+- Der Lieferant wird weiterhin niemals auf dem Artikeldatenblatt ausgegeben.
+- Client- und NAS-Paket wurden nach Veröffentlichung mit SHA-256 und ZIP-Integritätsprüfung verifiziert.
+- Das WooCommerce-Plugin wurde nicht verändert.
+
+### Installation 0.13.9
+
+1. NAS-Erweiterung 0.13.9 installieren und den NAS-Dienst neu starten.
+2. Clientupdate 0.13.9 einspielen.
+3. HCA vollständig schließen und neu starten.
+4. Ein älteres Angebot sowie ein neues Angebot mit mehreren Positionsstaffeln und Artikeldatenblatt prüfen.
