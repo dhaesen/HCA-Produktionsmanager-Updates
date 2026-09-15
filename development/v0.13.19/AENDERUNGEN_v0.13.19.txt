@@ -1,0 +1,8 @@
+HCA Produktionsmanager v0.13.19
+
+- Repariert bereits falsch als Textil gespeicherte Werbeartikelpositionen.
+- Verwendet die vorhandene Hauptartikel-ID für die Shopkalkulation, auch bevor eine Farbvariante gewählt wurde.
+- Behält die eingegebene Menge beim Reparieren der Position bei.
+- Lädt Druckpreis, Einrichtungskosten und Bearbeitungskosten wieder gemeinsam.
+- Akzeptiert eine reine 0,00-EUR-Antwort nicht mehr stillschweigend als erfolgreiche Aktualisierung.
+- Keine Änderung am WooCommerce-Plugin, an der NAS-Datenbank oder an vorhandenen Dokumenten.
