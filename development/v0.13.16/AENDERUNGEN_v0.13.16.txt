@@ -1,0 +1,6 @@
+HCA v0.13.16
+
+- WooCommerce-Veredelungspreisfunktion exakt auf den funktionierenden Stand v0.13.6.1 zurückgesetzt
+- gespeicherte Druckart-, Einrichtungs- und Bearbeitungskosten-IDs werden nicht mehr überschrieben
+- Druckpreis, Einrichtungskosten und Bearbeitungskosten werden wieder getrennt übernommen
+- WooCommerce-Plugin und Datenbank bleiben unverändert

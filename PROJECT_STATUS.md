@@ -1,7 +1,7 @@
 # HCA Produktionsmanager – Projektstatus
 
 Stand: 15. September 2026  
-Aktuelle Testversion: **0.13.15**  
+Aktuelle Testversion: **0.13.14**
 Quellbranch: `codex/v0.13.2-development`
 
 ## Aktueller Lieferumfang
@@ -15,6 +15,26 @@ Quellbranch: `codex/v0.13.2-development`
 - Mehrpostfach-E-Mail-Client mit HTML-/WYSIWYG-Nachrichten
 - Lexware-Office-Übergabe von Rechnungen und Rechnungskorrekturen
 - Sendcloud-, Produktions-, Lager- und Logistikfunktionen
+
+## Version 0.13.13 – Veredelungspreise wiederhergestellt
+
+- Die in 0.13.11 eingeführte automatische Neuzuordnung von Druckart-, Einrichtungs- und Bearbeitungskosten-IDs wurde zurückgenommen.
+- Bereits im Angebot gespeicherte WooCommerce-IDs bleiben beim Öffnen und Neuberechnen unverändert und werden wieder direkt an die Druckpreisverwaltung übergeben.
+- Fehlende IDs werden nur noch ergänzt, wenn die Zuordnung zu genau einer Veredelungsart eindeutig ist.
+- Manuelle Veredelungen bleiben von der WooCommerce-Preisabfrage ausgeschlossen und verschieben die Zuordnung der automatisch berechneten Positionen nicht.
+- Die Zahl der vom Shop gelieferten Preispositionen wird weiterhin geprüft; unvollständige Antworten werden nicht als erfolgreiche 0,00-Euro-Kalkulation angezeigt.
+- Eine ausschließlich aus 0,00-Euro-Werten bestehende WooCommerce-Antwort wird als Zuordnungsfehler angezeigt und überschreibt keine zuvor geladenen Preise.
+- Das WooCommerce-Plugin wurde nicht verändert.
+
+## Version 0.13.14 – Beschädigte Preiszuordnungen repariert
+
+- Die Wizard-Konfiguration wird vor der Veredelungskalkulation frisch aus WooCommerce geladen.
+- Bereits auf 0 gesetzte oder falsch zugeordnete Druckart-, Einrichtungs- und Bearbeitungskosten-IDs werden anhand von Druckposition und Verfahren repariert.
+- Die Preisabfrage verwendet die WooCommerce-ID des Hauptartikels und prüft Druck-, Einrichtungs- und Bearbeitungspreis einzeln.
+- Unvollständige Shopantworten überschreiben keine vorhandenen Angebotswerte.
+- Nach erfolgreicher Neuberechnung erscheinen Produkt, Veredelung, Einrichtung und Bearbeitung wieder als getrennte Angebotspositionen.
+- Es ist kein NAS-Update erforderlich.
+- Das WooCommerce-Plugin wurde nicht verändert.
 
 ## Version 0.13.5.4 – Einzelne Setup-EXE und einfacher Startbildschirm
 
@@ -219,84 +239,6 @@ Quellbranch: `codex/v0.13.2-development`
 4. Einen Werbeartikel auswählen, über „Weitere Menge“ mindestens zwei Alternativmengen anlegen und das PDF einschließlich Datenblatt prüfen.
 
 
-## Version 0.13.11 – Zuverlässige Veredelungspreise
-
-- Gleichzeitige beziehungsweise verspätete WooCommerce-Preisabfragen können neuere Mengen-, Druckpositions- oder Veredelungseingaben nicht mehr überschreiben.
-- Vor jeder Preisberechnung werden Druckposition und Veredelungsart erneut mit der WooCommerce-Wizard-Konfiguration abgeglichen.
-- Eine Preisantwort gilt nur als vollständig, wenn für jeden automatisch kalkulierten Veredelungsschritt eine Preisposition zurückgegeben wurde.
-- Kurzzeitige Fehler der WooCommerce-Druckkalkulation werden einmal automatisch wiederholt.
-- Bei gewählten Veredelungen gibt es keinen stillen Rückfall mehr auf den reinen Artikelpreis mit 0,00-Euro-Veredelungen.
-- Ladezustand, erfolgreicher Abruf und Fehler erscheinen direkt an der betroffenen Dokumentposition.
-- Eine fehlgeschlagene Kalkulation kann mit „Erneut laden“ gezielt wiederholt werden; vorhandene gültige Preise werden bei einem Fehler nicht gelöscht.
-- Der reine WooCommerce-Artikelpreis bleibt nur für Positionen ohne Veredelung als zulässiger Fallback erhalten.
-- Client- und NAS-Paket wurden nach Veröffentlichung mit Funktionstest, Python-/JavaScript-Syntaxprüfung, SHA-256 und ZIP-Integritätsprüfung verifiziert.
-- Das WooCommerce-Plugin wurde nicht verändert.
-
-### Installation 0.13.11
-
-1. NAS-Erweiterung 0.13.11 installieren und den NAS-Dienst neu starten.
-2. Clientupdate 0.13.11 einspielen.
-3. HCA vollständig schließen und neu starten.
-4. Einen Artikel mit mindestens einer Veredelung auswählen, Menge und Veredelungsart wechseln und prüfen, ob der grüne Hinweis zur vollständigen Preisübernahme erscheint.
-
-
-## Version 0.13.12 – DOM-Fehler bei Angeboten behoben
-
-- Die Ursache der irreführenden Shoppreis-Fehlermeldung wurde als Oberflächenfehler nach einer erfolgreichen Preisabfrage identifiziert.
-- Eine ältere Erweiterung versuchte, den Mengenbereich vor einem verschachtelten statt direkt untergeordneten Element der Angebotskopfzeile einzufügen.
-- Die `insertBefore`-Operation prüft jetzt ausdrücklich die tatsächliche Eltern-Kind-Beziehung und verwendet andernfalls eine sichere Einfügung am Ende der Kopfzeile.
-- Auch die ältere Kundenauswahl prüft ihren tatsächlichen Elternknoten vor einer DOM-Verschiebung.
-- Alte und neue Angebote lassen sich wieder öffnen und nach einer Preisberechnung fehlerfrei neu zeichnen.
-- Kundensuche, alternative Angebotsmengen und die Preiszuverlässigkeitsprüfung aus 0.13.11 bleiben erhalten.
-- Es ist kein NAS-Update erforderlich.
-- Das WooCommerce-Plugin wurde nicht verändert.
-
-### Installation 0.13.12
-
-1. Nur das Clientupdate 0.13.12 einspielen.
-2. HCA vollständig schließen und neu starten.
-3. Ein vor 0.13.9 angelegtes Angebot öffnen und anschließend bei einem Artikel mit Veredelung die Preise aktualisieren.
-
-
-## Version 0.13.13 – Veredelungspreise wiederhergestellt
-
-- Die in 0.13.11 eingeführte automatische Neuzuordnung von Druckart-, Einrichtungs- und Bearbeitungskosten-IDs wurde zurückgenommen.
-- Bereits im Angebot gespeicherte WooCommerce-IDs bleiben beim Öffnen und Neuberechnen unverändert und werden wieder direkt an die Druckpreisverwaltung übergeben.
-- Fehlende IDs werden nur noch ergänzt, wenn die Zuordnung zu genau einer Veredelungsart eindeutig ist.
-- Manuelle Veredelungen bleiben von der WooCommerce-Preisabfrage ausgeschlossen und verschieben die Zuordnung der automatisch berechneten Positionen nicht.
-- Die Zahl der vom Shop gelieferten Preispositionen wird weiterhin geprüft; unvollständige Antworten werden nicht als erfolgreiche 0,00-Euro-Kalkulation angezeigt.
-- Eine ausschließlich aus 0,00-Euro-Werten bestehende WooCommerce-Antwort wird als Zuordnungsfehler angezeigt und überschreibt keine zuvor geladenen Preise.
-- Der Live-Gegentest des WooCommerce-Wizards lieferte für Produkt 5266 und Menge 500 weiterhin 0,86 Euro Druck, 44,46 Euro Einrichtung und 0,18 Euro Bearbeitung je Artikel.
-- Es ist kein NAS-Update erforderlich.
-- Das WooCommerce-Plugin wurde nicht verändert.
-
-### Installation 0.13.13
-
-1. Nur das Clientupdate 0.13.13 einspielen.
-2. HCA vollständig schließen und neu starten.
-3. Ein Angebot mit Veredelung öffnen und „Shoppreise aktualisieren“ ausführen.
-
-
-## Version 0.13.14 – Beschädigte Preiszuordnungen repariert
-
-- Die Wizard-Konfiguration wird vor jeder Veredelungskalkulation frisch aus WooCommerce geladen.
-- Auf 0 gesetzte oder falsch zugeordnete Druckart-, Einrichtungs- und Bearbeitungskosten-IDs werden anhand von Druckposition und Verfahren repariert.
-- Für die Kalkulation wird zuverlässig die WooCommerce-ID des Hauptartikels statt einer ungeeigneten Varianten-ID verwendet.
-- Druckpreis, Einrichtungskosten und Bearbeitungskosten werden einzeln gegen die WooCommerce-Konfiguration geprüft.
-- Unvollständige Antworten überschreiben keine vorhandenen Angebotswerte.
-- Nach erfolgreicher Aktualisierung erscheinen Produkt, Veredelung, Einrichtung und Bearbeitung wieder als vier getrennte Angebotspositionen.
-- Der Regressionstest startet absichtlich mit drei auf 0 gesetzten Preis-IDs und bestätigt anschließend 0,86 Euro Druck, 44,46 Euro Einrichtung sowie 0,18 Euro Bearbeitung.
-- Es ist kein NAS-Update erforderlich.
-- Das WooCommerce-Plugin wurde nicht verändert.
-
-### Installation 0.13.14
-
-1. Nur das Clientupdate 0.13.14 einspielen.
-2. HCA vollständig schließen und neu starten.
-3. Das betroffene Angebot öffnen und „Shoppreise aktualisieren“ ausführen.
-4. Erst nach vier sichtbaren Positionen speichern.
-
-
 ## Version 0.13.15 – Rettungsupdate Preisberechnung und Produktionsgrößen
 
 - Die fehlerhaften Client-Preisüberschreibungen aus 0.13.11 bis 0.13.14 werden nicht mehr geladen.
@@ -312,3 +254,21 @@ Quellbranch: `codex/v0.13.2-development`
 2. HCA vollständig schließen und manuell neu starten.
 3. Ein vorhandenes Angebot mit Veredelung öffnen und prüfen, dass Produkt, Veredelung, Einrichtung und Bearbeitung wieder einzeln erscheinen.
 4. Einen Textil-Produktionsauftrag öffnen und die Größenanzeige prüfen.
+
+
+## Version 0.13.16 – Exakte Preisrücksetzung auf v0.13.6.1
+
+- Der vollständige Vergleich der Releases vom 14. und 15. September hat gezeigt: `app.js` und die NAS-Preisfunktionen blieben von 0.13.2 bis 0.13.10 unverändert; die erste eigene Preisüberschreibung wurde mit 0.13.11 eingeführt.
+- Die Rücksetzung in 0.13.15 war nicht identisch mit dem funktionierenden Stand: Sie ordnete gespeicherte WooCommerce-Preis-IDs vor jeder Kalkulation erneut zu und konnte dadurch die gewählte Druckart sowie Einrichtungs- und Bearbeitungskosten ersetzen.
+- 0.13.16 übernimmt die effektive `hca103ShopPrice`-Routine aus 0.13.6.1 wortgleich.
+- Vorhandene `druckart_id`, `cost_id` und `bearbeitung_cost_id` bleiben erhalten.
+- Druckpreis, Einrichtungskosten und Bearbeitungskosten werden wieder getrennt aus der WooCommerce-Antwort übernommen.
+- Der Größenanzeige-Fix aus 0.13.15 bleibt erhalten.
+- WooCommerce-Plugin, NAS-Server und Datenbank werden nicht verändert.
+
+### Installation 0.13.16
+
+1. Nur das Clientupdate 0.13.16 einspielen.
+2. HCA vollständig schließen und manuell neu starten.
+3. Zuerst ein gestern funktionierendes Angebot öffnen und „Shoppreise aktualisieren“ ausführen.
+4. Prüfen, dass Produkt, Veredelung, Einrichtung und Bearbeitung wieder als vier Preisbestandteile erscheinen.
