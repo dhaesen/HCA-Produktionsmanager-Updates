@@ -1,7 +1,7 @@
 # HCA Produktionsmanager – Projektstatus
 
-Stand: 14. September 2026  
-Aktuelle Testversion: **0.13.5.4**  
+Stand: 15. September 2026  
+Aktuelle Testversion: **0.13.7**  
 Quellbranch: `codex/v0.13.2-development`
 
 ## Aktueller Lieferumfang
