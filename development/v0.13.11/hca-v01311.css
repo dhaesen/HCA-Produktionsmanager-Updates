@@ -1,0 +1,8 @@
+/* HCA v0.13.11 · sichtbarer Status der WooCommerce-Preiskalkulation */
+.hca1311-price-status{margin:10px 0 4px;padding:9px 12px;border-radius:8px;font-size:12px;line-height:1.45;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.hca1311-price-status.ok{color:#216e3a;background:#edf8f0;border:1px solid #a9d8b6}
+.hca1311-price-status.loading{color:#805000;background:#fff6df;border:1px solid #edc775}
+.hca1311-price-status.error{color:#8b2020;background:#fff0f0;border:1px solid #dfa2a2}
+.hca1311-price-status.loading span{width:12px;height:12px;border:2px solid #edc775;border-top-color:#e75303;border-radius:50%;animation:hca1311-spin .75s linear infinite}
+.hca1311-price-status .btn{margin-left:auto}
+@keyframes hca1311-spin{to{transform:rotate(360deg)}}
