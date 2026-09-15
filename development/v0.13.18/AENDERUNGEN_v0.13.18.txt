@@ -1,0 +1,7 @@
+HCA Produktionsmanager v0.13.18
+
+- Fehlerhafte Erweiterung für zusätzliche Angebotsmengen vollständig entfernt.
+- Textwert "false" bei automatischen Veredelungen wird wieder korrekt als falsch ausgewertet.
+- Druckpreis, Einrichtungskosten und Bearbeitungskosten werden vollständig übernommen.
+- Unvollständige Preisantworten werden nicht mehr stillschweigend akzeptiert.
+- Keine Änderung am WooCommerce-Plugin oder an der Datenbank.

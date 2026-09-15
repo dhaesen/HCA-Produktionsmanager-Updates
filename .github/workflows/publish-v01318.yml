@@ -1,0 +1,50 @@
+name: Build and publish HCA client v0.13.18
+on:
+  push:
+    branches: [codex/v0.13.2-development]
+    paths:
+      - .github/workflows/publish-v01318.yml
+      - development/v0.13.18/**
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Fetch verified base package
+        run: |
+          set -euo pipefail
+          mkdir -p ../build
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.16/HCA_Update_v0.13.16.hcaupdate -o ../build/HCA_Update_v0.13.16.hcaupdate
+          printf '%s  %s\n' '168eceb96dc9f5bc94f12b9a3e4011e1098cbd7c8ea042694b1d20914c9ea87a' '../build/HCA_Update_v0.13.16.hcaupdate' | sha256sum -c -
+      - name: Build and test
+        run: |
+          set -euo pipefail
+          node development/v0.13.18/test_pricing.js
+          python -m py_compile development/v0.13.18/build_v01318.py
+          python development/v0.13.18/build_v01318.py
+          (cd ../build && sha256sum -c HCA_Update_v0.13.18.sha256)
+          unzip -t ../build/HCA_Update_v0.13.18.hcaupdate
+      - name: Publish and verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.md <<'EOF'
+          HCA Client v0.13.18
+
+          Entfernt die fehlerhafte Erweiterung für zusätzliche Angebotsmengen und
+          korrigiert die Auswertung von `manual_override: "false"`. Automatische
+          Veredelungen werden wieder vollständig an die WooCommerce-Kalkulation
+          gesendet; Druckpreis, Einrichtung und Bearbeitung werden getrennt übernommen.
+
+          WooCommerce-Plugin, NAS-Datenbank und vorhandene Dokumente werden nicht verändert.
+          EOF
+          gh release create v0.13.18 ../build/HCA_Update_v0.13.18.hcaupdate ../build/HCA_Update_v0.13.18.sha256 --repo dhaesen/HCA-Produktionsmanager-Updates --title 'HCA Client 0.13.18' --notes-file /tmp/notes.md --prerelease
+          mkdir verify
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.18/HCA_Update_v0.13.18.hcaupdate -o verify/HCA_Update_v0.13.18.hcaupdate
+          cp ../build/HCA_Update_v0.13.18.sha256 verify/
+          (cd verify && sha256sum -c HCA_Update_v0.13.18.sha256)

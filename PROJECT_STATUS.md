@@ -289,3 +289,21 @@ Quellbranch: `codex/v0.13.2-development`
 2. Die Datei aus dem NAS-Hotfix ersetzen.
 3. HCA-NAS-Dienst beziehungsweise Container neu starten.
 4. Client 0.13.16 verwenden, betroffenes Angebot öffnen und „Shoppreise aktualisieren“ ausführen.
+
+
+## Version 0.13.18 – Rückbau Mengenfelder und Client-Preisreparatur
+
+- Die mit 0.13.10 eingeführte Erweiterung für zusätzliche Angebotsmengen wurde vollständig aus dem Clientpaket entfernt.
+- Der eigentliche Preisfehler lag zusätzlich im Client: Der Textwert `"false"` bei `manual_override` wurde durch JavaScript als wahr behandelt. Automatische Veredelungen wurden dadurch bereits vor dem NAS-Aufruf ausgesondert.
+- `manual_override` wird nun typgerecht normalisiert. Nur echte Wahrwerte kennzeichnen eine manuelle Abweichung.
+- Druckpreis, Einrichtungskosten und Bearbeitungskosten werden wieder vollständig aus der Preisantwort auf den jeweiligen Veredelungsschritt übertragen.
+- Eine unvollständige Preisantwort wird nicht mehr stillschweigend akzeptiert.
+- Bereits gespeicherte Dokumentpositionen und manuelle Positionen werden nicht gelöscht oder verändert.
+- NAS, WooCommerce-Plugin und Datenbank werden durch das Clientupdate nicht verändert.
+
+### Installation 0.13.18
+
+1. Clientupdate 0.13.18 einspielen.
+2. HCA vollständig schließen und manuell neu starten.
+3. Ein betroffenes Angebot öffnen und „Shoppreise aktualisieren“ ausführen.
+4. Prüfen, dass Produkt, Veredelung, Einrichtung und Bearbeitung wieder als getrennte Preisbestandteile erscheinen.
