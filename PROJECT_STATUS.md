@@ -130,3 +130,24 @@ Quellbranch: `codex/v0.13.2-development`
 2. Clientupdate 0.13.6.1 einspielen.
 3. HCA manuell schließen und neu starten.
 4. Zuerst mit einem Testangebot und einer Testsendung prüfen.
+
+
+## Version 0.13.7 – Kundensuche, Artikelbilder und Angebotsdatenblätter
+
+- Die Kundenauswahl im Angebotsformular ist jetzt ein einziges durchsuchbares Kombinationsfeld an der bisherigen Dropdown-Position. Es kann weiterhin aufgeklappt oder direkt nach Kundennummer, Firma, Vorname, Nachname und E-Mail durchsucht werden.
+- Die zuvor zusätzlich oberhalb des Dropdowns angelegte Suchzeile wurde entfernt.
+- Die Artikelsuche in Angebot, Auftrag und Kundenrechnung zeigt zu jedem Treffer ein Produktbild zur eindeutigen Identifikation.
+- WooCommerce-Produktdaten liefern neben dem Hauptbild bis zu zehn Produktbilder, vollständige Beschreibung, Kurzbeschreibung, Hersteller, Lieferant, Maße, Gewicht, Kategorien und Attribute an HCA.
+- Für jede Angebotsposition kann ein Artikeldatenblatt wahlweise aktiviert und mit ein bis fünf Produktbildern zusammengestellt werden.
+- Das Datenblatt enthält die vollständigen gespeicherten Artikeldetails und die komplette Produktbeschreibung.
+- Datenblattseiten werden als Bestandteil derselben Angebots-PDF hinter das Angebot angehängt; E-Mails enthalten damit automatisch das vollständige Angebot einschließlich Datenblättern.
+- Im nativen WebView2-Client wird der HTML-Ladebildschirm bereits während des Dokumentaufbaus unterdrückt. Dadurch bleibt nur der erste native Startbildschirm sichtbar; der Webtest behält seinen eigenen Ladebildschirm.
+- Client- und NAS-Paket werden mit Syntax-, Struktur-, ZIP- und SHA-256-Prüfung veröffentlicht.
+- Das WooCommerce-Plugin wurde nicht verändert.
+
+### Installation 0.13.7
+
+1. NAS-Erweiterung 0.13.7 installieren und den NAS-Dienst neu starten.
+2. Clientupdate 0.13.7 einspielen.
+3. HCA manuell schließen und neu starten.
+4. Ein Testangebot mit ausgewähltem Artikeldatenblatt erstellen und dessen PDF prüfen.
