@@ -1,0 +1,110 @@
+name: Build and publish HCA v0.13.8
+on:
+  push:
+    branches: [codex/v0.13.2-development]
+    paths: [.github/workflows/publish-v0138.yml]
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Prepare client and NAS
+        run: |
+          set -euo pipefail
+          rm -rf work/v0138 dist
+          mkdir -p work/v0138/client/payload work/v0138/nas/app dist
+          cp development/current-v0.13.5/client/* work/v0138/client/payload/
+          mv work/v0138/client/payload/hca-update.json work/v0138/client/hca-update.json
+          cp development/v0.13.6/hca-v0136.js development/v0.13.6/hca-v0136.css work/v0138/client/payload/
+          cp development/v0.13.7/hca-v0137.js development/v0.13.7/hca-v0137.css work/v0138/client/payload/
+          cp development/v0.13.8/hca-v0138.js development/v0.13.8/hca-v0138.css work/v0138/client/payload/
+          cp development/current-v0.13.5/nas/hca_shared.py work/v0138/nas/app/hca_shared.py
+          python development/v0.13.6/patch_server.py work/v0138/nas/app/hca_shared.py
+          python development/v0.13.7/patch_server.py work/v0138/nas/app/hca_shared.py
+          python development/v0.13.8/patch_server.py work/v0138/nas/app/hca_shared.py
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          root=Path("work/v0138/client"); payload=root/"payload"
+          html=(payload/"index.html").read_text(encoding="utf-8")
+          early="<script id=\"hca-native-splash-guard\">if(window.chrome&&window.chrome.webview)document.documentElement.classList.add('hca-native-host')</script>"
+          if "hca-native-splash-guard" not in html: html=html.replace("<head>","<head>\n  "+early,1)
+          for version in ("0136","0137","0138"):
+              css=f"hca-v{version}.css"; js=f"hca-v{version}.js"
+              if css not in html: html=html.replace("</head>",f'  <link rel="stylesheet" href="/{css}?v=0.13.8">\n</head>')
+              if js not in html: html=html.replace("</body>",f'  <script src="/{js}?v=0.13.8"></script>\n</body>')
+          (payload/"index.html").write_text(html,encoding="utf-8")
+          (payload/"version.json").write_text(json.dumps({"version":"0.13.8","channel":"test","released":"2026-09-15"},ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          (root/"hca-update.json").write_text(json.dumps({"product":"HCA Produktionsmanager","version":"0.13.8","description":"Dauerhaft durchsuchbare Kundenauswahl und kundenreine Artikeldatenblätter mit Hauptbild, allen Farbvarianten sowie Veredelungsarten und Positionsbildern."},ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          (payload/"AENDERUNGEN_v0.13.8.txt").write_text("""HCA v0.13.8
+          - Kunden-Dropdown im Angebot dauerhaft direkt beschreibbar und durchsuchbar
+          - Kundensuche liest die tatsächlich vorhandenen Dropdown-Einträge
+          - Lieferant vollständig aus dem kundenbestimmten Artikeldatenblatt entfernt
+          - ausschließlich Hersteller beziehungsweise Marke im Datenblatt
+          - Hauptbild und Produktbilder eigener Abschnitt
+          - sämtliche Farbvarianten mit Namen und kleinen Bildern
+          - mögliche Veredelungspositionen und Veredelungsarten mit WooCommerce-Positionsbildern
+          - WooCommerce-Plugin unverändert
+          """,encoding="utf-8")
+          PY
+      - name: Validate
+        run: |
+          set -euo pipefail
+          python -m py_compile development/v0.13.8/patch_server.py work/v0138/nas/app/hca_shared.py
+          for file in work/v0138/client/payload/app.js work/v0138/client/payload/hca-v0132.js work/v0138/client/payload/hca-v0134.js work/v0138/client/payload/hca-v0135.js work/v0138/client/payload/hca-v0136.js work/v0138/client/payload/hca-v0137.js work/v0138/client/payload/hca-v0138.js; do node --check "$file"; done
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          c=Path("work/v0138/client"); j=(c/"payload/hca-v0138.js").read_text(encoding="utf-8"); h=(c/"payload/index.html").read_text(encoding="utf-8")
+          s=Path("work/v0138/nas/app/hca_shared.py").read_text(encoding="utf-8")
+          assert json.loads((c/"hca-update.json").read_text())["version"]=="0.13.8"
+          assert json.loads((c/"payload/version.json").read_text())["version"]=="0.13.8"
+          for marker in ("hca-v0138.js?v=0.13.8","hca-v0138.css?v=0.13.8"): assert marker in h
+          for marker in ("MutationObserver","customerRows(select)","hca138-customer-combo","color_images","refinement_areas"): assert marker in j
+          for marker in ("_hca138_product_visuals","_hca138_extra_datasheet_specs","FARBVARIANTEN","MOEGLICHE VEREDELUNGEN"): assert marker in s
+          block=s[s.index("def _hca137_datasheet_specs"):s.index("def _hca137_build_pdf")]
+          assert "Lieferant" not in block and 'details.get("supplier")' not in block
+          assert "wk-werbeartikel-konfigurator" not in "\n".join(str(p) for p in Path("work/v0138").rglob("*"))
+          PY
+      - name: Package
+        run: |
+          set -euo pipefail
+          cat > work/v0138/nas/INSTALLATION_v0.13.8.txt <<'EOF'
+          HCA NAS-Erweiterung v0.13.8
+
+          1. Bestehende app/hca_shared.py sichern.
+          2. app/hca_shared.py aus diesem Paket ersetzen.
+          3. NAS-Dienst beziehungsweise Container neu starten.
+          4. Erst danach HCA_Update_v0.13.8.hcaupdate am Client einspielen.
+          EOF
+          (cd work/v0138/client && zip -qr "$GITHUB_WORKSPACE/dist/HCA_Update_v0.13.8.hcaupdate" hca-update.json payload)
+          (cd work/v0138/nas && zip -qr "$GITHUB_WORKSPACE/dist/HCA_NAS_Erweiterung_Artikeldatenblaetter_v0.13.8.zip" .)
+          (cd dist && sha256sum HCA_Update_v0.13.8.hcaupdate > HCA_Update_v0.13.8.sha256)
+          (cd dist && sha256sum HCA_NAS_Erweiterung_Artikeldatenblaetter_v0.13.8.zip > HCA_NAS_Erweiterung_Artikeldatenblaetter_v0.13.8.sha256)
+          unzip -t dist/HCA_Update_v0.13.8.hcaupdate
+          unzip -t dist/HCA_NAS_Erweiterung_Artikeldatenblaetter_v0.13.8.zip
+          (cd dist && sha256sum -c HCA_Update_v0.13.8.sha256 && sha256sum -c HCA_NAS_Erweiterung_Artikeldatenblaetter_v0.13.8.sha256)
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.md <<'EOF'
+          HCA Produktionsmanager v0.13.8 Testbuild
+
+          Die Kundenauswahl im Angebot ist dauerhaft direkt beschreibbar und durchsucht die
+          vorhandenen Dropdown-Einträge. Artikeldatenblätter enthalten niemals den Lieferanten,
+          sondern Hersteller/Marke, Haupt- und Produktbilder, sämtliche Farbvarianten sowie
+          mögliche Veredelungsarten und WooCommerce-Positionsbilder.
+
+          Zuerst das NAS-Paket, danach das Clientupdate installieren.
+          Das WooCommerce-Plugin wurde nicht verändert.
+          EOF
+          gh release create v0.13.8 dist/* --repo dhaesen/HCA-Produktionsmanager-Updates --title "HCA Produktionsmanager 0.13.8 Testbuild" --notes-file /tmp/notes.md --prerelease
+          mkdir verify
+          for f in dist/*; do name=$(basename "$f"); curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.8/$name" -o "verify/$name"; done
+          (cd verify && sha256sum -c HCA_Update_v0.13.8.sha256 && sha256sum -c HCA_NAS_Erweiterung_Artikeldatenblaetter_v0.13.8.sha256)
