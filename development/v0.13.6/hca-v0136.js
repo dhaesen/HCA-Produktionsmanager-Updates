@@ -63,7 +63,8 @@ function enhanceCustomerCombo(){
   const customers=businessCustomerCache||[];
   list.innerHTML=customers.map(c=>'<option value="'+escapeHtml((c.customer_no||'')+' · '+businessCustomerDisplay(c))+'"></option>').join('');
   const selected=customers.find(c=>String(c.id)===String(select.value));if(selected)input.value=(selected.customer_no||'')+' · '+businessCustomerDisplay(selected);
-  select.parentNode.insertBefore(wrap,select);wrap.append(input,list,select);select.classList.add('hca136-combo-fallback');
+  const selectParent=select.parentNode;if(!selectParent)return;
+  selectParent.insertBefore(wrap,select);wrap.append(input,list,select);select.classList.add('hca136-combo-fallback');
   const apply=()=>{
     const needle=String(input.value||'').trim().toLowerCase();
     const exact=customers.find(c=>((c.customer_no||'')+' · '+businessCustomerDisplay(c)).toLowerCase()===needle);
@@ -79,7 +80,9 @@ window.renderBusinessQuoteEditor=function(){
   const intro=document.querySelector('#bqIntro')?.parentElement;
   const panel=document.createElement('div');panel.className='hca136-tier-panel';
   panel.innerHTML='<label>Mengenstaffel</label><div class="hca136-tier-row"><input class="text-input" id="hca136QuoteTiers" placeholder="z. B. 500, 1000, 1500" value="'+escapeHtml(quoteTiers().join(', '))+'"><button class="btn secondary" id="hca136CalculateTiers" type="button">Staffelpreise berechnen</button></div><small id="hca136TierStatus">Mehrere alternative Angebotsmengen; nur eine Staffel wird später beauftragt.</small><div id="hca136TierPreview">'+tierPreviewHtml()+'</div>';
-  if(intro)head.insertBefore(panel,intro);else head.appendChild(panel);
+  // Bei älteren Angeboten kann das Einleitungsfeld in einer Untergruppe liegen.
+  // insertBefore akzeptiert aber ausschließlich ein direktes Kind von `head`.
+  if(intro?.parentNode===head)head.insertBefore(panel,intro);else head.appendChild(panel);
   document.querySelector('#hca136CalculateTiers')?.addEventListener('click',async()=>{await buildTierSnapshots();document.querySelector('#hca136TierPreview').innerHTML=tierPreviewHtml();hcaEditorDirty=true});
   document.querySelector('#hca136QuoteTiers')?.addEventListener('change',e=>{activeBusinessQuote.quantity_tiers=parseTiers(e.target.value);hcaEditorDirty=true});
   enhanceCustomerCombo();
