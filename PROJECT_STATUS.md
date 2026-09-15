@@ -1,7 +1,7 @@
 # HCA Produktionsmanager – Projektstatus
 
 Stand: 15. September 2026  
-Aktuelle Testversion: **0.13.12**  
+Aktuelle Testversion: **0.13.13**  
 Quellbranch: `codex/v0.13.2-development`
 
 ## Aktueller Lieferumfang
@@ -256,3 +256,22 @@ Quellbranch: `codex/v0.13.2-development`
 1. Nur das Clientupdate 0.13.12 einspielen.
 2. HCA vollständig schließen und neu starten.
 3. Ein vor 0.13.9 angelegtes Angebot öffnen und anschließend bei einem Artikel mit Veredelung die Preise aktualisieren.
+
+
+## Version 0.13.13 – Veredelungspreise wiederhergestellt
+
+- Die in 0.13.11 eingeführte automatische Neuzuordnung von Druckart-, Einrichtungs- und Bearbeitungskosten-IDs wurde zurückgenommen.
+- Bereits im Angebot gespeicherte WooCommerce-IDs bleiben beim Öffnen und Neuberechnen unverändert und werden wieder direkt an die Druckpreisverwaltung übergeben.
+- Fehlende IDs werden nur noch ergänzt, wenn die Zuordnung zu genau einer Veredelungsart eindeutig ist.
+- Manuelle Veredelungen bleiben von der WooCommerce-Preisabfrage ausgeschlossen und verschieben die Zuordnung der automatisch berechneten Positionen nicht.
+- Die Zahl der vom Shop gelieferten Preispositionen wird weiterhin geprüft; unvollständige Antworten werden nicht als erfolgreiche 0,00-Euro-Kalkulation angezeigt.
+- Eine ausschließlich aus 0,00-Euro-Werten bestehende WooCommerce-Antwort wird als Zuordnungsfehler angezeigt und überschreibt keine zuvor geladenen Preise.
+- Der Live-Gegentest des WooCommerce-Wizards lieferte für Produkt 5266 und Menge 500 weiterhin 0,86 Euro Druck, 44,46 Euro Einrichtung und 0,18 Euro Bearbeitung je Artikel.
+- Es ist kein NAS-Update erforderlich.
+- Das WooCommerce-Plugin wurde nicht verändert.
+
+### Installation 0.13.13
+
+1. Nur das Clientupdate 0.13.13 einspielen.
+2. HCA vollständig schließen und neu starten.
+3. Ein Angebot mit Veredelung öffnen und „Shoppreise aktualisieren“ ausführen.
