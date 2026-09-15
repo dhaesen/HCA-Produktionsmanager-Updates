@@ -1,7 +1,7 @@
 # HCA Produktionsmanager – Projektstatus
 
 Stand: 15. September 2026  
-Aktuelle Testversion: **0.13.9**  
+Aktuelle Testversion: **0.13.10**  
 Quellbranch: `codex/v0.13.2-development`
 
 ## Aktueller Lieferumfang
@@ -193,3 +193,27 @@ Quellbranch: `codex/v0.13.2-development`
 2. Clientupdate 0.13.9 einspielen.
 3. HCA vollständig schließen und neu starten.
 4. Ein älteres Angebot sowie ein neues Angebot mit mehreren Positionsstaffeln und Artikeldatenblatt prüfen.
+
+
+## Version 0.13.10 – Alternative Angebotsmengen und neues Datenblatt
+
+- Die in 0.13.9 eingeführte separate Mengenstaffeltabelle wurde vollständig aus dem Client und der PDF-Ausgabe entfernt.
+- Bei normalen Werbeartikelpositionen können direkt am vorhandenen Mengenbereich beliebig viele weitere Angebotsmengen ergänzt werden.
+- Jede weitere Menge erzeugt automatisch eine optionale Zusatzposition.
+- Die Zusatzposition übernimmt Artikel, Farbe, Beschreibung und sämtliche Veredelungsschritte der Ausgangsposition.
+- Produkt-, Druck-, Einrichtungs- und Bearbeitungspreise werden für jede zusätzliche Menge erneut über die vorhandene WooCommerce-Preislogik berechnet.
+- Automatisch erzeugte Mengenoptionen sind als optionale Positionen gekennzeichnet und werden nicht in die Angebotssumme eingerechnet.
+- Beim Speichern werden Mengenoptionen nochmals aus der aktuellen Ausgangsposition aufgebaut, damit nachträgliche Änderungen an Artikel oder Veredelung übernommen werden.
+- Das Artikeldatenblatt wurde vollständig neu aufgebaut und erzeugt pro ausgewähltem Artikel genau eine Seite.
+- Seitenaufteilung: Hauptbild links, Eigenschaften und Beschreibung rechts, kleine Galeriebilder direkt darunter, kompakte Farbvariantenübersicht sowie Veredelungspositionen mit Bildern und möglichen Verfahren im unteren Seitenbereich.
+- Der Lieferant wird niemals auf dem Artikeldatenblatt ausgegeben; zulässig ist ausschließlich Hersteller beziehungsweise Marke.
+- Das PDF-Layout wurde vor Veröffentlichung als A4-Seite gerendert und visuell geprüft.
+- Client- und NAS-Paket wurden nach Veröffentlichung mit SHA-256 und ZIP-Integritätsprüfung verifiziert.
+- Das WooCommerce-Plugin wurde nicht verändert.
+
+### Installation 0.13.10
+
+1. NAS-Erweiterung 0.13.10 installieren und den NAS-Dienst neu starten.
+2. Clientupdate 0.13.10 einspielen.
+3. HCA vollständig schließen und neu starten.
+4. Einen Werbeartikel auswählen, über „Weitere Menge“ mindestens zwei Alternativmengen anlegen und das PDF einschließlich Datenblatt prüfen.
