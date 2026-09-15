@@ -1,7 +1,7 @@
 # HCA Produktionsmanager – Projektstatus
 
 Stand: 15. September 2026  
-Aktuelle Testversion: **0.13.10**  
+Aktuelle Testversion: **0.13.11**  
 Quellbranch: `codex/v0.13.2-development`
 
 ## Aktueller Lieferumfang
@@ -217,3 +217,24 @@ Quellbranch: `codex/v0.13.2-development`
 2. Clientupdate 0.13.10 einspielen.
 3. HCA vollständig schließen und neu starten.
 4. Einen Werbeartikel auswählen, über „Weitere Menge“ mindestens zwei Alternativmengen anlegen und das PDF einschließlich Datenblatt prüfen.
+
+
+## Version 0.13.11 – Zuverlässige Veredelungspreise
+
+- Gleichzeitige beziehungsweise verspätete WooCommerce-Preisabfragen können neuere Mengen-, Druckpositions- oder Veredelungseingaben nicht mehr überschreiben.
+- Vor jeder Preisberechnung werden Druckposition und Veredelungsart erneut mit der WooCommerce-Wizard-Konfiguration abgeglichen.
+- Eine Preisantwort gilt nur als vollständig, wenn für jeden automatisch kalkulierten Veredelungsschritt eine Preisposition zurückgegeben wurde.
+- Kurzzeitige Fehler der WooCommerce-Druckkalkulation werden einmal automatisch wiederholt.
+- Bei gewählten Veredelungen gibt es keinen stillen Rückfall mehr auf den reinen Artikelpreis mit 0,00-Euro-Veredelungen.
+- Ladezustand, erfolgreicher Abruf und Fehler erscheinen direkt an der betroffenen Dokumentposition.
+- Eine fehlgeschlagene Kalkulation kann mit „Erneut laden“ gezielt wiederholt werden; vorhandene gültige Preise werden bei einem Fehler nicht gelöscht.
+- Der reine WooCommerce-Artikelpreis bleibt nur für Positionen ohne Veredelung als zulässiger Fallback erhalten.
+- Client- und NAS-Paket wurden nach Veröffentlichung mit Funktionstest, Python-/JavaScript-Syntaxprüfung, SHA-256 und ZIP-Integritätsprüfung verifiziert.
+- Das WooCommerce-Plugin wurde nicht verändert.
+
+### Installation 0.13.11
+
+1. NAS-Erweiterung 0.13.11 installieren und den NAS-Dienst neu starten.
+2. Clientupdate 0.13.11 einspielen.
+3. HCA vollständig schließen und neu starten.
+4. Einen Artikel mit mindestens einer Veredelung auswählen, Menge und Veredelungsart wechseln und prüfen, ob der grüne Hinweis zur vollständigen Preisübernahme erscheint.
