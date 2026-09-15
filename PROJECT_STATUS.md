@@ -1,7 +1,7 @@
 # HCA Produktionsmanager – Projektstatus
 
 Stand: 15. September 2026  
-Aktuelle Testversion: **0.13.13**  
+Aktuelle Testversion: **0.13.14**  
 Quellbranch: `codex/v0.13.2-development`
 
 ## Aktueller Lieferumfang
@@ -275,3 +275,23 @@ Quellbranch: `codex/v0.13.2-development`
 1. Nur das Clientupdate 0.13.13 einspielen.
 2. HCA vollständig schließen und neu starten.
 3. Ein Angebot mit Veredelung öffnen und „Shoppreise aktualisieren“ ausführen.
+
+
+## Version 0.13.14 – Beschädigte Preiszuordnungen repariert
+
+- Die Wizard-Konfiguration wird vor jeder Veredelungskalkulation frisch aus WooCommerce geladen.
+- Auf 0 gesetzte oder falsch zugeordnete Druckart-, Einrichtungs- und Bearbeitungskosten-IDs werden anhand von Druckposition und Verfahren repariert.
+- Für die Kalkulation wird zuverlässig die WooCommerce-ID des Hauptartikels statt einer ungeeigneten Varianten-ID verwendet.
+- Druckpreis, Einrichtungskosten und Bearbeitungskosten werden einzeln gegen die WooCommerce-Konfiguration geprüft.
+- Unvollständige Antworten überschreiben keine vorhandenen Angebotswerte.
+- Nach erfolgreicher Aktualisierung erscheinen Produkt, Veredelung, Einrichtung und Bearbeitung wieder als vier getrennte Angebotspositionen.
+- Der Regressionstest startet absichtlich mit drei auf 0 gesetzten Preis-IDs und bestätigt anschließend 0,86 Euro Druck, 44,46 Euro Einrichtung sowie 0,18 Euro Bearbeitung.
+- Es ist kein NAS-Update erforderlich.
+- Das WooCommerce-Plugin wurde nicht verändert.
+
+### Installation 0.13.14
+
+1. Nur das Clientupdate 0.13.14 einspielen.
+2. HCA vollständig schließen und neu starten.
+3. Das betroffene Angebot öffnen und „Shoppreise aktualisieren“ ausführen.
+4. Erst nach vier sichtbaren Positionen speichern.
