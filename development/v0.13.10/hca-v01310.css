@@ -1,0 +1,5 @@
+.hca1310-alternatives{display:grid;gap:10px;margin:10px 0 14px;padding:12px;border:1px solid #c9c9c2;border-left:4px solid #ef4318;border-radius:8px;background:#fafaf7}
+.hca1310-alternatives>div:first-child{display:grid;gap:3px}.hca1310-alternatives small{color:#62625d}
+.hca1310-quantity-list{display:flex;flex-wrap:wrap;gap:8px}.hca1310-quantity-row{display:grid;grid-template-columns:120px auto 34px;gap:6px;align-items:center}
+.hca1310-quantity-row input{width:120px}.hca1310-quantity-row span{font-size:12px;color:#555}.hca1310-actions{display:flex;flex-wrap:wrap;gap:8px}
+.hca-optional-position [data-bq-line]{}.hca-optional-position .business-quote-line-head span{color:#8b3b1f}
