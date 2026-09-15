@@ -205,7 +205,7 @@ def _hca137_datasheet_specs(document: dict[str, Any]) -> list[dict[str, Any]]:
             if len(loaded)==1: boxes=[(46,150,503,450)]
             elif len(loaded)==2: boxes=[(46,180,245,400),(304,180,245,400)]
             elif len(loaded)<=4: boxes=[(46,380,245,210),(304,380,245,210),(46,145,245,210),(304,145,245,210)][:len(loaded)]
-            else: boxes=[(46,380,503,220),(46,160,245,190),(304,160,245,190),(46,95,245,55),(304,95,245,55)]
+            else: boxes=[(46,410,503,180),(46,255,245,130),(304,255,245,130),(46,105,245,130),(304,105,245,130)]
             images=[]
             for index,(image,box) in enumerate(zip(loaded,boxes),1):
                 x,y,w,h=_hca137_fit(image,box); name_id=f"IMG{index}"
