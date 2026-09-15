@@ -1,0 +1,8 @@
+HCA NAS-Hotfix v0.13.17 – Veredelungspreise
+
+1. Bestehende app/hca_shared.py sichern.
+2. app/hca_shared.py aus diesem Paket in den HCA-Serverordner kopieren und ersetzen.
+3. HCA-NAS-Dienst beziehungsweise Container neu starten.
+4. Im Client ein betroffenes Angebot öffnen und „Shoppreise aktualisieren“ ausführen.
+
+Das WooCommerce-Plugin und die HCA-Datenbank werden nicht verändert.

@@ -1,0 +1,50 @@
+name: Build and publish HCA NAS hotfix v0.13.17
+on:
+  push:
+    branches: [codex/v0.13.2-development]
+    paths:
+      - .github/workflows/publish-v01317.yml
+      - development/v0.13.17/**
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Validate NAS server
+        run: |
+          set -euo pipefail
+          python -m py_compile development/v0.13.17/hca_shared.py development/v0.13.17/patch_server.py development/v0.13.17/test_server_pricing.py
+          python development/v0.13.17/test_server_pricing.py
+      - name: Package NAS hotfix
+        run: |
+          set -euo pipefail
+          mkdir -p work/v01317/app dist
+          cp development/v0.13.17/hca_shared.py work/v01317/app/
+          cp development/v0.13.17/INSTALLATION_v0.13.17.txt work/v01317/
+          (cd work/v01317 && zip -qr "$GITHUB_WORKSPACE/dist/HCA_NAS_Hotfix_Veredelungspreise_v0.13.17.zip" .)
+          (cd dist && sha256sum HCA_NAS_Hotfix_Veredelungspreise_v0.13.17.zip > HCA_NAS_Hotfix_Veredelungspreise_v0.13.17.sha256)
+          unzip -t dist/HCA_NAS_Hotfix_Veredelungspreise_v0.13.17.zip
+          (cd dist && sha256sum -c HCA_NAS_Hotfix_Veredelungspreise_v0.13.17.sha256)
+      - name: Publish and verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.md <<'EOF'
+          HCA NAS-Hotfix v0.13.17
+
+          Korrigiert die serverseitige Übergabe der WooCommerce-Veredelungspreise.
+          Textwerte für manuelle Abweichungen werden korrekt ausgewertet, Preis-IDs
+          werden gegen die WooCommerce-Wizardkonfiguration geprüft und vollständige
+          Nullpreisantworten bei gewählter Veredelung werden nicht mehr akzeptiert.
+
+          Nur auf dem NAS installieren. WooCommerce-Plugin und Datenbank bleiben unverändert.
+          EOF
+          gh release create v0.13.17 dist/* --repo dhaesen/HCA-Produktionsmanager-Updates --title 'HCA NAS-Hotfix 0.13.17' --notes-file /tmp/notes.md --prerelease
+          mkdir verify
+          for file in dist/*; do name=$(basename "$file"); curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.17/$name" -o "verify/$name"; done
+          (cd verify && sha256sum -c HCA_NAS_Hotfix_Veredelungspreise_v0.13.17.sha256)

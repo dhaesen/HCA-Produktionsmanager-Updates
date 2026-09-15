@@ -272,3 +272,20 @@ Quellbranch: `codex/v0.13.2-development`
 2. HCA vollständig schließen und manuell neu starten.
 3. Zuerst ein gestern funktionierendes Angebot öffnen und „Shoppreise aktualisieren“ ausführen.
 4. Prüfen, dass Produkt, Veredelung, Einrichtung und Bearbeitung wieder als vier Preisbestandteile erscheinen.
+
+
+## Version 0.13.17 – NAS-Hotfix Veredelungspreise
+
+- Nach der exakten Client-Rücksetzung 0.13.16 blieb der Fehler bestehen; die Ursache liegt damit in der NAS-Preisübergabe beziehungsweise in den dort verarbeiteten Daten.
+- Der NAS-Server wertete den Textwert `"false"` bei `manual_override` durch `bool("false")` fälschlich als wahr und konnte dadurch reguläre Veredelungsschritte aus der WooCommerce-Preisanfrage entfernen.
+- Druckart-, Einrichtungs- und Bearbeitungskosten-IDs werden serverseitig gegen die aktuelle, nur lesend abgerufene WooCommerce-Wizardkonfiguration geprüft und bei eindeutiger Zuordnung vervollständigt.
+- Eine WooCommerce-Antwort mit 0,00 EUR für Druck, Einrichtung und Bearbeitung wird bei ausgewählter Veredelung nicht mehr als erfolgreiche Kalkulation akzeptiert.
+- Fehlermeldungen enthalten die tatsächlich übertragenen IDs, damit eine verbleibende falsche Zuordnung eindeutig erkennbar ist.
+- WooCommerce-Plugin und HCA-Datenbank werden nicht verändert.
+
+### Installation 0.13.17
+
+1. Bestehende `app/hca_shared.py` auf dem NAS sichern.
+2. Die Datei aus dem NAS-Hotfix ersetzen.
+3. HCA-NAS-Dienst beziehungsweise Container neu starten.
+4. Client 0.13.16 verwenden, betroffenes Angebot öffnen und „Shoppreise aktualisieren“ ausführen.
