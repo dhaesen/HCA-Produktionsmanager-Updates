@@ -1,0 +1,50 @@
+name: Build and publish HCA client v0.13.20
+on:
+  push:
+    branches: [codex/v0.13.2-development]
+    paths:
+      - .github/workflows/publish-v01320.yml
+      - development/v0.13.19/hca-v01319.js
+      - development/v0.13.20/**
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Fetch verified base package
+        run: |
+          set -euo pipefail
+          mkdir -p ../build
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.18/HCA_Update_v0.13.18.hcaupdate -o ../build/HCA_Update_v0.13.18.hcaupdate
+          printf '%s  %s\n' '34f5d9a3af86d177b1bf4034e054c310ea29ab43dd0b54dcd2ae66bfea2bee80' '../build/HCA_Update_v0.13.18.hcaupdate' | sha256sum -c -
+      - name: Build and test
+        run: |
+          set -euo pipefail
+          node development/v0.13.20/test_pricing.js
+          python -m py_compile development/v0.13.20/build_v01320.py
+          python development/v0.13.20/build_v01320.py
+          (cd ../build && sha256sum -c HCA_Update_v0.13.20.sha256)
+          unzip -t ../build/HCA_Update_v0.13.20.hcaupdate
+      - name: Publish and verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.md <<'EOF'
+          HCA Client v0.13.20
+
+          Repariert Bestandspositionen aus der fehlerhaften Mengenfelder-Version und
+          den vollständigen Ablauf von „Shoppreise aktualisieren“. Auch bei noch nicht
+          gewählter Farbvariante wird die vorhandene Hauptartikel-ID verwendet.
+
+          WooCommerce-Plugin, NAS-Datenbank und vorhandene Dokumente werden nicht verändert.
+          EOF
+          gh release create v0.13.20 ../build/HCA_Update_v0.13.20.hcaupdate ../build/HCA_Update_v0.13.20.sha256 --repo dhaesen/HCA-Produktionsmanager-Updates --title 'HCA Client 0.13.20' --notes-file /tmp/notes.md --prerelease
+          mkdir verify
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.20/HCA_Update_v0.13.20.hcaupdate -o verify/HCA_Update_v0.13.20.hcaupdate
+          cp ../build/HCA_Update_v0.13.20.sha256 verify/
+          (cd verify && sha256sum -c HCA_Update_v0.13.20.sha256)

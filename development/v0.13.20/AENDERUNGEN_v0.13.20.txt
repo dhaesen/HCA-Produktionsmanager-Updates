@@ -1,0 +1,9 @@
+HCA Produktionsmanager v0.13.20
+
+- Repariert den vollständigen Ablauf der Schaltfläche „Shoppreise aktualisieren“.
+- Repariert bereits falsch als Textil gespeicherte Werbeartikelpositionen.
+- Verwendet bei fehlender Varianten-ID die vorhandene WooCommerce-Hauptartikel-ID.
+- Behält die eingegebene Menge unverändert bei.
+- Übernimmt Druckpreis, Einrichtungskosten und Bearbeitungskosten wieder gemeinsam.
+- Meldet echte Nullpreis- oder Zuordnungsfehler, statt sie als erfolgreiche Aktualisierung anzuzeigen.
+- Keine Änderung am WooCommerce-Plugin, an der NAS-Datenbank oder an vorhandenen Dokumenten.

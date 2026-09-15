@@ -105,7 +105,7 @@ window.hca103ShopPrice=async function(line){
 };
 
 window.hca103RepriceQuote=async function(){
-  if(!window.activeBusinessQuote)return;
+  if(!activeBusinessQuote)return;
   const button=document.querySelector('#businessQuoteReprice');
   if(button){button.disabled=true;button.textContent='Shoppreise werden geladen …';}
   try{
@@ -122,7 +122,7 @@ window.hca103RepriceQuote=async function(){
 
 const oldQuoteRender=window.renderBusinessQuoteEditor;
 if(typeof oldQuoteRender==='function')window.renderBusinessQuoteEditor=function(...args){
-  (window.activeBusinessQuote?.items||[]).forEach(normalizeExistingLine);
+  (activeBusinessQuote?.items||[]).forEach(normalizeExistingLine);
   const result=oldQuoteRender.apply(this,args);
   const button=document.querySelector('#businessQuoteReprice');
   if(button)button.onclick=window.hca103RepriceQuote;
