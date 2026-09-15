@@ -1,0 +1,17 @@
+.hca138-customer-combo{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 42px;width:100%}
+.hca138-customer-input{grid-column:1/3;width:100%;padding-right:48px}
+.hca138-combo-toggle{position:absolute;right:1px;top:1px;bottom:1px;width:40px;border:0;border-left:1px solid #b9b9b2;border-radius:0 7px 7px 0;background:#ecece6;color:#1d1d1d;font-size:18px;cursor:pointer}
+.hca138-combo-toggle:hover,.hca138-combo-toggle:focus{background:#ffe4d8;outline:2px solid #ef4318;outline-offset:-2px}
+.hca138-customer-list{position:absolute;z-index:2500;top:calc(100% + 4px);left:0;right:0;max-height:360px;overflow:auto;padding:5px;border:1px solid #aaa9a2;border-radius:8px;background:#fff;box-shadow:0 14px 34px rgba(0,0,0,.24)}
+.hca138-customer-list button{display:flex;width:100%;flex-direction:column;gap:3px;padding:10px 12px;border:0;border-radius:6px;background:#fff;color:#191919;text-align:left;cursor:pointer}
+.hca138-customer-list button:hover,.hca138-customer-list button:focus{background:#fff0e9;outline:2px solid #ef4318}
+.hca138-customer-list button span{color:#5f5f5a;font-size:12px}.hca138-no-result{padding:14px;color:#666}
+.hca138-native-select{display:none!important}
+.hca138-datasheet-details{display:grid;gap:14px;margin-top:12px;padding:12px;border-radius:7px;background:#f2f2ed}
+.hca138-datasheet-details section>b,.hca138-datasheet-details section>small{display:block}.hca138-datasheet-details section>small{margin:3px 0 8px;color:#666}
+.hca138-thumb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:8px}
+.hca138-thumb-grid>div{display:grid;gap:4px;padding:6px;border:1px solid #d5d5cf;border-radius:6px;background:#fff;text-align:center}
+.hca138-thumb-grid img,.hca138-thumb-grid .empty{display:flex;width:100%;height:66px;align-items:center;justify-content:center;object-fit:contain;color:#777;font-size:10px}
+.hca138-thumb-grid label{font-size:11px}.hca138-area-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:8px}
+.hca138-area-list>div{display:flex;gap:9px;align-items:center;padding:7px;border:1px solid #d5d5cf;border-radius:6px;background:#fff}
+.hca138-area-list img{width:64px;height:54px;object-fit:contain}.hca138-area-list span{display:grid;gap:3px}.hca138-area-list small{color:#666}
