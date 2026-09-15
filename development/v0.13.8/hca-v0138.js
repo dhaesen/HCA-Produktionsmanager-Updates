@@ -27,7 +27,9 @@ function upgradeCustomerSelect(select){
   const input=document.createElement('input');input.type='text';input.className='text-input hca138-customer-input';input.autocomplete='off';input.placeholder='Kunde auswählen oder Anfangsbuchstaben eingeben …';input.setAttribute('role','combobox');input.setAttribute('aria-autocomplete','list');input.disabled=select.disabled;
   const toggle=document.createElement('button');toggle.type='button';toggle.className='hca138-combo-toggle';toggle.textContent='▾';toggle.title='Kundenliste öffnen';toggle.disabled=select.disabled;
   const list=document.createElement('div');list.className='hca138-customer-list hidden';list.setAttribute('role','listbox');
-  const marker=old||select;parent.insertBefore(wrap,marker);wrap.append(input,toggle,list,select);if(old)old.remove();
+  const marker=old||select;
+  if(marker.parentNode!==parent)return;
+  marker.replaceWith(wrap);wrap.append(input,toggle,list,select);
   select.dataset.hca138Enhanced='1';select.classList.add('hca138-native-select');select.tabIndex=-1;
   let rows=customerRows(select),active=-1;
   const selected=()=>rows.find(r=>r.id===String(select.value));
