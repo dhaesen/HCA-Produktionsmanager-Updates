@@ -1,0 +1,8 @@
+HCA v0.13.28
+
+- QR-Codes verwenden einen normalen URL-Parameter, der beim Öffnen und bei Weiterleitungen erhalten bleibt.
+- Einmalige Pairing-Codes werden bis zur Einlösung oder zum Ablauf in der NAS-Datenbank gespeichert.
+- Die mobile Lager-App funktioniert auch dann weiter, wenn der Browserzugriff auf localStorage eingeschränkt ist.
+- Der Button „API-Schlüssel verwenden“ ist wieder zuverlässig bedienbar; Enter im Eingabefeld bestätigt ebenfalls.
+- Fehlende oder ungültige API-Schlüssel zeigen eine eindeutige Rückmeldung.
+- WooCommerce-Plugin, Preise, Dokumente, Lagerbestände und vorhandene Geräteverbindungen werden nicht verändert.

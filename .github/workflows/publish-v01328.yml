@@ -1,0 +1,60 @@
+name: Build and publish HCA v0.13.28
+on:
+  push:
+    branches: [codex/v0.13.28]
+    paths:
+      - .github/workflows/publish-v01328.yml
+      - development/v0.13.28/**
+      - PROJECT_STATUS.md
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch verified bases
+        run: |
+          set -euo pipefail
+          mkdir -p ../build/published-v01327
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.27/HCA_Update_v0.13.27.hcaupdate -o ../build/published-v01327/HCA_Update_v0.13.27.hcaupdate
+          printf '%s  %s\n' 'a4ca6b8c4c74af157f92a394f669d890210753935b3730a536d375bb9048c299' '../build/published-v01327/HCA_Update_v0.13.27.hcaupdate' | sha256sum -c -
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.27/HCA_NAS_Erweiterung_v0.13.27.zip -o ../build/published-v01327/HCA_NAS_Erweiterung_v0.13.27.zip
+          printf '%s  %s\n' 'd05cb2a2d4aeedd515d565f7d4e32ae533404af7969c95eabc05da9c748bfe26' '../build/published-v01327/HCA_NAS_Erweiterung_v0.13.27.zip' | sha256sum -c -
+      - name: Test and build
+        run: |
+          set -euo pipefail
+          python -m py_compile development/v0.13.28/patch_server.py development/v0.13.28/build_v01328.py development/v0.13.28/test_v01328.py
+          python development/v0.13.28/test_v01328.py
+          python development/v0.13.28/build_v01328.py
+          (cd ../build && sha256sum -c HCA_Update_v0.13.28.sha256 && sha256sum -c HCA_NAS_Erweiterung_v0.13.28.sha256)
+          unzip -t ../build/HCA_Update_v0.13.28.hcaupdate
+          unzip -t ../build/HCA_NAS_Erweiterung_v0.13.28.zip
+      - name: Publish and verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cp ../build/HCA_NAS_Erweiterung_v0.13.28.sha256 ../build/HCA_NAS_Erweiterung_v0.13.28_CHECKSUM.txt
+          cat > /tmp/notes.md <<'EOF'
+          HCA v0.13.28
+
+          Behebt die defekte Kopplung der mobilen Lager-App. QR-Codes verwenden
+          einen weiterleitungsfesten URL-Parameter; Pairing-Codes werden bis zur
+          Einlösung auf der NAS gespeichert. Die mobile Oberfläche bleibt auch bei
+          eingeschränktem Browser-Speicher bedienbar. Der manuelle API-Schlüssel kann
+          wieder per Schaltfläche oder Enter bestätigt werden.
+
+          Installationsreihenfolge: zuerst NAS-Erweiterung installieren und den
+          Container neu starten, danach das Clientupdate einspielen und HCA neu starten.
+
+          WooCommerce-Plugin, Preise, Dokumente und Lagerbestände bleiben unverändert.
+          EOF
+          gh release create v0.13.28 ../build/HCA_Update_v0.13.28.hcaupdate ../build/HCA_Update_v0.13.28.sha256 ../build/HCA_NAS_Erweiterung_v0.13.28.zip ../build/HCA_NAS_Erweiterung_v0.13.28_CHECKSUM.txt --repo dhaesen/HCA-Produktionsmanager-Updates --title 'HCA 0.13.28' --notes-file /tmp/notes.md --prerelease
+          test "$(gh release view v0.13.28 --repo dhaesen/HCA-Produktionsmanager-Updates --json assets --jq '[.assets[].name | select(endswith(".sha256"))] | length')" = 1
+          mkdir verify
+          gh release download v0.13.28 --repo dhaesen/HCA-Produktionsmanager-Updates --pattern 'HCA_Update_v0.13.28.hcaupdate' --dir verify
+          gh release download v0.13.28 --repo dhaesen/HCA-Produktionsmanager-Updates --pattern 'HCA_Update_v0.13.28.sha256' --dir verify
+          gh release download v0.13.28 --repo dhaesen/HCA-Produktionsmanager-Updates --pattern 'HCA_NAS_Erweiterung_v0.13.28.zip' --dir verify
+          cp ../build/HCA_NAS_Erweiterung_v0.13.28_CHECKSUM.txt verify/
+          (cd verify && sha256sum -c HCA_Update_v0.13.28.sha256 && sha256sum -c HCA_NAS_Erweiterung_v0.13.28_CHECKSUM.txt)

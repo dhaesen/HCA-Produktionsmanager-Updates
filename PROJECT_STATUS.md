@@ -431,3 +431,23 @@ Quellbranch: `codex/v0.13.25`
 - Der bestehende HCA-Updater unterscheidet diese Prüfsummendateien nicht zuverlässig und konnte deshalb die NAS-Prüfsumme gegen das Clientupdate prüfen.
 - Im Release bleibt künftig ausschließlich die Client-Prüfsumme als `.sha256` erhalten. Die NAS-Prüfsumme wird als `HCA_NAS_Erweiterung_v0.13.27_CHECKSUM.txt` veröffentlicht.
 - Client- und NAS-Paket selbst werden durch diese Korrektur nicht verändert.
+
+# HCA v0.13.28 – Mobile Lager-App wieder koppeln (16.09.2026)
+
+- Fehlerbild: Ein über HCA erzeugter QR-Code öffnete nur die API-Schlüsselmaske; der manuell eingegebene Schlüssel ließ sich dort nicht bestätigen.
+- Ursache 1: Ein Fehler oder eine Einschränkung beim Zugriff auf `localStorage` konnte das mobile JavaScript vor der Registrierung der Schaltflächen abbrechen.
+- Ursache 2: Der Pairing-Code wurde ausschließlich im URL-Fragment (`#pair=...`) transportiert und konnte beim Öffnen oder bei Weiterleitungen verloren gehen.
+- Ursache 3: Kurzlebige Pairing-Codes lagen nur im Arbeitsspeicher des Serverprozesses und waren damit bei Containerneustarts oder mehreren Prozessen nicht zuverlässig verfügbar.
+- Browser-Speicherzugriffe sind jetzt fehlertolerant. QR-Kopplung und manuelle API-Schlüssel-Eingabe bleiben bedienbar, selbst wenn dauerhafter Browserspeicher eingeschränkt ist.
+- QR-Codes verwenden `?pair=...`; die mobile App akzeptiert aus Kompatibilitätsgründen zusätzlich weiterhin alte `#pair=...`-Links.
+- Pairing-Codes werden gehasht und mit Ablaufzeit in der NAS-Datenbank gespeichert, einmalig eingelöst und anschließend gelöscht.
+- „API-Schlüssel verwenden“ besitzt einen expliziten Button-Handler; Enter im Eingabefeld bestätigt ebenfalls. Status und Fehler werden sichtbar ausgegeben.
+- Bestehende gekoppelte Geräte, Lagerbestände, WooCommerce-Plugin, Preise und Dokumentlogik werden nicht verändert.
+
+### Installation 0.13.28
+
+1. Vorhandene `app/hca_shared.py` auf der NAS sichern.
+2. NAS-Erweiterung 0.13.28 installieren und den HCA-Container vollständig neu starten.
+3. Clientupdate 0.13.28 einspielen.
+4. HCA vollständig schließen und neu starten.
+5. Unter Einstellungen einen neuen QR-Code erzeugen und mit der normalen Handykamera öffnen.

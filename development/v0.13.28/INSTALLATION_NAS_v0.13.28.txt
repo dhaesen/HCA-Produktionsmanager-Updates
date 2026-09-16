@@ -1,0 +1,10 @@
+HCA v0.13.28 – Installation
+
+1. Vorhandene app/hca_shared.py auf der NAS sichern.
+2. NAS-Erweiterung v0.13.28 über die bestehende HCA-NAS-Installation kopieren.
+3. HCA-Container vollständig neu starten.
+4. Clientupdate v0.13.28 einspielen.
+5. HCA vollständig schließen und neu starten.
+6. Unter Einstellungen einen neuen QR-Code erzeugen und mit der normalen Handykamera öffnen.
+
+Reihenfolge unbedingt einhalten: zuerst NAS, danach Client.
