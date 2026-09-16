@@ -1,0 +1,9 @@
+HCA Produktionsmanager v0.13.23
+
+- Bereits angelegte Angebotspositionen können im Positionskopf nachträglich als „Optional“ markiert werden.
+- Der Schalter gilt für die vollständige Positionsgruppe: Produkt, Veredelung, Einrichtung und Bearbeitung.
+- Optionale Positionsgruppen werden nicht in Netto-, Steuer- und Bruttosumme des Angebots eingerechnet.
+- Im PDF bleiben optionale Gruppen mit ihren Preisen in Klammern sichtbar.
+- Der Schalter kann jederzeit wieder deaktiviert werden.
+- Festgeschriebene Angebote bleiben gesperrt und können nicht nachträglich verändert werden.
+- WooCommerce-Plugin, NAS-Server und Datenbank werden nicht verändert.

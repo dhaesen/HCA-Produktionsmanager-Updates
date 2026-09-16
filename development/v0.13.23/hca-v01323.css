@@ -1,0 +1,8 @@
+/* HCA v0.13.23 · gut sichtbarer Optional-Schalter im Positionskopf */
+.hca1323-optional-holder{display:flex;align-items:center}
+.hca1323-optional-toggle{display:inline-flex;align-items:center;gap:.48rem;min-height:34px;padding:.35rem .72rem;border:1px solid #a6a39d;border-radius:8px;background:#f3f1ec;color:#222;font-weight:700;cursor:pointer;user-select:none}
+.hca1323-optional-toggle:hover{border-color:#e75303;background:#fff4ed}
+.hca1323-optional-toggle:has(input:checked){border-color:#e75303;background:#e75303;color:#fff}
+.hca1323-optional-toggle input{width:17px;height:17px;margin:0;accent-color:#e75303}
+.hca1323-optional-toggle:has(input:disabled){cursor:default;opacity:.72}
+.hca-optional-position{outline:2px solid rgba(231,83,3,.32);outline-offset:-2px}

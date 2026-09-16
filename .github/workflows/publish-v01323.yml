@@ -1,0 +1,54 @@
+name: Build and publish HCA v0.13.23
+on:
+  push:
+    branches: [codex/v0.13.2-development]
+    paths:
+      - .github/workflows/publish-v01323.yml
+      - development/v0.13.23/**
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Fetch verified client base
+        run: |
+          set -euo pipefail
+          mkdir -p ../build
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.22/HCA_Update_v0.13.22.hcaupdate -o ../build/HCA_Update_v0.13.22.hcaupdate
+          printf '%s  %s\n' '48f729be525aaf1458a8564559bac34bf902651bf8516d8d830b301d35d442a5' '../build/HCA_Update_v0.13.22.hcaupdate' | sha256sum -c -
+      - name: Test and build
+        run: |
+          set -euo pipefail
+          node --check development/v0.13.23/hca-v01323.js
+          node development/v0.13.23/test_client.js
+          python -m py_compile development/v0.13.23/build_v01323.py
+          python development/v0.13.23/build_v01323.py
+          (cd ../build && sha256sum -c HCA_Update_v0.13.23.sha256)
+          unzip -t ../build/HCA_Update_v0.13.23.hcaupdate
+      - name: Publish and verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.md <<'EOF'
+          HCA v0.13.23
+
+          Bereits angelegte Angebotspositionen können im Positionskopf nachträglich
+          als „Optional“ markiert und wieder als reguläre Position zurückgestellt werden.
+
+          Der Schalter gilt für die vollständige Positionsgruppe mit Produkt,
+          Veredelung, Einrichtung und Bearbeitung. Optionale Gruppen bleiben im PDF
+          sichtbar, werden aber nicht in die Angebotssumme eingerechnet.
+
+          Dieses Update verändert weder das WooCommerce-Plugin noch den NAS-Server
+          oder die HCA-Datenbank.
+          EOF
+          gh release create v0.13.23 ../build/HCA_Update_v0.13.23.hcaupdate ../build/HCA_Update_v0.13.23.sha256 --repo dhaesen/HCA-Produktionsmanager-Updates --title 'HCA 0.13.23' --notes-file /tmp/notes.md --prerelease
+          mkdir verify
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.23/HCA_Update_v0.13.23.hcaupdate -o verify/HCA_Update_v0.13.23.hcaupdate
+          cp ../build/HCA_Update_v0.13.23.sha256 verify/
+          (cd verify && sha256sum -c HCA_Update_v0.13.23.sha256)

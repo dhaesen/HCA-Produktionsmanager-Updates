@@ -339,3 +339,12 @@ Quellbranch: `codex/v0.13.2-development`
 - Positionsgruppen werden nach Möglichkeit vollständig auf derselben PDF-Seite gehalten.
 - Abwärtskompatibel für bestehende Angebote, Aufträge und Rechnungen; keine Datenmigration.
 - WooCommerce-Plugin und HCA-Datenbank bleiben unverändert.
+
+# HCA v0.13.23 – Positionen nachträglich optional stellen (16.09.2026)
+
+- Jede bereits angelegte Angebotsposition erhält im Positionskopf einen Schalter „Optional“.
+- Beim Aktivieren wird die gesamte Positionsgruppe einschließlich Veredelung, Einrichtung und Bearbeitung optional.
+- Optionale Gruppen bleiben mit Preisen sichtbar, werden aber nicht in die Angebotssummen eingerechnet.
+- Der Schalter kann wieder deaktiviert werden; die Position wird dann erneut regulär summiert.
+- Festgeschriebene Angebote bleiben unveränderbar.
+- WooCommerce-Plugin, NAS-Server und Datenbank bleiben unverändert.
