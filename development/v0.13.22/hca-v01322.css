@@ -1,0 +1,2 @@
+/* v0.13.22: alte Mengenstaffel-Steuerelemente aus allen gestapelten Clientständen ausblenden. */
+.hca136-tier-panel,.hca139-line-tiers,.hca1310-alternatives,.hca1321-tier-summary{display:none!important}
