@@ -329,3 +329,13 @@ Quellbranch: `codex/v0.13.2-development`
 3. Clientupdate 0.13.21 einspielen.
 4. HCA vollständig schließen und manuell neu starten.
 5. Einen Werbeartikel mit Produkt- und Druckstaffeln öffnen, Zusatzmengen berechnen und Dokumentvorschau samt Datenblatt prüfen.
+# HCA v0.13.22 – Positionsgruppen und Rückbau Mengenstaffel (16.09.2026)
+
+- Der Angebotsbereich „Mengenstaffel“ ist vollständig entfernt.
+- Automatisch erzeugte Mengenoptionen werden beim Öffnen bzw. Speichern entfernt; manuelle optionale Positionen bleiben erhalten.
+- Produkt, Veredelung, Einrichtung und Bearbeitung werden in kaufmännischen PDFs als eine Positionsgruppe behandelt.
+- Nummerierung innerhalb einer Gruppe: `1.1`, `1.2`, `1.3` usw.; nächste Gruppe: `2.1` usw.
+- Innerhalb einer Gruppe gibt es keine waagerechten Trennlinien. Der Gruppenabschluss erhält eine stärkere Linie.
+- Positionsgruppen werden nach Möglichkeit vollständig auf derselben PDF-Seite gehalten.
+- Abwärtskompatibel für bestehende Angebote, Aufträge und Rechnungen; keine Datenmigration.
+- WooCommerce-Plugin und HCA-Datenbank bleiben unverändert.
