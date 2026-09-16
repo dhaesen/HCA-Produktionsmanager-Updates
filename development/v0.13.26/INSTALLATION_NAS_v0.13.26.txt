@@ -1,0 +1,8 @@
+HCA NAS-Erweiterung v0.13.26
+
+1. Vorhandene NAS-Anwendung sichern.
+2. Den Inhalt dieses ZIP-Pakets über die bestehende HCA-NAS-Installation kopieren.
+3. Den HCA-Container beziehungsweise HCA-Dienst auf der Synology neu starten.
+4. Ein Angebot mit einem variablen Textil öffnen und die Dokumentenvorschau mit Artikeldatenblatt prüfen.
+
+Für dieses Update ist kein neues Clientupdate und keine Änderung am WooCommerce-Plugin erforderlich.

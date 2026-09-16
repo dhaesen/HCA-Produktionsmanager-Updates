@@ -387,3 +387,21 @@ Quellbranch: `codex/v0.13.25`
 3. Im Angebot eine Veredelung hinzufügen und danach die Menge ändern.
 4. Prüfen, dass Druckpreis, Einrichtungskosten und Bearbeitungskosten ohne Betätigung von „Shoppreise aktualisieren“ neu erscheinen.
 5. Danach je eine neue Auftrag- und Rechnungsposition öffnen und die identische Positionsmaske prüfen.
+
+# HCA NAS v0.13.26 – Textilbilder im Artikeldatenblatt (16.09.2026)
+
+- Ursache: Werbeartikel speichern ihre Farbbilder am Hauptartikel; variable Textilien speichern das jeweilige Bild dagegen an den WooCommerce-Varianten. Die PDF-Erzeugung wertete bisher nur die Hauptartikel-Farbliste zuverlässig aus.
+- Beim Erzeugen eines Artikeldatenblatts liest der NAS-Server für variable Textilien nun die Variantenbilder aus WooCommerce ein.
+- Varianten derselben Farbe und desselben Bildes werden zusammengeführt, damit Größenvarianten keine Bildduplikate erzeugen.
+- Alle eindeutigen Farbbilder werden im Bereich „Farbvarianten“ des weiterhin einseitigen Datenblatts ausgegeben.
+- Die Ergänzung funktioniert auch für ältere Angebote, weil die Bilder beim Erzeugen der PDF nachgeladen werden.
+- Der Bildabruf unterstützt typische WebP-/AVIF-Konvertierungen besser und probiert bei konvertierten Dateinamen zusätzlich das ursprüngliche JPEG-/PNG-Bild.
+- Lieferantendaten werden weiterhin nicht auf dem kundenseitigen Artikeldatenblatt ausgegeben; sichtbar bleibt ausschließlich Hersteller beziehungsweise Marke.
+- Client v0.13.25, WooCommerce-Plugin, Druckpreise, Angebotsberechnung und Datenbank bleiben unverändert.
+
+### Installation 0.13.26
+
+1. Vorhandene `app/hca_shared.py` auf dem NAS sichern.
+2. NAS-Erweiterung 0.13.26 über die bestehende NAS-Installation kopieren.
+3. HCA-Dienst beziehungsweise Container auf der Synology neu starten.
+4. Ein Angebot mit einem variablen Textil und Artikeldatenblatt in der Dokumentenvorschau prüfen.

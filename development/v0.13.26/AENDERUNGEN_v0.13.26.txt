@@ -1,0 +1,8 @@
+HCA NAS v0.13.26
+
+- Artikeldatenblätter laden bei variablen Textilien die Farbbilder jetzt direkt aus den WooCommerce-Varianten.
+- Bereits gespeicherte Angebote werden beim Erzeugen des Datenblatts ebenfalls ergänzt.
+- Doppelte Farb-/Bildkombinationen werden entfernt; alle eindeutigen Farbvarianten bleiben erhalten.
+- Bildabrufe verwenden kompatiblere HTTP-Header und versuchen bei konvertierten WebP-/AVIF-Dateinamen zusätzlich das Ursprungsbild.
+- Lieferantendaten werden weiterhin niemals auf dem kundenseitigen Artikeldatenblatt ausgegeben.
+- WooCommerce-Plugin, Druckpreise, Angebotsberechnung und Clientdateien werden nicht verändert.

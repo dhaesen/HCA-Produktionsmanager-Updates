@@ -1,0 +1,50 @@
+name: Build and publish HCA NAS v0.13.26
+on:
+  push:
+    branches: [codex/v0.13.26]
+    paths:
+      - .github/workflows/publish-v01326.yml
+      - development/v0.13.26/**
+      - PROJECT_STATUS.md
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch verified NAS base
+        run: |
+          set -euo pipefail
+          mkdir -p ../build
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.24/HCA_NAS_Erweiterung_v0.13.24.zip -o ../build/HCA_NAS_Erweiterung_v0.13.24.published.zip
+          printf '%s  %s\n' '88e294bedffc5b1839a7e69c291c9f2926b110ecd77c12cd24351c03c3936188' '../build/HCA_NAS_Erweiterung_v0.13.24.published.zip' | sha256sum -c -
+      - name: Test and build
+        run: |
+          set -euo pipefail
+          python -m py_compile development/v0.13.26/patch_server.py development/v0.13.26/build_v01326.py development/v0.13.26/test_server.py
+          python development/v0.13.26/test_server.py
+          python development/v0.13.26/build_v01326.py
+          (cd ../build && sha256sum -c HCA_NAS_Erweiterung_v0.13.26.sha256)
+          unzip -t ../build/HCA_NAS_Erweiterung_v0.13.26.zip
+      - name: Publish and verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.md <<'EOF'
+          HCA NAS v0.13.26
+
+          Artikeldatenblätter lesen die Farbbilder variabler Textilien jetzt aus den
+          WooCommerce-Varianten. Größenvarianten derselben Farbe werden dabei nicht
+          als Bildduplikate ausgegeben. Die Ergänzung gilt auch für ältere Angebote.
+
+          Der Bildabruf wurde für typische WebP-/AVIF-Konvertierungen robuster gemacht.
+          Lieferantendaten bleiben vom Kundendatenblatt ausgeschlossen. Client,
+          WooCommerce-Plugin, Preislogik und Datenbank werden nicht verändert.
+          EOF
+          gh release create v0.13.26 ../build/HCA_NAS_Erweiterung_v0.13.26.zip ../build/HCA_NAS_Erweiterung_v0.13.26.sha256 --repo dhaesen/HCA-Produktionsmanager-Updates --title 'HCA NAS 0.13.26' --notes-file /tmp/notes.md --prerelease
+          mkdir verify
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.26/HCA_NAS_Erweiterung_v0.13.26.zip -o verify/HCA_NAS_Erweiterung_v0.13.26.zip
+          cp ../build/HCA_NAS_Erweiterung_v0.13.26.sha256 verify/
+          (cd verify && sha256sum -c HCA_NAS_Erweiterung_v0.13.26.sha256)
