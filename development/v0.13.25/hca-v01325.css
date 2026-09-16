@@ -1,0 +1,29 @@
+/* HCA v0.13.25 · gemeinsame Positionsmaske und automatische Shoppreise */
+#businessOrderLines .business-quote-line,
+#financeInvoiceLines .business-quote-line {
+  margin-bottom: 18px;
+}
+
+.hca1325-price-status {
+  margin-left: auto;
+  padding: 5px 9px;
+  border-radius: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.hca1325-price-status.loading {
+  color: #804000;
+  background: #fff0dc;
+}
+
+.hca1325-price-status.ok {
+  color: #225d32;
+  background: #e4f4e8;
+}
+
+.hca1325-price-status.error {
+  color: #8b2222;
+  background: #fbe4e4;
+}

@@ -1,0 +1,62 @@
+name: Build and publish HCA v0.13.24
+on:
+  push:
+    branches: [codex/v0.13.2-development]
+    paths:
+      - .github/workflows/publish-v01324.yml
+      - development/v0.13.24/**
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: codex/v0.13.2-development
+      - name: Fetch verified bases
+        run: |
+          set -euo pipefail
+          mkdir -p ../build
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.23/HCA_Update_v0.13.23.hcaupdate -o ../build/HCA_Update_v0.13.23.hcaupdate
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.22/HCA_NAS_Erweiterung_v0.13.22.zip -o ../build/HCA_NAS_Erweiterung_v0.13.22.zip
+          printf '%s  %s\n' '3a23234dd98e76b3e7a2b3aee642a6b4f31ac7da9f0c7d2eaceff4268a103aa7' '../build/HCA_Update_v0.13.23.hcaupdate' | sha256sum -c -
+          printf '%s  %s\n' '6395bf13ce56aa17b497cd35ee3f6555fe374261d4320003b12eeea21833c51b' '../build/HCA_NAS_Erweiterung_v0.13.22.zip' | sha256sum -c -
+      - name: Test and build
+        run: |
+          set -euo pipefail
+          node --check development/v0.13.24/hca-v01324.js
+          node development/v0.13.24/test_client.js
+          node development/v0.13.24/test_runtime.js
+          python -m py_compile development/v0.13.24/patch_server.py development/v0.13.24/build_v01324.py development/v0.13.24/test_server.py
+          python development/v0.13.24/test_server.py
+          python development/v0.13.24/build_v01324.py
+          (cd ../build && sha256sum -c HCA_Update_v0.13.24.sha256 && sha256sum -c HCA_NAS_Erweiterung_v0.13.24.sha256)
+          unzip -t ../build/HCA_Update_v0.13.24.hcaupdate
+          unzip -t ../build/HCA_NAS_Erweiterung_v0.13.24.zip
+      - name: Publish and verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.md <<'EOF'
+          HCA v0.13.24
+
+          Produktionsaufträge aus Kundenaufträgen übernehmen die Lieferadresse nun
+          auch in die zentrale HCA-Versandverwaltung. In manuellen Produktionsaufträgen
+          sind Auftragsnummer und Kunde durchsuchbar und übernehmen die Lieferadresse.
+
+          Personalisierte Merch-/Einzelversandaufträge erhalten eine Größenübersicht,
+          die nächste Personalisierung samt Dateivorschlag sowie vier Maschinen- bzw.
+          Transferplatz-Slots. Die bestehende Fertigmeldung übernimmt weiterhin
+          Etikettendruck und Versandvorbereitung.
+
+          Zusätzlich werden die sichtbar gewordenen "\\n"-Zeichen am Fensterrand entfernt.
+          Das WooCommerce-Plugin wird nicht verändert.
+          EOF
+          gh release create v0.13.24 ../build/HCA_Update_v0.13.24.hcaupdate ../build/HCA_Update_v0.13.24.sha256 ../build/HCA_NAS_Erweiterung_v0.13.24.zip ../build/HCA_NAS_Erweiterung_v0.13.24.sha256 --repo dhaesen/HCA-Produktionsmanager-Updates --title 'HCA 0.13.24' --notes-file /tmp/notes.md --prerelease
+          mkdir verify
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.24/HCA_Update_v0.13.24.hcaupdate -o verify/HCA_Update_v0.13.24.hcaupdate
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.24/HCA_NAS_Erweiterung_v0.13.24.zip -o verify/HCA_NAS_Erweiterung_v0.13.24.zip
+          cp ../build/HCA_Update_v0.13.24.sha256 ../build/HCA_NAS_Erweiterung_v0.13.24.sha256 verify/
+          (cd verify && sha256sum -c HCA_Update_v0.13.24.sha256 && sha256sum -c HCA_NAS_Erweiterung_v0.13.24.sha256)

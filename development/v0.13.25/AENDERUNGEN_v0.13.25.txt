@@ -1,0 +1,9 @@
+HCA Produktionsmanager v0.13.25
+
+- Auftrag und Kundenrechnung verwenden wieder dieselbe vollständige Positionsmaske wie das Angebot.
+- Artikelsuche, Farbauswahl, Größen, mehrere Veredelungen, Druckpositionen, Verfahren und Preisaufschlüsselung sind dadurch in allen drei Belegarten einheitlich.
+- Beim Hinzufügen oder Entfernen einer Veredelung werden die WooCommerce-Shoppreise automatisch neu berechnet.
+- Änderungen an Menge, Größenmengen, Druckposition, Veredelungsart und Druckfarben lösen ebenfalls automatisch eine neue Kalkulation aus.
+- Die Schaltfläche „Shoppreise aktualisieren“ bleibt als manuelle Rückfallebene erhalten.
+- Die funktionierende Preiszuordnung aus v0.13.20/v0.13.21 bleibt unverändert.
+- WooCommerce-Plugin, NAS-Server und Datenbank werden nicht verändert.

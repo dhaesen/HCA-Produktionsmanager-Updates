@@ -1,0 +1,51 @@
+name: Build and publish HCA client v0.13.25
+on:
+  push:
+    branches: [codex/v0.13.25]
+    paths:
+      - .github/workflows/publish-v01325.yml
+      - development/v0.13.25/**
+      - PROJECT_STATUS.md
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch verified base package
+        run: |
+          set -euo pipefail
+          mkdir -p ../build
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.24/HCA_Update_v0.13.24.hcaupdate -o ../build/HCA_Update_v0.13.24.hcaupdate
+          printf '%s  %s\n' 'ff7205ba5bf70b2eefd70edbc72b7858d0d19bf4ed69f78c7d060e370e451a8c' '../build/HCA_Update_v0.13.24.hcaupdate' | sha256sum -c -
+      - name: Build and test
+        run: |
+          set -euo pipefail
+          node --check development/v0.13.25/hca-v01325.js
+          node development/v0.13.25/test_client.js
+          python -m py_compile development/v0.13.25/build_v01325.py
+          python development/v0.13.25/build_v01325.py
+          (cd ../build && sha256sum -c HCA_Update_v0.13.25.sha256)
+          unzip -t ../build/HCA_Update_v0.13.25.hcaupdate
+      - name: Publish and verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.md <<'EOF'
+          HCA Client v0.13.25
+
+          Auftrag und Kundenrechnung verwenden wieder dieselbe vollständige
+          Positionsmaske wie das Angebot. Veredelungspreise werden beim Hinzufügen
+          einer Veredelung sowie bei Änderungen von Menge, Größenmenge,
+          Druckposition, Veredelungsart und Druckfarben automatisch neu geladen.
+
+          „Shoppreise aktualisieren“ bleibt als manuelle Rückfallebene erhalten.
+          WooCommerce-Plugin, NAS-Server und Datenbank werden nicht verändert.
+          EOF
+          gh release create v0.13.25 ../build/HCA_Update_v0.13.25.hcaupdate ../build/HCA_Update_v0.13.25.sha256 --repo dhaesen/HCA-Produktionsmanager-Updates --title 'HCA Client 0.13.25' --notes-file /tmp/notes.md --prerelease
+          mkdir verify
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.25/HCA_Update_v0.13.25.hcaupdate -o verify/HCA_Update_v0.13.25.hcaupdate
+          cp ../build/HCA_Update_v0.13.25.sha256 verify/
+          (cd verify && sha256sum -c HCA_Update_v0.13.25.sha256)
