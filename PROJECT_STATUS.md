@@ -348,3 +348,24 @@ Quellbranch: `codex/v0.13.2-development`
 - Der Schalter kann wieder deaktiviert werden; die Position wird dann erneut regulär summiert.
 - Festgeschriebene Angebote bleiben unveränderbar.
 - WooCommerce-Plugin, NAS-Server und Datenbank bleiben unverändert.
+
+# HCA v0.13.24 – Lieferadressen und personalisierte Serienproduktion (16.09.2026)
+
+- Aus Kundenaufträgen erzeugte Produktionsaufträge übernehmen die dort gespeicherte Lieferadresse nun auch in die zentrale HCA-Versandverwaltung.
+- Bei manuell angelegten Produktionsaufträgen sind „Auftragsnummer“ und „Kunde“ durchsuchbare Eingabefelder mit Trefferliste.
+- Die Auswahl eines Kunden übernimmt dessen Standardlieferadresse; die Auswahl eines Auftrags übernimmt dessen Lieferadress-Snapshot und zugehörigen Kunden.
+- Drei versehentlich als Text ausgelieferte `\n`-Zeichenfolgen werden aus `index.html` entfernt.
+- Merch-, Einzelversand- und anderweitig personalisierte Produktionsaufträge erhalten eine eigene Serienansicht mit Fertig-/Offen-Zahlen je Größe.
+- Nach Auswahl einer Größe wird das nächste offene Textil mit Personalisierung/Standort und vorgeschlagenem Dateinamen angezeigt.
+- Vier Maschinen- beziehungsweise Transferplatz-Slots zeigen die aktuell laufenden Textilien.
+- Erfolgreiche Stickdateiübertragungen werden dem gewählten Maschinenslot zugeordnet.
+- Ein Klick auf einen belegten Slot verwendet die bestehende Fertigmeldelogik einschließlich Artikeletikett und Versandvorbereitung.
+- Standort- und Teamnamen werden pro physischem Textil im vorhandenen Personalisierungsfeld gespeichert. Damit sind beispielsweise drei Textilien „Berlin“ und vier Textilien „Köln“ getrennt nachvollziehbar.
+- Das WooCommerce-Plugin wird nicht verändert.
+
+### Installation 0.13.24
+
+1. Vorhandene `app/hca_shared.py` auf dem NAS sichern.
+2. NAS-Erweiterung 0.13.24 installieren und den NAS-Dienst/Container neu starten.
+3. Clientupdate 0.13.24 einspielen.
+4. HCA vollständig schließen und manuell neu starten.

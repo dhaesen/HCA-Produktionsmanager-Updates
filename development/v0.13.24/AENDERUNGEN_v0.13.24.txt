@@ -1,0 +1,12 @@
+HCA Produktionsmanager v0.13.24
+
+- Produktionsaufträge aus Kundenaufträgen übernehmen die Lieferadresse in die zentrale Versandverwaltung.
+- Bei manuellen Produktionsaufträgen sind Auftragsnummer und Kunde durchsuchbar.
+- Die Auswahl eines Auftrags oder Kunden übernimmt dessen Standardlieferadresse.
+- Die irrtümlich sichtbare Zeichenfolge "\\n" am oberen Fensterrand wurde entfernt.
+- Merch-, Einzelversand- und personalisierte Aufträge erhalten eine Größen-/Serienansicht.
+- Vier Maschinen- beziehungsweise Transferplatz-Felder zeigen laufende Textilien.
+- Fertigmelden am Platz nutzt den bestehenden Ablauf für Etikettendruck und Versandvorbereitung.
+- Personalisierungen können auch als Standort-/Teamname (z. B. Berlin oder Köln) geführt werden.
+
+Wichtig: Client- und NAS-Paket dieser Version gemeinsam installieren.

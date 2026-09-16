@@ -1,0 +1,9 @@
+HCA NAS-Erweiterung v0.13.24
+
+1. Vorhandene app/hca_shared.py sichern.
+2. app/hca_shared.py aus diesem Paket ersetzen.
+3. HCA-Produktionsserver/Docker-Container neu starten.
+4. Danach das HCA-Clientupdate v0.13.24 installieren und HCA neu starten.
+
+Die bestehende Datenbank wird nicht gelöscht oder zurückgesetzt.
+

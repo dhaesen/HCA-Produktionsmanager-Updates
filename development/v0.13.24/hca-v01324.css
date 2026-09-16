@@ -1,0 +1,23 @@
+/* HCA v0.13.24 · Produktionsauftragssuche und Serienmonitor */
+.hca1324-search-field{position:relative}
+.hca1324-search-results{position:absolute;z-index:1200;left:0;right:0;top:calc(100% + 4px);max-height:280px;overflow:auto;padding:6px;background:#fff;border:1px solid #b8b8b2;border-radius:10px;box-shadow:0 14px 34px rgba(0,0,0,.18)}
+.hca1324-search-result{display:flex;width:100%;flex-direction:column;gap:3px;padding:10px 12px;border:0;border-radius:7px;background:#fff;color:#191919;text-align:left;cursor:pointer}
+.hca1324-search-result:hover,.hca1324-search-result:focus{background:#fff1ea;outline:2px solid #ee4b16}
+.hca1324-search-result span,.hca1324-search-empty{font-size:.82rem;color:#686861}
+.hca1324-search-empty{padding:12px}
+.hca1324-series{display:grid;gap:18px}
+.hca1324-size-overview,.hca1324-next,.hca1324-machine-board{padding:18px;border:1px solid #d7d7d1;border-radius:14px;background:#fff}
+.hca1324-section-title h3,.hca1324-next h3{margin:3px 0 10px}
+.hca1324-size-buttons{display:flex;flex-wrap:wrap;gap:10px}
+.hca1324-size-buttons button{display:flex;min-width:130px;flex-direction:column;gap:4px;padding:13px 16px;border:2px solid #c5c5bf;border-radius:11px;background:#f4f4f1;color:#1d1d1b;text-align:left;cursor:pointer}
+.hca1324-size-buttons button:hover,.hca1324-size-buttons button.active{border-color:#ee4b16;background:#fff1ea}
+.hca1324-size-buttons button:disabled{opacity:.55;cursor:default}
+.hca1324-size-buttons button strong{font-size:1.2rem}.hca1324-size-buttons button span{font-size:.82rem}
+.hca1324-next{display:grid;grid-template-columns:minmax(0,1fr) minmax(260px,420px);gap:18px;align-items:center}
+.hca1324-next p{margin:0 0 12px;color:#55554f}
+.hca1324-file{display:flex;flex-direction:column;gap:3px;padding:10px 12px;border-left:4px solid #ee4b16;background:#f4f4f1}.hca1324-file span{font-size:.75rem;color:#65655f}.hca1324-file strong{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.hca1324-start-buttons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.hca1324-start-buttons button{padding:13px 10px;border:0;border-radius:9px;background:#ee4b16;color:#fff;font-weight:800;cursor:pointer}.hca1324-start-buttons button:disabled{background:#c7c7c1;color:#74746f;cursor:not-allowed}
+.hca1324-machine-board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;background:#20201e}
+.hca1324-machine-slot{display:flex;min-height:150px;flex-direction:column;gap:8px;padding:14px;border:2px solid #50504b;border-radius:12px;background:#2d2d29;color:#fff;text-align:left}.hca1324-machine-slot>span{font-size:.78rem;font-weight:800;color:#ff7a45;text-transform:uppercase}.hca1324-machine-slot strong{font-size:1.02rem}.hca1324-machine-slot small{color:#d1d1ca}.hca1324-machine-slot em{margin-top:auto;font-size:.75rem;font-style:normal;color:#ffd1bf}.hca1324-machine-slot.occupied{border-color:#ee4b16;cursor:pointer}.hca1324-machine-slot.occupied:hover{background:#383832}
+.hca1324-empty{grid-column:1/-1;padding:12px;color:#66665f}
+@media(max-width:1050px){.hca1324-next{grid-template-columns:1fr}.hca1324-machine-board{grid-template-columns:repeat(2,minmax(0,1fr))}}
