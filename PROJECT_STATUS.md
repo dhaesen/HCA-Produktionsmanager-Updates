@@ -424,3 +424,10 @@ Quellbranch: `codex/v0.13.25`
 3. Clientupdate 0.13.27 einspielen.
 4. HCA vollständig schließen und manuell neu starten.
 5. Ein Textilangebot mit aktiviertem Artikeldatenblatt öffnen und die Dokumentenvorschau erzeugen. Der erste Lauf baut den Bildcache auf; weitere Vorschauen verwenden diesen Cache.
+
+### Prüfsummen-Korrektur 0.13.27
+
+- Der erste Release enthielt sowohl für das Clientupdate als auch für die NAS-Erweiterung eine Datei mit der Endung `.sha256`.
+- Der bestehende HCA-Updater unterscheidet diese Prüfsummendateien nicht zuverlässig und konnte deshalb die NAS-Prüfsumme gegen das Clientupdate prüfen.
+- Im Release bleibt künftig ausschließlich die Client-Prüfsumme als `.sha256` erhalten. Die NAS-Prüfsumme wird als `HCA_NAS_Erweiterung_v0.13.27_CHECKSUM.txt` veröffentlicht.
+- Client- und NAS-Paket selbst werden durch diese Korrektur nicht verändert.

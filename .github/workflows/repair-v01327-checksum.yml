@@ -1,0 +1,32 @@
+name: Repair HCA v0.13.27 checksum assets
+on:
+  push:
+    branches: [codex/v0.13.27]
+    paths:
+      - .github/workflows/repair-v01327-checksum.yml
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Remove ambiguous NAS .sha256 asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hca-release
+          gh release download v0.13.27 --repo dhaesen/HCA-Produktionsmanager-Updates --pattern 'HCA_NAS_Erweiterung_v0.13.27.sha256' --dir /tmp/hca-release
+          mv /tmp/hca-release/HCA_NAS_Erweiterung_v0.13.27.sha256 /tmp/hca-release/HCA_NAS_Erweiterung_v0.13.27_CHECKSUM.txt
+          gh release delete-asset v0.13.27 HCA_NAS_Erweiterung_v0.13.27.sha256 --repo dhaesen/HCA-Produktionsmanager-Updates --yes
+          gh release upload v0.13.27 /tmp/hca-release/HCA_NAS_Erweiterung_v0.13.27_CHECKSUM.txt --repo dhaesen/HCA-Produktionsmanager-Updates --clobber
+      - name: Verify unambiguous client checksum
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/hca-verify
+          gh release download v0.13.27 --repo dhaesen/HCA-Produktionsmanager-Updates --pattern 'HCA_Update_v0.13.27.hcaupdate' --dir /tmp/hca-verify
+          gh release download v0.13.27 --repo dhaesen/HCA-Produktionsmanager-Updates --pattern 'HCA_Update_v0.13.27.sha256' --dir /tmp/hca-verify
+          (cd /tmp/hca-verify && sha256sum -c HCA_Update_v0.13.27.sha256)
+          test "$(gh release view v0.13.27 --repo dhaesen/HCA-Produktionsmanager-Updates --json assets --jq '[.assets[].name | select(endswith(".sha256"))] | length')" = 1

@@ -37,6 +37,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
+          cp ../build/HCA_NAS_Erweiterung_v0.13.27.sha256 ../build/HCA_NAS_Erweiterung_v0.13.27_CHECKSUM.txt
           cat > /tmp/notes.md <<'EOF'
           HCA v0.13.27
 
@@ -51,10 +52,10 @@ jobs:
 
           WooCommerce-Plugin, Druckpreise, Produktdaten und Datenbank bleiben unverändert.
           EOF
-          gh release create v0.13.27 ../build/HCA_Update_v0.13.27.hcaupdate ../build/HCA_Update_v0.13.27.sha256 ../build/HCA_NAS_Erweiterung_v0.13.27.zip ../build/HCA_NAS_Erweiterung_v0.13.27.sha256 --repo dhaesen/HCA-Produktionsmanager-Updates --title 'HCA 0.13.27' --notes-file /tmp/notes.md --prerelease
+          gh release create v0.13.27 ../build/HCA_Update_v0.13.27.hcaupdate ../build/HCA_Update_v0.13.27.sha256 ../build/HCA_NAS_Erweiterung_v0.13.27.zip ../build/HCA_NAS_Erweiterung_v0.13.27_CHECKSUM.txt --repo dhaesen/HCA-Produktionsmanager-Updates --title 'HCA 0.13.27' --notes-file /tmp/notes.md --prerelease
           mkdir verify
           for name in HCA_Update_v0.13.27.hcaupdate HCA_NAS_Erweiterung_v0.13.27.zip; do
             curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.27/$name" -o "verify/$name"
           done
-          cp ../build/HCA_Update_v0.13.27.sha256 ../build/HCA_NAS_Erweiterung_v0.13.27.sha256 verify/
-          (cd verify && sha256sum -c HCA_Update_v0.13.27.sha256 && sha256sum -c HCA_NAS_Erweiterung_v0.13.27.sha256)
+          cp ../build/HCA_Update_v0.13.27.sha256 ../build/HCA_NAS_Erweiterung_v0.13.27_CHECKSUM.txt verify/
+          (cd verify && sha256sum -c HCA_Update_v0.13.27.sha256 && sha256sum -c HCA_NAS_Erweiterung_v0.13.27_CHECKSUM.txt)
