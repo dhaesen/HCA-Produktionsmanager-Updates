@@ -1,0 +1,60 @@
+name: Build and publish HCA v0.13.27
+on:
+  push:
+    branches: [codex/v0.13.27]
+    paths:
+      - .github/workflows/publish-v01327.yml
+      - development/v0.13.27/**
+      - PROJECT_STATUS.md
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch verified bases
+        run: |
+          set -euo pipefail
+          mkdir -p ../build
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.25/HCA_Update_v0.13.25.hcaupdate -o ../build/HCA_Update_v0.13.25.hcaupdate
+          printf '%s  %s\n' '64f94582b2c794f911976863c97d6cf44f3c770171f558429a9d10f3dae1f07a' '../build/HCA_Update_v0.13.25.hcaupdate' | sha256sum -c -
+          curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.26/HCA_NAS_Erweiterung_v0.13.26.zip -o ../build/HCA_NAS_Erweiterung_v0.13.26.zip
+          printf '%s  %s\n' '91d8cd2b1cba9b345f19a36b010b40e42b173aa0ad28e2de43179df0c24e336e' '../build/HCA_NAS_Erweiterung_v0.13.26.zip' | sha256sum -c -
+      - name: Test and build
+        run: |
+          set -euo pipefail
+          python -m py_compile development/v0.13.27/patch_server.py development/v0.13.27/build_v01327.py development/v0.13.27/test_server.py
+          node --check development/v0.13.27/hca-v01327.js
+          node development/v0.13.27/test_client.js
+          python development/v0.13.27/test_server.py
+          python development/v0.13.27/build_v01327.py
+          (cd ../build && sha256sum -c HCA_Update_v0.13.27.sha256 && sha256sum -c HCA_NAS_Erweiterung_v0.13.27.sha256)
+          unzip -t ../build/HCA_Update_v0.13.27.hcaupdate
+          unzip -t ../build/HCA_NAS_Erweiterung_v0.13.27.zip
+      - name: Publish and verify
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          cat > /tmp/notes.md <<'EOF'
+          HCA v0.13.27
+
+          Behebt die extrem langsame Dokumentvorschau und fehlende Textilbilder aus
+          NAS v0.13.26. WebP-/AVIF-Bilder werden im Client PDF-tauglich konvertiert,
+          auf der NAS zwischengespeichert und bei späteren Vorschauen direkt aus dem
+          Cache geladen. Nur die auf dem einseitigen Datenblatt tatsächlich sichtbaren
+          Bilder werden verarbeitet.
+
+          Installationsreihenfolge: zuerst NAS-Erweiterung installieren und den
+          Container neu starten, danach das Clientupdate einspielen und HCA neu starten.
+
+          WooCommerce-Plugin, Druckpreise, Produktdaten und Datenbank bleiben unverändert.
+          EOF
+          gh release create v0.13.27 ../build/HCA_Update_v0.13.27.hcaupdate ../build/HCA_Update_v0.13.27.sha256 ../build/HCA_NAS_Erweiterung_v0.13.27.zip ../build/HCA_NAS_Erweiterung_v0.13.27.sha256 --repo dhaesen/HCA-Produktionsmanager-Updates --title 'HCA 0.13.27' --notes-file /tmp/notes.md --prerelease
+          mkdir verify
+          for name in HCA_Update_v0.13.27.hcaupdate HCA_NAS_Erweiterung_v0.13.27.zip; do
+            curl -fL --retry 5 "https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.27/$name" -o "verify/$name"
+          done
+          cp ../build/HCA_Update_v0.13.27.sha256 ../build/HCA_NAS_Erweiterung_v0.13.27.sha256 verify/
+          (cd verify && sha256sum -c HCA_Update_v0.13.27.sha256 && sha256sum -c HCA_NAS_Erweiterung_v0.13.27.sha256)

@@ -1,0 +1,11 @@
+HCA v0.13.27
+
+- Der 54-Sekunden-Hänger der Dokumentenvorschau aus v0.13.26 ist beseitigt.
+- Die PDF-Erzeugung führt keine umfangreichen WooCommerce-Variantenabfragen mehr synchron aus.
+- Externe Bilder haben nur noch einen kurzen Einzelversuch statt mehrerer 12-Sekunden-Versuche.
+- WebP-/AVIF-Textilbilder werden im WebView2-Client in PDF-kompatible JPEG-Bilder umgewandelt.
+- Konvertierte Bilder werden auf der NAS zwischengespeichert und stehen danach auch gespeicherten PDFs zur Verfügung.
+- Der Client verarbeitet nur die Bilder, die auf der einseitigen PDF tatsächlich erscheinen; unnötige Größen- und Variantendubletten werden nicht geladen.
+- Bereits konvertierte Bilder kommen bei späteren Vorschauen direkt aus dem NAS-Cache.
+- Defekte oder nicht erreichbare Einzelbilder blockieren die Dokumentvorschau nicht mehr.
+- WooCommerce-Plugin, Produktdaten, Druckpreise und Angebotsberechnung bleiben unverändert.

@@ -1,0 +1,10 @@
+HCA v0.13.27 – Installation
+
+1. Vorhandene app/hca_shared.py auf der NAS sichern.
+2. NAS-Erweiterung v0.13.27 über die bestehende HCA-NAS-Installation kopieren.
+3. HCA-Dienst beziehungsweise Container neu starten.
+4. Clientupdate v0.13.27 in HCA einspielen.
+5. HCA vollständig schließen und manuell neu starten.
+6. Das Textilangebot öffnen und die Dokumentenvorschau erneut erzeugen.
+
+Reihenfolge unbedingt einhalten: zuerst NAS, danach Client.

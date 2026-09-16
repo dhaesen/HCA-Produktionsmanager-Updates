@@ -405,3 +405,22 @@ Quellbranch: `codex/v0.13.25`
 2. NAS-Erweiterung 0.13.26 über die bestehende NAS-Installation kopieren.
 3. HCA-Dienst beziehungsweise Container auf der Synology neu starten.
 4. Ein Angebot mit einem variablen Textil und Artikeldatenblatt in der Dokumentenvorschau prüfen.
+
+# HCA v0.13.27 – schnelle und kompatible Textilbilder (16.09.2026)
+
+- Das Containerprotokoll belegt für v0.13.26 einen Vorschauaufruf von rund 54 Sekunden. Ursache waren synchrone WooCommerce-Variantenabfragen und mehrere nacheinander ausgeführte Bildabrufe.
+- Die PDF-Erzeugung fragt beim Vorschauaufbau keine WooCommerce-Varianten mehr live ab. Sie verwendet die bereits im Angebotseditor geladenen und gespeicherten Produktdetails.
+- WebP-/AVIF-Textilbilder werden im WebView2-Client in PDF-kompatible JPEGs umgewandelt.
+- Die JPEGs werden persistent unter `/data/hca_datasheet_images` auf der NAS zwischengespeichert. Spätere Vorschauen verwenden den Cache direkt.
+- Verarbeitet werden nur Hauptbild, höchstens fünf tatsächlich dargestellte Galeriebilder, die eindeutigen Farbvarianten und die dargestellten Veredelungsbilder. Unbenutzte Größen- und Variantendubletten werden nicht geladen.
+- Ein nicht erreichbares Einzelbild blockiert die Dokumentenvorschau nicht mehr; externe Bildabrufe besitzen kurze feste Zeitgrenzen.
+- Lieferantendaten bleiben im Kundendatenblatt ausgeschlossen.
+- WooCommerce-Plugin, Druckpreislogik, Produktdaten und HCA-Datenbank werden nicht verändert.
+
+### Installation 0.13.27
+
+1. Vorhandene `app/hca_shared.py` auf der NAS sichern.
+2. NAS-Erweiterung 0.13.27 installieren und den HCA-Container neu starten.
+3. Clientupdate 0.13.27 einspielen.
+4. HCA vollständig schließen und manuell neu starten.
+5. Ein Textilangebot mit aktiviertem Artikeldatenblatt öffnen und die Dokumentenvorschau erzeugen. Der erste Lauf baut den Bildcache auf; weitere Vorschauen verwenden diesen Cache.
