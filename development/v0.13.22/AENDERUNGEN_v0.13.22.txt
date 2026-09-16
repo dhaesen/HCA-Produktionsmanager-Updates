@@ -1,0 +1,10 @@
+HCA Produktionsmanager v0.13.22
+
+- Der Bereich „Mengenstaffel“ und automatisch erzeugte Mengenoptionen wurden entfernt.
+- Das normale Mengenfeld jeder Position bleibt unverändert erhalten.
+- Produkt, Veredelung, Einrichtung und Bearbeitung bilden im PDF eine Positionsgruppe.
+- Unterpositionen werden als 1.1, 1.2, 1.3 usw. nummeriert.
+- Zwischen Unterpositionen derselben Gruppe gibt es keine waagerechte Tabellenlinie.
+- Erst die nächste Produkt- oder Textgruppe erhält einen neuen umschlossenen Tabellenblock.
+- Alte Angebote werden ohne Datenmigration in der neuen Gruppendarstellung ausgegeben.
+- Das WooCommerce-Plugin wird nicht verändert.
