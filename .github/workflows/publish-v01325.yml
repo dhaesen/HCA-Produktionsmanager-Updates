@@ -18,7 +18,7 @@ jobs:
           set -euo pipefail
           mkdir -p ../build
           curl -fL --retry 5 https://github.com/dhaesen/HCA-Produktionsmanager-Updates/releases/download/v0.13.24/HCA_Update_v0.13.24.hcaupdate -o ../build/HCA_Update_v0.13.24.hcaupdate
-          printf '%s  %s\n' 'ff7205ba5bf70b2eefd70edbc72b7858d0d19bf4ed69f78c7d060e370e451a8c' '../build/HCA_Update_v0.13.24.hcaupdate' | sha256sum -c -
+          printf '%s  %s\n' '90b4130f4f72f2bff60f55ff4bd42e0ea9c25d2750216fdff32622916477c551' '../build/HCA_Update_v0.13.24.hcaupdate' | sha256sum -c -
       - name: Build and test
         run: |
           set -euo pipefail
