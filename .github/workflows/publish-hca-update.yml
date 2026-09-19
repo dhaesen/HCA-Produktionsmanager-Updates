@@ -5,6 +5,7 @@ on:
     paths:
       - "incoming/*.hcaupdate"
       - "incoming/*.hcaupdate.b64part.*"
+      - "incoming/*.zip.b64part.*"
   workflow_dispatch:
 
 permissions:
@@ -64,16 +65,23 @@ jobs:
           TAG="v${VERSION#v}"
           BASENAME="$(basename "$FILE")"
           SHA_FILE="/tmp/${BASENAME%.hcaupdate}.sha256"
-          sha256sum "$FILE" | sed "s#  $FILE#  $BASENAME#" > "$SHA_FILE"
+          sha256sum "$FILE" | awk '{print $1}' > "$SHA_FILE"
 
-          NAS_FILE="incoming/HCA_NAS_Patch_v${VERSION#v}.zip"
+          NAS_BASE="incoming/HCA_NAS_Patch_v${VERSION#v}.zip"
+          NAS_FILE="$NAS_BASE"
           NAS_SHA_FILE=""
           if [ -f "$NAS_FILE" ]; then
-            NAS_BASENAME="$(basename "$NAS_FILE")"
-            NAS_SHA_FILE="/tmp/${NAS_BASENAME%.zip}.sha256"
-            sha256sum "$NAS_FILE" | sed "s#  $NAS_FILE#  $NAS_BASENAME#" > "$NAS_SHA_FILE"
+            :
+          elif compgen -G "${NAS_BASE}.b64part.*" >/dev/null; then
+            NAS_FILE="/tmp/$(basename "$NAS_BASE")"
+            cat "${NAS_BASE}.b64part."* > "$NAS_FILE"
           else
             NAS_FILE=""
+          fi
+
+          if [ -n "$NAS_FILE" ] && [ -f "$NAS_FILE" ]; then
+            NAS_SHA_FILE="/tmp/$(basename "${NAS_FILE%.zip}").sha256"
+            sha256sum "$NAS_FILE" | awk '{print $1}' > "$NAS_SHA_FILE"
           fi
 
           echo "file=$FILE" >> "$GITHUB_OUTPUT"
