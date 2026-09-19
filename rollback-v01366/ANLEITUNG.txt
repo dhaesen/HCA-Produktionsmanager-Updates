@@ -1,0 +1,20 @@
+HCA NOTFALL-ROLLBACK AUF v0.13.66
+================================
+
+Dieses Paket stellt den letzten funktionierenden Programmstand vor v0.13.67 wieder her.
+
+1. ZIP vollstaendig in einen neuen Ordner entpacken.
+2. HCA_ROLLBACK_STARTEN.cmd doppelt anklicken.
+3. Das Skript beendet HCA, sichert den jetzigen Stand, stellt v0.13.66 wieder her und startet HCA neu.
+
+NICHT VERAENDERT WERDEN:
+- config.json
+- data und Datenbank
+- Dokumente und Anhaenge
+- NAS- und Docker-Konfiguration
+- HCA_Backend.exe
+
+Der aktuelle Programmstand und der WebView2-Zwischenspeicher werden vor dem Rollback unter folgendem Pfad gesichert:
+%LOCALAPPDATA%\HCA Produktionsmanager\rollback\
+
+Nach erfolgreichem Start kein Update auf v0.13.67 oder v0.13.68 installieren.

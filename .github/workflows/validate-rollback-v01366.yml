@@ -1,0 +1,46 @@
+name: Validate emergency rollback v0.13.66
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'rollback-v01366/**'
+      - '.github/workflows/validate-rollback-v01366.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate-powershell:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Parse rollback script with Windows PowerShell
+        shell: powershell
+        run: |
+          $tokens = $null
+          $errors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            (Resolve-Path 'rollback-v01366/ROLLBACK.ps1'),
+            [ref]$tokens,
+            [ref]$errors
+          ) | Out-Null
+          if ($errors.Count -gt 0) {
+            $errors | ForEach-Object { Write-Error $_.Message }
+            throw "Rollback script contains $($errors.Count) parser error(s)."
+          }
+          Write-Host 'ROLLBACK.ps1 parser validation passed.'
+
+      - name: Verify protected paths are absent from payload source
+        shell: powershell
+        run: |
+          $script = Get-Content 'rollback-v01366/ROLLBACK.ps1' -Raw
+          if ($script -notmatch "config\.json" -or $script -notmatch "data\\") {
+            throw 'Rollback protection checks are missing.'
+          }
+          if ($script -match 'Read-Host') {
+            throw 'Rollback must not use manual text path input.'
+          }
+          Write-Host 'Rollback safety guards passed.'
