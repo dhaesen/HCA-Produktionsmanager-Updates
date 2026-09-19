@@ -66,9 +66,21 @@ jobs:
           SHA_FILE="/tmp/${BASENAME%.hcaupdate}.sha256"
           sha256sum "$FILE" | sed "s#  $FILE#  $BASENAME#" > "$SHA_FILE"
 
+          NAS_FILE="incoming/HCA_NAS_Patch_v${VERSION#v}.zip"
+          NAS_SHA_FILE=""
+          if [ -f "$NAS_FILE" ]; then
+            NAS_BASENAME="$(basename "$NAS_FILE")"
+            NAS_SHA_FILE="/tmp/${NAS_BASENAME%.zip}.sha256"
+            sha256sum "$NAS_FILE" | sed "s#  $NAS_FILE#  $NAS_BASENAME#" > "$NAS_SHA_FILE"
+          else
+            NAS_FILE=""
+          fi
+
           echo "file=$FILE" >> "$GITHUB_OUTPUT"
           echo "basename=$BASENAME" >> "$GITHUB_OUTPUT"
           echo "sha_file=$SHA_FILE" >> "$GITHUB_OUTPUT"
+          echo "nas_file=$NAS_FILE" >> "$GITHUB_OUTPUT"
+          echo "nas_sha_file=$NAS_SHA_FILE" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           {
@@ -82,6 +94,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           FILE: ${{ steps.update.outputs.file }}
           SHA_FILE: ${{ steps.update.outputs.sha_file }}
+          NAS_FILE: ${{ steps.update.outputs.nas_file }}
+          NAS_SHA_FILE: ${{ steps.update.outputs.nas_sha_file }}
           TAG: ${{ steps.update.outputs.tag }}
           VERSION: ${{ steps.update.outputs.version }}
           DESCRIPTION: ${{ steps.update.outputs.description }}
@@ -89,15 +103,24 @@ jobs:
         run: |
           set -euo pipefail
           NOTES="/tmp/hca_release_notes.md"
-          printf '## HCA Produktionsmanager %s\n\n%s\n\n### Installation\nDer HCA Produktionsmanager erkennt dieses Stable-Update automatisch. Alternativ kann die `.hcaupdate` weiterhin manuell unter Einstellungen → Update einspielen installiert werden.\n' "$VERSION" "$DESCRIPTION" > "$NOTES"
+          printf '## HCA Produktionsmanager %s\n\n%s\n\n### Installation\nDer HCA Produktionsmanager erkennt dieses Stable-Update automatisch. Alternativ kann die `.hcaupdate` weiterhin manuell unter Einstellungen → Update einspielen installiert werden. Falls ein NAS-Patch beigefügt ist, zuerst dessen Anleitung beachten und danach das Desktop-Update installieren.\n' "$VERSION" "$DESCRIPTION" > "$NOTES"
 
-          if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" "$FILE" "$SHA_FILE" --clobber
-            gh release edit "$TAG" --title "HCA Produktionsmanager $VERSION" --notes-file "$NOTES" --latest
-          else
-            gh release create "$TAG" "$FILE" "$SHA_FILE" --title "HCA Produktionsmanager $VERSION" --notes-file "$NOTES" --latest
+          ASSETS=("$FILE" "$SHA_FILE")
+          if [ -n "$NAS_FILE" ] && [ -f "$NAS_FILE" ]; then
+            ASSETS+=("$NAS_FILE" "$NAS_SHA_FILE")
           fi
 
-      - name: Prüfsumme anzeigen
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" "${ASSETS[@]}" --clobber
+            gh release edit "$TAG" --title "HCA Produktionsmanager $VERSION" --notes-file "$NOTES" --latest
+          else
+            gh release create "$TAG" "${ASSETS[@]}" --title "HCA Produktionsmanager $VERSION" --notes-file "$NOTES" --latest
+          fi
+
+      - name: Prüfsummen anzeigen
         shell: bash
-        run: cat "${{ steps.update.outputs.sha_file }}"
+        run: |
+          cat "${{ steps.update.outputs.sha_file }}"
+          if [ -n "${{ steps.update.outputs.nas_sha_file }}" ]; then
+            cat "${{ steps.update.outputs.nas_sha_file }}"
+          fi
