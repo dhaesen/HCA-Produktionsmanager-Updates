@@ -38,7 +38,7 @@ namespace HcaWindowsHost
         {
             try
             {
-                Log("Programmstart v0.13.68.2 (Launcher-Hotfix)");
+                Log("Programmstart v0.13.68.4 (Launcher-Hotfix)");
                 var app = new Application { ShutdownMode = ShutdownMode.OnMainWindowClose };
                 bool created;
                 _mutex = new Mutex(true, "Local\\HCA-Produktionsmanager", out created);
@@ -221,9 +221,17 @@ namespace HcaWindowsHost
                 await _webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync(
                     @"(function(){var s=document.createElement('style');s.id='hca-native-splash-suppression';s.textContent='#hcaStartupSplash{display:none!important}';document.documentElement.appendChild(s);})();");
 
+                var contentReady = new TaskCompletionSource<bool>();
                 var navigation = new TaskCompletionSource<bool>();
                 CoreWebView2WebErrorStatus? navigationError = null;
+                EventHandler<CoreWebView2DOMContentLoadedEventArgs> contentHandler = null;
                 EventHandler<CoreWebView2NavigationCompletedEventArgs> completedHandler = null;
+                contentHandler = (sender, args) =>
+                {
+                    _webView.CoreWebView2.DOMContentLoaded -= contentHandler;
+                    Program.Log("WebView2 DOMContentLoaded: Oberfläche kann eingeblendet werden.");
+                    contentReady.TrySetResult(true);
+                };
                 completedHandler = (sender, args) =>
                 {
                     _webView.CoreWebView2.NavigationCompleted -= completedHandler;
@@ -232,18 +240,23 @@ namespace HcaWindowsHost
                         (navigationError.HasValue ? ", status=" + navigationError.Value : string.Empty));
                     navigation.TrySetResult(args.IsSuccess);
                 };
+                _webView.CoreWebView2.DOMContentLoaded += contentHandler;
                 _webView.CoreWebView2.NavigationCompleted += completedHandler;
                 SetStartupProgress(88, "Arbeitsbereiche werden geladen …");
                 _webView.Source = new Uri("http://127.0.0.1:" + _port + "/");
-                var finished = await Task.WhenAny(navigation.Task, Task.Delay(TimeSpan.FromSeconds(120)));
-                if (finished != navigation.Task)
+                var displayGuard = Task.Delay(TimeSpan.FromSeconds(8));
+                var finished = await Task.WhenAny(contentReady.Task, navigation.Task, displayGuard);
+                if (finished == navigation.Task && !await navigation.Task)
                 {
-                    _webView.CoreWebView2.NavigationCompleted -= completedHandler;
-                    throw new TimeoutException("Die HCA-Oberfläche hat das erweiterte Ladezeitlimit von 120 Sekunden überschritten.");
-                }
-                if (!await navigation.Task)
+                    _webView.CoreWebView2.DOMContentLoaded -= contentHandler;
                     throw new InvalidOperationException("Die HCA-Oberfläche konnte nicht geladen werden. WebView2-Navigationsstatus: " +
                         (navigationError.HasValue ? navigationError.Value.ToString() : "unbekannt") + ".");
+                }
+
+                _webView.CoreWebView2.DOMContentLoaded -= contentHandler;
+                _webView.CoreWebView2.NavigationCompleted -= completedHandler;
+                if (finished == displayGuard)
+                    Program.Log("WebView2 Ladeereignis nach 8 Sekunden noch ausstehend; Oberfläche wird trotzdem eingeblendet.");
 
                 SetStartupProgress(100, "HCA ist bereit.");
                 await Task.Delay(120);

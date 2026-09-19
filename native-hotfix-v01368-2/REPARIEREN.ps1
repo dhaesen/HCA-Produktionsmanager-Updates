@@ -1,5 +1,5 @@
 $ErrorActionPreference = 'Stop'
-$Host.UI.RawUI.WindowTitle = 'HCA Produktionsmanager - Launcher-Reparatur v0.13.68.3'
+$Host.UI.RawUI.WindowTitle = 'HCA Produktionsmanager - Launcher-Reparatur v0.13.68.4'
 
 $packageRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
 $sourceExe = Join-Path $packageRoot 'payload\HCA_Produktionsmanager.exe'
@@ -135,7 +135,7 @@ function Select-HcaInstall {
 }
 
 try {
-    Write-RepairLog 'HCA Launcher-Reparatur v0.13.68.3' White
+    Write-RepairLog 'HCA Launcher-Reparatur v0.13.68.4' White
     Write-RepairLog 'Reparaturpaket wird geprueft ...' Cyan
 
     if (-not (Test-Path -LiteralPath $sourceExe -PathType Leaf) -or -not (Test-Path -LiteralPath $checksumFile -PathType Leaf)) {

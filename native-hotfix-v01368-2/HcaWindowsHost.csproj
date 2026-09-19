@@ -13,9 +13,9 @@
     <AssemblyTitle>HCA Produktionsmanager</AssemblyTitle>
     <Company>Werbestudio Königswinter</Company>
     <Product>HCA Produktionsmanager</Product>
-    <Version>0.13.68.2</Version>
-    <FileVersion>0.13.68.2</FileVersion>
-    <InformationalVersion>0.13.68.2-launcher-hotfix</InformationalVersion>
+    <Version>0.13.68.4</Version>
+    <FileVersion>0.13.68.4</FileVersion>
+    <InformationalVersion>0.13.68.4-launcher-hotfix</InformationalVersion>
   </PropertyGroup>
 
   <ItemGroup>

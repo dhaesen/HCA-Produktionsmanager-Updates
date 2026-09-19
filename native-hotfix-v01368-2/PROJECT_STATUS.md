@@ -1,7 +1,15 @@
 # HCA Produktionsmanager – Projektstatus
 
 Stand: 19.09.2026  
-Reparaturstand: **Launcher-Reparaturpaket v0.13.68.3**
+Reparaturstand: **Launcher-Reparaturpaket v0.13.68.4**
+
+## Korrektur v0.13.68.4
+
+- Die native Ladeblende wartet nicht mehr zwingend auf `NavigationCompleted`.
+- Die Oberfläche wird bereits bei `DOMContentLoaded` eingeblendet.
+- Falls WebView2 keines der beiden Ereignisse meldet, wird die WebView nach acht Sekunden trotzdem sichtbar geschaltet.
+- Ein expliziter WebView2-Navigationsfehler bleibt weiterhin ein echter Startfehler und wird mit Status protokolliert.
+- Damit wird der Zustand `Arbeitsbereiche werden geladen` nicht mehr dauerhaft vor einer bereits erreichbaren HCA-Oberfläche angezeigt.
 
 ## Korrektur v0.13.68.3
 

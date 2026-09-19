@@ -1,4 +1,4 @@
-HCA LAUNCHER-REPARATUR v0.13.68.3
+HCA LAUNCHER-REPARATUR v0.13.68.4
 =================================
 
 Diese Reparatur ersetzt ausschließlich HCA_Produktionsmanager.exe.
@@ -12,9 +12,10 @@ Konfiguration, Datenbank, Dokumente und Docker-Einstellungen bleiben unveränder
 Falls die automatische Erkennung scheitert, erscheint eine normale Ordnerauswahl. Dort den Ordner auswaehlen, in dem HCA_Produktionsmanager.exe liegt. Es ist keine Pfadeingabe erforderlich.
 
 Korrektur:
-- Das falsche 25-Sekunden-Limit beim Laden der Oberfläche wurde auf 120 Sekunden erhöht.
+- Das falsche 25-Sekunden-Abbruchverhalten wurde entfernt.
 - Navigationsfehler werden konkret ins Startprotokoll geschrieben.
 - Die irreführende pauschale WebView2-Meldung wurde entfernt.
+- Die Oberfläche wird nach DOMContentLoaded bzw. spaetestens nach 8 Sekunden eingeblendet und bleibt nicht mehr bei "Arbeitsbereiche werden geladen" verdeckt.
 
 Die Sicherung des bisherigen Launchers liegt unter:
 %LOCALAPPDATA%\HCA Produktionsmanager\recovery\
