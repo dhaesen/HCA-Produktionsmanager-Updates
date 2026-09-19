@@ -1,12 +1,15 @@
-HCA LAUNCHER-REPARATUR v0.13.68.2
+HCA LAUNCHER-REPARATUR v0.13.68.3
 =================================
 
 Diese Reparatur ersetzt ausschließlich HCA_Produktionsmanager.exe.
 Konfiguration, Datenbank, Dokumente und Docker-Einstellungen bleiben unverändert.
 
 1. ZIP vollständig in einen neuen Ordner entpacken.
-2. HCA_REPARIEREN.cmd per Doppelklick starten.
-3. Das Skript prüft die Datei, sichert den bisherigen Launcher und startet HCA neu.
+2. HCA geoeffnet lassen, damit der Installationsordner sicher erkannt werden kann.
+3. HCA_REPARIEREN.cmd per Doppelklick starten.
+4. Das Skript ermittelt den Installationsordner automatisch, beendet HCA, sichert den bisherigen Launcher und startet HCA neu.
+
+Falls die automatische Erkennung scheitert, erscheint eine normale Ordnerauswahl. Dort den Ordner auswaehlen, in dem HCA_Produktionsmanager.exe liegt. Es ist keine Pfadeingabe erforderlich.
 
 Korrektur:
 - Das falsche 25-Sekunden-Limit beim Laden der Oberfläche wurde auf 120 Sekunden erhöht.

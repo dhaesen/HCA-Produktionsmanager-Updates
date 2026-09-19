@@ -1,7 +1,15 @@
 # HCA Produktionsmanager – Projektstatus
 
 Stand: 19.09.2026  
-Reparaturstand: **Launcher-Hotfix v0.13.68.2**
+Reparaturstand: **Launcher-Reparaturpaket v0.13.68.3**
+
+## Korrektur v0.13.68.3
+
+- Fehlerhafte manuelle Pfadeingabe entfernt, durch die nur `C` uebernommen werden konnte.
+- Installationsordner wird nun ueber den laufenden Prozess, Registry, das erfolgreiche Reparaturprotokoll v0.13.68, typische Benutzerprofile und Verknuepfungen ermittelt.
+- Falls keine automatische Erkennung gelingt, wird eine grafische Ordnerauswahl statt einer Texteingabe angezeigt.
+- Konsolenausgaben sind ASCII-kompatibel, damit Windows PowerShell keine defekten Umlaute anzeigt.
+- Der enthaltene und bereits verifizierte Windows-Launcher bleibt Dateiversion `0.13.68.2`.
 
 ## Anlass
 
