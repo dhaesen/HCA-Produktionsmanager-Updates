@@ -46,6 +46,41 @@ jobs:
           fi
 
           unzip -t "$FILE" >/dev/null
+          python3 - "$FILE" <<'PY'
+          import re
+          import sys
+          import zipfile
+
+          archive = sys.argv[1]
+          required = {
+              "hca-update.json",
+              "payload/index.html",
+              "payload/app.js",
+              "payload/style.css",
+              "payload/hca-ui.css",
+              "payload/hca-ui.js",
+              "payload/native-bridge.js",
+              "payload/assets/app-icon.png",
+              "payload/assets/logo-app.png",
+              "payload/version.json",
+          }
+          with zipfile.ZipFile(archive) as package:
+              names = set(package.namelist())
+              missing = sorted(required - names)
+              if missing:
+                  raise SystemExit("Clientpaket unvollständig; fehlt: " + ", ".join(missing))
+              index = package.read("payload/index.html").decode("utf-8")
+              references = set(re.findall(r'(?:src|href)="/([^"?#]+)', index))
+              missing_references = sorted(
+                  reference for reference in references
+                  if "payload/" + reference not in names
+              )
+              if missing_references:
+                  raise SystemExit(
+                      "Clientpaket enthält nicht alle lokalen Oberflächenressourcen: "
+                      + ", ".join(missing_references)
+                  )
+          PY
           echo "Veröffentliche: $FILE"
           mkdir -p /tmp/hca_manifest
           unzip -p "$FILE" hca-update.json > /tmp/hca_manifest/hca-update.json
@@ -84,11 +119,31 @@ jobs:
             sha256sum "$NAS_FILE" | awk '{print $1}' > "$NAS_SHA_FILE"
           fi
 
+          REPAIR_BASE="incoming/HCA_Reparatur_Hotfix_v${VERSION#v}.zip"
+          REPAIR_FILE="$REPAIR_BASE"
+          REPAIR_SHA_FILE=""
+          if [ -f "$REPAIR_FILE" ]; then
+            :
+          elif compgen -G "${REPAIR_BASE}.b64part.*" >/dev/null; then
+            REPAIR_FILE="/tmp/$(basename "$REPAIR_BASE")"
+            cat "${REPAIR_BASE}.b64part."* > "$REPAIR_FILE"
+          else
+            REPAIR_FILE=""
+          fi
+
+          if [ -n "$REPAIR_FILE" ] && [ -f "$REPAIR_FILE" ]; then
+            unzip -t "$REPAIR_FILE" >/dev/null
+            REPAIR_SHA_FILE="/tmp/$(basename "${REPAIR_FILE%.zip}").sha256"
+            sha256sum "$REPAIR_FILE" | awk '{print $1}' > "$REPAIR_SHA_FILE"
+          fi
+
           echo "file=$FILE" >> "$GITHUB_OUTPUT"
           echo "basename=$BASENAME" >> "$GITHUB_OUTPUT"
           echo "sha_file=$SHA_FILE" >> "$GITHUB_OUTPUT"
           echo "nas_file=$NAS_FILE" >> "$GITHUB_OUTPUT"
           echo "nas_sha_file=$NAS_SHA_FILE" >> "$GITHUB_OUTPUT"
+          echo "repair_file=$REPAIR_FILE" >> "$GITHUB_OUTPUT"
+          echo "repair_sha_file=$REPAIR_SHA_FILE" >> "$GITHUB_OUTPUT"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           {
@@ -104,6 +159,8 @@ jobs:
           SHA_FILE: ${{ steps.update.outputs.sha_file }}
           NAS_FILE: ${{ steps.update.outputs.nas_file }}
           NAS_SHA_FILE: ${{ steps.update.outputs.nas_sha_file }}
+          REPAIR_FILE: ${{ steps.update.outputs.repair_file }}
+          REPAIR_SHA_FILE: ${{ steps.update.outputs.repair_sha_file }}
           TAG: ${{ steps.update.outputs.tag }}
           VERSION: ${{ steps.update.outputs.version }}
           DESCRIPTION: ${{ steps.update.outputs.description }}
@@ -111,11 +168,14 @@ jobs:
         run: |
           set -euo pipefail
           NOTES="/tmp/hca_release_notes.md"
-          printf '## HCA Produktionsmanager %s\n\n%s\n\n### Installation\nDer HCA Produktionsmanager erkennt dieses Stable-Update automatisch. Alternativ kann die `.hcaupdate` weiterhin manuell unter Einstellungen → Update einspielen installiert werden. Falls ein NAS-Patch beigefügt ist, zuerst dessen Anleitung beachten und danach das Desktop-Update installieren.\n' "$VERSION" "$DESCRIPTION" > "$NOTES"
+          printf '## HCA Produktionsmanager %s\n\n%s\n\n### Installation\nDer HCA Produktionsmanager erkennt dieses Stable-Update automatisch. Alternativ kann die `.hcaupdate` weiterhin manuell unter Einstellungen → Update einspielen installiert werden. Falls ein NAS-Patch beigefügt ist, zuerst dessen Anleitung beachten und danach das Desktop-Update installieren.\n\n### Reparatur\nWenn die HCA-Oberfläche nach v0.13.67 nicht mehr startet, `HCA_Reparatur_Hotfix_v%s.zip` vollständig entpacken und anschließend `HCA_REPARIEREN.cmd` doppelt anklicken.\n' "$VERSION" "$DESCRIPTION" "$VERSION" > "$NOTES"
 
           ASSETS=("$FILE" "$SHA_FILE")
           if [ -n "$NAS_FILE" ] && [ -f "$NAS_FILE" ]; then
             ASSETS+=("$NAS_FILE" "$NAS_SHA_FILE")
+          fi
+          if [ -n "$REPAIR_FILE" ] && [ -f "$REPAIR_FILE" ]; then
+            ASSETS+=("$REPAIR_FILE" "$REPAIR_SHA_FILE")
           fi
 
           if gh release view "$TAG" >/dev/null 2>&1; then
@@ -131,4 +191,7 @@ jobs:
           cat "${{ steps.update.outputs.sha_file }}"
           if [ -n "${{ steps.update.outputs.nas_sha_file }}" ]; then
             cat "${{ steps.update.outputs.nas_sha_file }}"
+          fi
+          if [ -n "${{ steps.update.outputs.repair_sha_file }}" ]; then
+            cat "${{ steps.update.outputs.repair_sha_file }}"
           fi
